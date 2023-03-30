@@ -1,0 +1,30 @@
+<!-- Brand Logo -->
+<a [routerLink]="['/']" class="brand-link">
+  <pf-image
+    src="/assets/img/logo.png"
+    alt="Ntls Logo"
+    class="brand-image"
+    height="33"
+    width="33"
+    rounded
+  ></pf-image>
+  <span class="brand-text font-weight-bold">NAUTILUS</span>
+</a>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <!-- Sidebar Menu -->
+  <nav class="mt-2" style="overflow-y: hidden">
+    <ul
+      class="nav nav-pills nav-sidebar flex-column"
+      data-widget="treeview"
+      role="menu"
+      data-accordion="false"
+    >
+      <app-menu-item
+        *ngFor="let item of menu"
+        [menuItem]="item"
+      ></app-menu-item>
+    </ul>
+  </nav>
+</div>

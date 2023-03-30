@@ -1,0 +1,22 @@
+<pf-dropdown>
+  <div slot="button">
+    <a class="nav-link">
+      <pf-image
+        fallback-src="/assets/img/default-profile.png"
+        class="user-image-small"
+        width="25"
+        height="25"
+        alt="User Image"
+        rounded
+      ></pf-image>
+    </a>
+  </div>
+  <div slot="menu">
+    <!-- Menu Footer-->
+    <li>
+      <a (click)="logout()" class="btn btn-default btn-flat float-right">
+        Sign out
+      </a>
+    </li>
+  </div>
+</pf-dropdown>
