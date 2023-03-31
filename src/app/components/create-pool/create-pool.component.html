@@ -1,0 +1,62 @@
+<ng-wizard [config]="config" (stepChanged)="stepChanged($event)">
+  <ng-wizard-step
+    title="1"
+    description="Select files"
+    [canEnter]="isValidTypeBoolean"
+    [canExit]="isValidFunctionReturnsBoolean.bind(this)"
+  >
+    <form>
+      <div class="form-group">
+        <label>Select Schema Definition</label>
+        <select class="form-control">
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+        </select>
+
+        <div class="custom-file mt-3">
+          <input type="file" class="custom-file-input" required />
+          <label class="custom-file-label">Choose file...</label>
+          <div class="invalid-feedback">
+            Example invalid custom file feedback
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Select data file</label>
+        <div class="input-group is-invalid">
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" required />
+            <label class="custom-file-label">Choose file...</label>
+          </div>
+          <div class="input-group-append">
+            <button class="btn btn-danger" type="button">
+              <i class="bi bi-trash-fill"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </ng-wizard-step>
+
+  <ng-wizard-step
+    title="2"
+    description="Add digital rights"
+    [canEnter]="isValidTypeBoolean"
+    [canExit]="isValidFunctionReturnsBoolean.bind(this)"
+  >
+    <span>Step 2 content</span>
+  </ng-wizard-step>
+
+  <ng-wizard-step
+    title="3"
+    description="Add description"
+    [canEnter]="isValidFunctionReturnsObservable.bind(this)"
+    [canExit]="isValidFunctionReturnsBoolean.bind(this)"
+  >
+    <span>Step 3 content</span>
+  </ng-wizard-step>
+</ng-wizard>
