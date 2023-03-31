@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { MatButtonModule } from '@angular/material/button';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Store, StoreModule } from '@ngrx/store';
 import { ProfabricComponentsModule } from '@profabric/angular-components';
@@ -18,7 +17,6 @@ import { uiReducer } from './store/ui/reducer';
     AppRoutingModule,
     ProfabricComponentsModule,
     BrowserAnimationsModule,
-    MatButtonModule,
     ToastrModule.forRoot(),
 
     StoreModule.forRoot({ ui: uiReducer }),
