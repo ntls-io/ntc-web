@@ -3,8 +3,7 @@
     title="1"
     description="Select files"
     [canEnter]="isValidTypeBoolean"
-    [canExit]="isValidFunctionReturnsBoolean.bind(this)"
-  >
+    [canExit]="isValidFunctionReturnsBoolean.bind(this)">
     <form>
       <div class="form-group">
         <label>Select Schema Definition</label>
@@ -15,30 +14,90 @@
           <option>4</option>
           <option>5</option>
         </select>
-
-        <div class="custom-file mt-3">
-          <input type="file" class="custom-file-input" required />
-          <label class="custom-file-label">Choose file...</label>
-          <div class="invalid-feedback">
-            Example invalid custom file feedback
-          </div>
-        </div>
       </div>
 
-      <div class="form-group">
-        <label>Select data file</label>
-        <div class="input-group is-invalid">
-          <div class="custom-file">
-            <input type="file" class="custom-file-input" required />
-            <label class="custom-file-label">Choose file...</label>
+      <ng-container>
+        <ul
+          class="list-group my-3"
+          *ngIf="uploaderSchema.queue?.[0]?.file as file; else noSchema">
+          <li
+            class="list-group-item d-flex justify-content-between align-items-center p-2">
+            <span>
+              <small class="badge badge-info">Schema file</small>
+              <div>
+                {{ file.name }}
+              </div>
+            </span>
+
+            <div class="btn-group" role="group">
+              <button class="btn btn-sm btn-outline-secondary" type="button">
+                <i class="bi bi-eye-fill"></i>
+              </button>
+              <button
+                class="btn btn-sm btn-outline-secondary"
+                type="button"
+                (click)="uploaderSchema.clearQueue()">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </div>
+          </li>
+        </ul>
+
+        <ng-template #noSchema>
+          <div class="form-group mt-3">
+            <label>Select schema file</label>
+            <div class="input-group is-invalid">
+              <div class="custom-file">
+                <input
+                  type="file"
+                  class="custom-file-input"
+                  ng2FileSelect
+                  [uploader]="uploaderSchema" />
+                <label class="custom-file-label"> Choose schema... </label>
+              </div>
+            </div>
           </div>
-          <div class="input-group-append">
-            <button class="btn btn-danger" type="button">
+        </ng-template>
+      </ng-container>
+
+      <ng-container>
+        <ul
+          class="list-group my-3"
+          *ngIf="uploaderData.queue?.[0]?.file as file; else noData">
+          <li
+            class="list-group-item d-flex justify-content-between align-items-center p-2">
+            <span>
+              <small class="badge badge-primary">Data file</small>
+              <div>
+                {{ file.name }}
+              </div>
+            </span>
+
+            <button
+              class="btn btn-sm btn-outline-secondary"
+              type="button"
+              (click)="uploaderSchema.clearQueue()">
               <i class="bi bi-trash-fill"></i>
             </button>
+          </li>
+        </ul>
+
+        <ng-template #noData>
+          <div class="form-group">
+            <label>Select data file</label>
+            <div class="input-group is-invalid">
+              <div class="custom-file">
+                <input
+                  type="file"
+                  class="custom-file-input"
+                  ng2FileSelect
+                  [uploader]="uploaderData" />
+                <label class="custom-file-label">Choose data...</label>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </ng-template>
+      </ng-container>
     </form>
   </ng-wizard-step>
 
@@ -46,17 +105,48 @@
     title="2"
     description="Add digital rights"
     [canEnter]="isValidTypeBoolean"
-    [canExit]="isValidFunctionReturnsBoolean.bind(this)"
-  >
-    <span>Step 2 content</span>
+    [canExit]="isValidFunctionReturnsBoolean.bind(this)">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>DRT Name</td>
+          <td>Lorem Ipsum</td>
+          <td>
+            <div class="form-check">
+              <input class="form-check-input position-static" type="checkbox" />
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </ng-wizard-step>
 
   <ng-wizard-step
     title="3"
     description="Add description"
     [canEnter]="isValidFunctionReturnsObservable.bind(this)"
-    [canExit]="isValidFunctionReturnsBoolean.bind(this)"
-  >
-    <span>Step 3 content</span>
+    [canExit]="isValidFunctionReturnsBoolean.bind(this)">
+    <div class="form-group">
+      <label>Give your pool a name</label>
+      <input type="text" class="form-control" placeholder="Enter name" />
+      <small class="form-text text-muted">Max 50 characters</small>
+    </div>
+    <div class="form-group">
+      <label>Give a high level description of your pool</label>
+      <textarea
+        class="form-control"
+        rows="3"
+        placeholder="Enter description"></textarea>
+      <small id="emailHelp" class="form-text text-muted"
+        >Max 200 characters
+      </small>
+    </div>
   </ng-wizard-step>
 </ng-wizard>
