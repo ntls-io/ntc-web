@@ -8,7 +8,10 @@ import {
   THEME
 } from "ng-wizard";
 import { FileUploader } from "ng2-file-upload";
+import { BsModalRef, BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { of } from "rxjs";
+import { AjvService } from "src/app/utils/ajv.service";
+import { SchemaPreviewComponent } from "../schema-preview/schema-preview.component";
 
 const uploaderConfig = {
   url: "",
@@ -38,29 +41,42 @@ export class CreatePoolComponent implements OnInit {
 
   uploaderSchema = new FileUploader(uploaderConfig);
   uploaderData = new FileUploader(uploaderConfig);
+  isSchemaValid: { success: unknown; error: string } | undefined;
 
-  constructor(private ngWizardService: NgWizardService) {}
+  scPrevModal?: BsModalRef;
+
+  constructor(
+    private ngWizardService: NgWizardService,
+    private ajv: AjvService,
+    private modalService: BsModalService
+  ) {}
 
   ngOnInit() {}
 
-  showPreviousStep(event?: Event) {
-    this.ngWizardService.previous();
-  }
-
-  showNextStep(event?: Event) {
-    this.ngWizardService.next();
-  }
-
-  resetWizard(event?: Event) {
-    this.ngWizardService.reset();
-  }
-
-  setTheme(theme: THEME) {
-    this.ngWizardService.theme(theme);
-  }
-
   stepChanged(args: StepChangedArgs) {
     console.log(args.step);
+  }
+
+  async previewModal(schema: Blob) {
+    const schemaFileAsText = (await this.ajv.readAsText(schema)) as string;
+    const schemaFileObject = JSON.parse(schemaFileAsText) as object;
+
+    const initialState: ModalOptions = {
+      initialState: {
+        schema: schemaFileObject,
+        title: "Modal with component"
+      }
+    };
+    this.scPrevModal = this.modalService.show(
+      SchemaPreviewComponent,
+      initialState
+    );
+    this.scPrevModal.content.closeBtnName = "Close";
+  }
+
+  async validateSchema(event: File[]) {
+    console.log(event);
+    this.isSchemaValid = await this.ajv.validateSchemaFile(event[0]);
   }
 
   isValidFunctionReturnsBoolean(args: StepValidationArgs) {

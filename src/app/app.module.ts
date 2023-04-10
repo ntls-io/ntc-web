@@ -9,9 +9,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { uiReducer } from './store/ui/reducer';
+import { SchemaPreviewComponent } from './components/schema-preview/schema-preview.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, SchemaPreviewComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
