@@ -1,1 +1,27 @@
-<section class="content"></section>
+<div class="container-fluid">
+  <div class="row pb-3">
+    <div class="col-lg-4 col-sm-6 col-12">
+      <ul class="list-group">
+        <li
+          class="list-group-item d-flex justify-content-between align-items-center"
+          *ngFor="let item of list">
+          {{ item.name }}
+          <span class="badge badge-dark">{{ item.amount }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <table class="table">
+        <thead>
+          <tr class="bg-dark">
+            <th>Name</th>
+            <th>Description</th>
+            <th>Digital Rights</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+</div>

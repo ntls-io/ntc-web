@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <h4 class="modal-title pull-left">{{ title }}</h4>
+  <h4 class="modal-title pull-left">Schema Preview</h4>
   <button
     type="button"
     class="btn-close close pull-right"
@@ -9,12 +9,5 @@
   </button>
 </div>
 <div class="modal-body">
-  <ul *ngIf="schema.length">
-    <li *ngFor="let item of schema">{{ item }}</li>
-  </ul>
-</div>
-<div class="modal-footer">
-  <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">
-    {{ closeBtnName }}
-  </button>
+  <pre class="m-0">{{ schema?.properties ?? schema?.items | json }}</pre>
 </div>

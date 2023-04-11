@@ -9,7 +9,7 @@ import {
 } from "ng-wizard";
 import { FileUploader } from "ng2-file-upload";
 import { BsModalRef, BsModalService, ModalOptions } from "ngx-bootstrap/modal";
-import { of } from "rxjs";
+import { defer, of } from "rxjs";
 import { AjvService } from "src/app/utils/ajv.service";
 import { SchemaPreviewComponent } from "../schema-preview/schema-preview.component";
 
@@ -42,6 +42,7 @@ export class CreatePoolComponent implements OnInit {
   uploaderSchema = new FileUploader(uploaderConfig);
   uploaderData = new FileUploader(uploaderConfig);
   isSchemaValid: { success: unknown; error: string } | undefined;
+  isPackageValid = { state: STEP_STATE.normal, message: "" };
 
   scPrevModal?: BsModalRef;
 
@@ -63,20 +64,39 @@ export class CreatePoolComponent implements OnInit {
 
     const initialState: ModalOptions = {
       initialState: {
-        schema: schemaFileObject,
-        title: "Modal with component"
-      }
+        schema: schemaFileObject
+      },
+      class: "modal-dialog-centered"
     };
     this.scPrevModal = this.modalService.show(
       SchemaPreviewComponent,
       initialState
     );
-    this.scPrevModal.content.closeBtnName = "Close";
   }
 
   async validateSchema(event: File[]) {
-    console.log(event);
     this.isSchemaValid = await this.ajv.validateSchemaFile(event[0]);
+  }
+
+  validatePackage(args: StepValidationArgs) {
+    return defer(() => this.validateDataSchema());
+  }
+
+  async validateDataSchema() {
+    const result = await this.ajv.validateJsonDataAgainstSchema(
+      this.uploaderData.queue[0]._file,
+      this.uploaderSchema.queue[0]._file
+    );
+    this.isPackageValid = result.success
+      ? { state: STEP_STATE.normal, message: "" }
+      : { state: STEP_STATE.error, message: result.error };
+
+    console.log(result);
+    return result.success;
+  }
+
+  resetPackageStep() {
+    this.isPackageValid = { state: STEP_STATE.normal, message: "" };
   }
 
   isValidFunctionReturnsBoolean(args: StepValidationArgs) {

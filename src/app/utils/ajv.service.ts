@@ -8,17 +8,17 @@ const ajv = new Ajv();
 export class AjvService {
   constructor() {}
 
-  readAsText(file: Blob): Promise<string | ArrayBuffer | null> {
+  readAsText(file: Blob): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
+      reader.onload = () => resolve(String(reader.result));
       reader.onerror = () => reject(reader.error);
       reader.readAsText(file);
     });
   }
 
   async validateSchemaFile(schema: Blob) {
-    const schemaFileAsText = (await this.readAsText(schema)) as string;
+    const schemaFileAsText = await this.readAsText(schema);
     const schemaFileObject = JSON.parse(schemaFileAsText);
     const validate = await ajv.validateSchema(schemaFileObject);
     return {
@@ -27,16 +27,16 @@ export class AjvService {
     };
   }
 
-  // async validateJsonDataAgainstSchema(dataFile: Blob, schemaFile: Blob) {
-  //   const data = (await this.readAsText(dataFile)) as string;
-  //   const schema = (await this.readAsText(schemaFile)) as string;
+  async validateJsonDataAgainstSchema(dataFile: Blob, schemaFile: Blob) {
+    const data = await this.readAsText(dataFile);
+    const schema = await this.readAsText(schemaFile);
 
-  //   const validate = compile(JSON.parse(schema));
+    const validate = ajv.compile(JSON.parse(schema));
 
-  //   const result = {
-  //     success: validate(JSON.parse(data)),
-  //     error: errorsText(validate.errors)
-  //   };
-  //   return result;
-  // }
+    const result = {
+      success: validate(JSON.parse(data)),
+      error: ajv.errorsText(validate.errors)
+    };
+    return result;
+  }
 }

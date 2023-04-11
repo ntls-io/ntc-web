@@ -3,7 +3,8 @@
     title="1"
     description="Select files"
     [canEnter]="isValidTypeBoolean"
-    [canExit]="isValidFunctionReturnsBoolean.bind(this)">
+    [canExit]="validatePackage.bind(this)"
+    [state]="isPackageValid.state">
     <form>
       <div class="form-group">
         <label>Select Schema Definition</label>
@@ -63,7 +64,9 @@
                   ng2FileSelect
                   accept="application/json"
                   [uploader]="uploaderSchema"
-                  (onFileSelected)="validateSchema($event)" />
+                  (onFileSelected)="
+                    validateSchema($event); resetPackageStep()
+                  " />
                 <label class="custom-file-label"> Choose schema... </label>
               </div>
             </div>
@@ -87,7 +90,7 @@
             <button
               class="btn btn-sm btn-outline-secondary"
               type="button"
-              (click)="uploaderSchema.clearQueue()">
+              (click)="uploaderData.clearQueue(); resetPackageStep()">
               <i class="bi bi-trash-fill"></i>
             </button>
           </li>
@@ -103,6 +106,7 @@
                   class="custom-file-input"
                   ng2FileSelect
                   accept="application/json"
+                  (onFileSelected)="resetPackageStep()"
                   [uploader]="uploaderData" />
                 <label class="custom-file-label">Choose data...</label>
               </div>
@@ -111,6 +115,13 @@
         </ng-template>
       </ng-container>
     </form>
+
+    <div
+      *ngIf="isPackageValid?.message"
+      class="alert alert-danger"
+      role="alert">
+      {{ isPackageValid.message }}
+    </div>
   </ng-wizard-step>
 
   <ng-wizard-step

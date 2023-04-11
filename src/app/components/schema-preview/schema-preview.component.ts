@@ -7,8 +7,6 @@ import { BsModalRef } from "ngx-bootstrap/modal";
   styleUrls: ["./schema-preview.component.scss"]
 })
 export class SchemaPreviewComponent {
-  title?: string;
-  closeBtnName?: string;
-  schema: any[] = [];
+  schema: any;
   constructor(public bsModalRef: BsModalRef) {}
 }
