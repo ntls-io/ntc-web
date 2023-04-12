@@ -1,9 +1,9 @@
-import { Injectable } from "@angular/core";
-import Ajv from "ajv";
+import { Injectable } from '@angular/core';
+import Ajv from 'ajv';
 const ajv = new Ajv();
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class AjvService {
   constructor() {}

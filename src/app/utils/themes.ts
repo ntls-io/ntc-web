@@ -7,7 +7,7 @@ export const NAVBAR_LIGHT_VARIANTS: Array<Option> = [
   { value: 'navbar-light', label: 'Light' },
   { value: 'navbar-warning navbar-light', label: 'Warning' },
   { value: 'navbar-white navbar-light', label: 'White' },
-  { value: 'navbar-orange navbar-light', label: 'Orange' },
+  { value: 'navbar-orange navbar-light', label: 'Orange' }
 ];
 
 export const SIDEBAR_LIGHT_SKINS: Array<Option> = [
@@ -26,5 +26,5 @@ export const SIDEBAR_LIGHT_SKINS: Array<Option> = [
   { value: 'sidebar-light-orange', label: 'Orange' },
   { value: 'sidebar-light-lime', label: 'Lime' },
   { value: 'sidebar-light-teal', label: 'Teal' },
-  { value: 'sidebar-light-olive', label: 'Olive' },
+  { value: 'sidebar-light-olive', label: 'Olive' }
 ];

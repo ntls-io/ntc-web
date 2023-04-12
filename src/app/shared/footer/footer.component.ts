@@ -1,4 +1,4 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
+import { Component, HostBinding } from '@angular/core';
 
 @Component({
   selector: 'app-footer',
@@ -7,7 +7,6 @@ import { Component, HostBinding, OnInit } from '@angular/core';
 })
 export class FooterComponent {
   @HostBinding('class') classes: string = 'main-footer';
- // public appVersion = packageInfo.version;
+  // public appVersion = packageInfo.version;
   //public currentYear: string = DateTime.now().toFormat('y');
-
 }

@@ -7,7 +7,7 @@ export function uiReducer(state: UiState = initialState, action: UiAction) {
     case Actions.TOGGLE_SIDEBAR_MENU:
       return {
         ...state,
-        menuSidebarCollapsed: !state.menuSidebarCollapsed,
+        menuSidebarCollapsed: !state.menuSidebarCollapsed
       };
     default:
       return state;

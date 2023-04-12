@@ -8,13 +8,13 @@ import { UserService } from '../../../core/services/user.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
   @HostBinding('class') class = 'login-box h-100 d-flex align-items-center';
   public loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', Validators.required),
+    password: new FormControl('', Validators.required)
   });
   validateuser: boolean = false;
   submitted: any = false;

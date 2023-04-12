@@ -10,7 +10,7 @@ const BASE_CLASSES = 'main-header navbar navbar-expand';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss'],
+  styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
   @HostBinding('class') classes: string = BASE_CLASSES;
@@ -28,7 +28,7 @@ export class HeaderComponent implements OnInit {
     //     this.classes = `${BASE_CLASSES} ${state.navbarVariant}`;
     // });
     this.searchForm = new UntypedFormGroup({
-      search: new UntypedFormControl(null),
+      search: new UntypedFormControl(null)
     });
   }
 

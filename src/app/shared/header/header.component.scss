@@ -12,14 +12,14 @@ pf-dropdown {
   --pf-dropdown-menu-min-width: 18rem;
 
   .dropdown-item {
-      padding: 0.5rem 1rem;
+    padding: 0.5rem 1rem;
   }
 
   .text-sm {
-      margin-bottom: 0;
+    margin-bottom: 0;
   }
   .dropdown-divider {
-      margin: 0;
+    margin: 0;
   }
 }
 .fa-bars {
@@ -28,13 +28,13 @@ pf-dropdown {
 
 .nav-item {
   .nav-link {
-      cursor: pointer;
+    cursor: pointer;
   }
 }
 .nav-item {
   button.nav-link {
-      outline: none;
-      border: none;
-      background-color: transparent;
+    outline: none;
+    border: none;
+    background-color: transparent;
   }
 }

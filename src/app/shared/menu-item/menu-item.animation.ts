@@ -1,4 +1,11 @@
-import {animate, AUTO_STYLE, state, style, transition, trigger} from '@angular/animations';
+import {
+  animate,
+  AUTO_STYLE,
+  state,
+  style,
+  transition,
+  trigger
+} from '@angular/animations';
 
 const TRANSITION_DURATION = 250;
 

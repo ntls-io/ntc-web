@@ -16,4 +16,4 @@ jobs:
     steps:
       - uses: toshimaru/auto-author-assign@v1.6.2
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'

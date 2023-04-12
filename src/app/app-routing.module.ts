@@ -6,7 +6,7 @@ const routes: Routes = [
   {
     path: 'auth',
     loadChildren: () =>
-      import('./modules/auth/auth.module').then((m) => m.AuthModule),
+      import('./modules/auth/auth.module').then(m => m.AuthModule)
   },
   {
     path: '',
@@ -17,15 +17,15 @@ const routes: Routes = [
         path: '',
         loadChildren: () =>
           import('./modules/dashboard/dashboard.module').then(
-            (m) => m.DashboardModule
-          ),
-      },
-    ],
-  },
+            m => m.DashboardModule
+          )
+      }
+    ]
+  }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class AppRoutingModule {}

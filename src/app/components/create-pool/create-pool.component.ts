@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit } from '@angular/core';
 import {
   NgWizardConfig,
   NgWizardService,
@@ -6,23 +6,23 @@ import {
   StepValidationArgs,
   STEP_STATE,
   THEME
-} from "ng-wizard";
-import { FileUploader } from "ng2-file-upload";
-import { BsModalRef, BsModalService, ModalOptions } from "ngx-bootstrap/modal";
-import { defer, of } from "rxjs";
-import { AjvService } from "src/app/utils/ajv.service";
-import { SchemaPreviewComponent } from "../schema-preview/schema-preview.component";
+} from 'ng-wizard';
+import { FileUploader } from 'ng2-file-upload';
+import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { defer, of } from 'rxjs';
+import { AjvService } from 'src/app/utils/ajv.service';
+import { SchemaPreviewComponent } from '../schema-preview/schema-preview.component';
 
 const uploaderConfig = {
-  url: "",
+  url: '',
   disableMultipart: true,
-  allowedMimeType: ["application/json"]
+  allowedMimeType: ['application/json']
 };
 
 @Component({
-  selector: "app-create-pool",
-  templateUrl: "./create-pool.component.html",
-  styleUrls: ["./create-pool.component.scss"]
+  selector: 'app-create-pool',
+  templateUrl: './create-pool.component.html',
+  styleUrls: ['./create-pool.component.scss']
 })
 export class CreatePoolComponent implements OnInit {
   stepStates = {
@@ -42,7 +42,7 @@ export class CreatePoolComponent implements OnInit {
   uploaderSchema = new FileUploader(uploaderConfig);
   uploaderData = new FileUploader(uploaderConfig);
   isSchemaValid: { success: unknown; error: string } | undefined;
-  isPackageValid = { state: STEP_STATE.normal, message: "" };
+  isPackageValid = { state: STEP_STATE.normal, message: '' };
 
   scPrevModal?: BsModalRef;
 
@@ -66,7 +66,7 @@ export class CreatePoolComponent implements OnInit {
       initialState: {
         schema: schemaFileObject
       },
-      class: "modal-dialog-centered"
+      class: 'modal-dialog-centered'
     };
     this.scPrevModal = this.modalService.show(
       SchemaPreviewComponent,
@@ -88,7 +88,7 @@ export class CreatePoolComponent implements OnInit {
       this.uploaderSchema.queue[0]._file
     );
     this.isPackageValid = result.success
-      ? { state: STEP_STATE.normal, message: "" }
+      ? { state: STEP_STATE.normal, message: '' }
       : { state: STEP_STATE.error, message: result.error };
 
     console.log(result);
@@ -96,7 +96,7 @@ export class CreatePoolComponent implements OnInit {
   }
 
   resetPackageStep() {
-    this.isPackageValid = { state: STEP_STATE.normal, message: "" };
+    this.isPackageValid = { state: STEP_STATE.normal, message: '' };
   }
 
   isValidFunctionReturnsBoolean(args: StepValidationArgs) {

@@ -8,9 +8,8 @@ describe('SchemaPreviewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SchemaPreviewComponent ]
-    })
-    .compileComponents();
+      declarations: [SchemaPreviewComponent]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SchemaPreviewComponent);
     component = fixture.componentInstance;

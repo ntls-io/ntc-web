@@ -19,8 +19,8 @@ defineCustomElements();
     FormsModule,
     ReactiveFormsModule,
     ProfabricComponentsModule,
-    HttpClientModule,
+    HttpClientModule
   ],
-  providers: [UserService],
+  providers: [UserService]
 })
 export class AuthModule {}

@@ -6,20 +6,20 @@ import { PoolsComponent } from './pools/pools.component';
 const routes: Routes = [
   {
     path: 'home',
-    component: HomeComponent,
+    component: HomeComponent
   },
   {
     path: 'pools',
-    component: PoolsComponent,
+    component: PoolsComponent
   },
   {
     path: '',
     redirectTo: 'home',
-    pathMatch: 'full',
-  },
+    pathMatch: 'full'
+  }
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class DashboardRoutingModule {}

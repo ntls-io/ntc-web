@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {AuthenticationService} from '../../../core/services/authentication.service';
+import { AuthenticationService } from '../../../core/services/authentication.service';
 
 @Component({
   selector: 'app-user',
@@ -7,16 +7,15 @@ import {AuthenticationService} from '../../../core/services/authentication.servi
   styleUrls: ['./user.component.scss']
 })
 export class UserComponent implements OnInit {
-  public user:any;
+  public user: any;
 
   constructor(private appservice: AuthenticationService) {}
 
   ngOnInit(): void {
     this.user = this.appservice.getCurrentUser();
-}
+  }
 
-logout() {
+  logout() {
     this.appservice.removeCurrentUser();
-}
-
+  }
 }

@@ -4,7 +4,8 @@
     description="Select files"
     [canEnter]="isValidTypeBoolean"
     [canExit]="validatePackage.bind(this)"
-    [state]="isPackageValid.state">
+    [state]="isPackageValid.state"
+  >
     <form>
       <div class="form-group">
         <label>Select Schema Definition</label>
@@ -20,9 +21,11 @@
       <ng-container>
         <ul
           class="list-group my-3"
-          *ngIf="uploaderSchema.queue?.[0]?.file as file; else noSchema">
+          *ngIf="uploaderSchema.queue?.[0]?.file as file; else noSchema"
+        >
           <li
-            class="list-group-item d-flex justify-content-between align-items-center p-2">
+            class="list-group-item d-flex justify-content-between align-items-center p-2"
+          >
             <span>
               <small class="badge badge-info">Schema file</small>
               <div>
@@ -35,20 +38,23 @@
                 *ngIf="isSchemaValid?.success"
                 class="btn btn-sm btn-outline-secondary"
                 type="button"
-                (click)="previewModal(uploaderSchema.queue[0]._file)">
+                (click)="previewModal(uploaderSchema.queue[0]._file)"
+              >
                 <i class="bi bi-eye-fill"></i>
               </button>
               <button
                 class="btn btn-sm btn-outline-secondary"
                 type="button"
-                (click)="uploaderSchema.clearQueue()">
+                (click)="uploaderSchema.clearQueue()"
+              >
                 <i class="bi bi-trash-fill"></i>
               </button>
             </div>
           </li>
           <li
             class="list-group-item list-group-item-danger px-2 py-1"
-            *ngIf="!isSchemaValid?.success">
+            *ngIf="!isSchemaValid?.success"
+          >
             <small>{{ isSchemaValid?.error }}</small>
           </li>
         </ul>
@@ -64,9 +70,8 @@
                   ng2FileSelect
                   accept="application/json"
                   [uploader]="uploaderSchema"
-                  (onFileSelected)="
-                    validateSchema($event); resetPackageStep()
-                  " />
+                  (onFileSelected)="validateSchema($event); resetPackageStep()"
+                />
                 <label class="custom-file-label"> Choose schema... </label>
               </div>
             </div>
@@ -77,9 +82,11 @@
       <ng-container>
         <ul
           class="list-group my-3"
-          *ngIf="uploaderData.queue?.[0]?.file as file; else noData">
+          *ngIf="uploaderData.queue?.[0]?.file as file; else noData"
+        >
           <li
-            class="list-group-item d-flex justify-content-between align-items-center p-2">
+            class="list-group-item d-flex justify-content-between align-items-center p-2"
+          >
             <span>
               <small class="badge badge-primary">Data file</small>
               <div>
@@ -90,7 +97,8 @@
             <button
               class="btn btn-sm btn-outline-secondary"
               type="button"
-              (click)="uploaderData.clearQueue(); resetPackageStep()">
+              (click)="uploaderData.clearQueue(); resetPackageStep()"
+            >
               <i class="bi bi-trash-fill"></i>
             </button>
           </li>
@@ -107,7 +115,8 @@
                   ng2FileSelect
                   accept="application/json"
                   (onFileSelected)="resetPackageStep()"
-                  [uploader]="uploaderData" />
+                  [uploader]="uploaderData"
+                />
                 <label class="custom-file-label">Choose data...</label>
               </div>
             </div>
@@ -119,7 +128,8 @@
     <div
       *ngIf="isPackageValid?.message"
       class="alert alert-danger"
-      role="alert">
+      role="alert"
+    >
       {{ isPackageValid.message }}
     </div>
   </ng-wizard-step>
@@ -128,7 +138,8 @@
     title="2"
     description="Add digital rights"
     [canEnter]="isValidTypeBoolean"
-    [canExit]="isValidFunctionReturnsBoolean.bind(this)">
+    [canExit]="isValidFunctionReturnsBoolean.bind(this)"
+  >
     <table class="table">
       <thead>
         <tr>
@@ -155,7 +166,8 @@
     title="3"
     description="Add description"
     [canEnter]="isValidFunctionReturnsObservable.bind(this)"
-    [canExit]="isValidFunctionReturnsBoolean.bind(this)">
+    [canExit]="isValidFunctionReturnsBoolean.bind(this)"
+  >
     <div class="form-group">
       <label>Give your pool a name</label>
       <input type="text" class="form-control" placeholder="Enter name" />
@@ -166,7 +178,8 @@
       <textarea
         class="form-control"
         rows="3"
-        placeholder="Enter description"></textarea>
+        placeholder="Enter description"
+      ></textarea>
       <small id="emailHelp" class="form-text text-muted"
         >Max 200 characters
       </small>
