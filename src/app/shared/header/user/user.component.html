@@ -1,22 +1,21 @@
-<pf-dropdown>
-  <div slot="button">
-    <a class="nav-link">
-      <pf-image
-        fallback-src="/assets/img/default-profile.png"
-        class="user-image-small"
-        width="25"
-        height="25"
-        alt="User Image"
-        rounded
-      ></pf-image>
-    </a>
-  </div>
-  <div slot="menu">
-    <!-- Menu Footer-->
-    <li>
-      <a (click)="logout()" class="btn btn-default btn-flat float-right">
-        Sign out
-      </a>
+<div class="btn-group" dropdown>
+  <button
+    id="button-nav-user-menu"
+    dropdownToggle
+    type="button"
+    class="btn dropdown-toggle"
+    aria-controls="dropdown-nav-user-menu"
+  >
+    Full Name <span class="caret"></span>
+  </button>
+  <ul
+    id="dropdown-nav-user-menu"
+    *dropdownMenu
+    class="dropdown-menu dropdown-menu-right"
+    role="menu"
+  >
+    <li role="menuitem">
+      <a (click)="logout()" class="btn btn-default"> Sign out </a>
     </li>
-  </div>
-</pf-dropdown>
+  </ul>
+</div>

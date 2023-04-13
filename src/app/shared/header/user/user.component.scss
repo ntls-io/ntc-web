@@ -4,34 +4,6 @@
   align-items: center;
 }
 
-pf-dropdown {
-  border: none;
-  width: 3rem;
-  justify-content: center;
-  align-items: center;
-  --pf-dropdown-menu-min-width: 280px;
-
-  .dropdown-item {
-    padding: 0.5rem 1rem;
-  }
-
-  .text-sm {
-    margin-bottom: 0;
-  }
-  .dropdown-divider {
-    margin: 0;
-  }
-}
-
-.user-image-small {
-  margin: 0px -4px;
-  --pf-box-shadow: 0 3px 6px #00000029, 0 3px 6px #0000003b !important;
-}
-.user-image-big {
-  --pf-box-shadow: 0 3px 6px #00000029, 0 3px 6px #0000003b !important;
-  --pf-border: 3px solid #fff3;
-}
-
 .user-header {
   display: flex;
   align-items: center;
@@ -39,6 +11,7 @@ pf-dropdown {
   height: 175px;
   padding: 10px;
   text-align: center;
+
   img {
     z-index: 5;
     height: 90px;
@@ -47,10 +20,12 @@ pf-dropdown {
     border-color: transparent;
     border-color: rgba(255, 255, 255, 0.2);
   }
+
   p {
     z-index: 5;
     font-size: 17px;
     margin-top: 10px;
+
     small {
       display: block;
       font-size: 12px;
@@ -64,6 +39,7 @@ pf-dropdown {
   border-bottom: 1px solid #495057;
   border-top: 1px solid #dee2e6;
   padding: 15px;
+
   &::after {
     display: block;
     clear: both;
@@ -74,11 +50,13 @@ pf-dropdown {
 .user-footer {
   background-color: #f8f9fa;
   padding: 10px;
+
   &::after {
     display: block;
     clear: both;
     content: '';
   }
+
   .btn-default {
     color: #6c757d;
   }
