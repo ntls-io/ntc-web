@@ -2,7 +2,6 @@ import { Component, HostBinding, OnInit, Renderer2 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../../core/services/authentication.service';
-import { toasterservice } from '../../../core/services/toaster.service';
 import { UserService } from '../../../core/services/user.service';
 
 @Component({
@@ -22,7 +21,6 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private renderer: Renderer2,
     private loginservice: UserService,
-    private toast: toasterservice,
     private authenticationservice: AuthenticationService
   ) {}
 
