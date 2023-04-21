@@ -27,5 +27,15 @@ export const MENU = [
     name: 'Pools',
     iconClasses: 'bi-columns-gap',
     path: ['/pools']
+  },
+  {
+    name: 'Analysis',
+    iconClasses: 'bi-pie-chart',
+    path: ['/analysis']
+  },
+  {
+    name: 'Marker',
+    iconClasses: 'bi-cart3',
+    path: ['/market']
   }
 ];
