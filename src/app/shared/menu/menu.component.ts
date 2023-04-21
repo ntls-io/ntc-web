@@ -34,7 +34,7 @@ export const MENU = [
     path: ['/analysis']
   },
   {
-    name: 'Marker',
+    name: 'Market',
     iconClasses: 'bi-cart3',
     path: ['/market']
   }
