@@ -1,5 +1,4 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
-import { AuthenticationService } from '../../core/services/authentication.service';
 
 const BASE_CLASSES = 'main-sidebar elevation-1';
 
@@ -12,7 +11,7 @@ export class MenuComponent implements OnInit {
   @HostBinding('class') classes: string = BASE_CLASSES;
   public menu = MENU;
 
-  constructor(public appService: AuthenticationService) {}
+  constructor() {}
 
   ngOnInit(): void {}
 }

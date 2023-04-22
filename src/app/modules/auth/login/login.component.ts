@@ -1,8 +1,7 @@
 import { Component, HostBinding, OnInit, Renderer2 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthenticationService } from '../../../core/services/authentication.service';
-import { UserService } from '../../../core/services/user.service';
+import { SessionQuery } from 'src/app/states/session';
 
 @Component({
   selector: 'app-login',
@@ -20,12 +19,12 @@ export class LoginComponent implements OnInit {
   constructor(
     private router: Router,
     private renderer: Renderer2,
-    private loginservice: UserService,
-    private authenticationservice: AuthenticationService
+    private sessionQuery: SessionQuery
   ) {}
 
   ngOnInit(): void {
-    if (this.authenticationservice.isAuhenticated()) {
+    const { user } = this.sessionQuery.getValue();
+    if (user) {
       this.router.navigate(['dashboard']);
     }
     this.renderer.addClass(document.querySelector('app-root'), 'login-page');

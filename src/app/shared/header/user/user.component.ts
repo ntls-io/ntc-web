@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from '../../../core/services/authentication.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user',
@@ -9,13 +9,11 @@ import { AuthenticationService } from '../../../core/services/authentication.ser
 export class UserComponent implements OnInit {
   public user: any;
 
-  constructor(private appservice: AuthenticationService) {}
+  constructor(private router: Router) {}
 
-  ngOnInit(): void {
-    this.user = this.appservice.getCurrentUser();
-  }
+  ngOnInit(): void {}
 
   logout() {
-    this.appservice.removeCurrentUser();
+    this.router.navigate(['/auth/login']);
   }
 }

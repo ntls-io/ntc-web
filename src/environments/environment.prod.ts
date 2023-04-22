@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+
+  nautilusWalletServer: 'http://localhost:4200/api/nautilus/'
 };
