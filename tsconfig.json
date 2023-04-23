@@ -13,8 +13,7 @@
     "target": "ES2022",
     "module": "es2020",
     "lib": ["es2020", "dom"],
-    "strict": true,
-    "noImplicitOverride": true
+    "strict": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

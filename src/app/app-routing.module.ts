@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './guard/auth.guard';
 import { MainComponent } from './shared/main/main.component';
 
 const routes: Routes = [
@@ -9,9 +10,9 @@ const routes: Routes = [
       import('./modules/auth/auth.module').then(m => m.AuthModule)
   },
   {
-    path: '',
+    path: 'dashboard',
     component: MainComponent,
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',
@@ -21,6 +22,11 @@ const routes: Routes = [
           )
       }
     ]
+  },
+  {
+    path: '',
+    redirectTo: 'auth',
+    pathMatch: 'full'
   }
 ];
 

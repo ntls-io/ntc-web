@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
 
-  nautilusWalletServer: 'http://localhost:4200/api/nautilus/'
+  nautilusWalletServer: 'https://wallet-staging-api.ntls.io/'
 };
 
 /*

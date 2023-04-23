@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { SessionQuery, SessionStore } from 'src/app/states/session';
 
 @Component({
   selector: 'app-user',
@@ -9,11 +10,15 @@ import { Router } from '@angular/router';
 export class UserComponent implements OnInit {
   public user: any;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    public sessionQuery: SessionQuery,
+    private sessionStore: SessionStore
+  ) {}
 
   ngOnInit(): void {}
 
   logout() {
-    this.router.navigate(['/auth/login']);
+    this.sessionStore.reset();
   }
 }

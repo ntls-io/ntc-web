@@ -6,10 +6,9 @@ import {
 } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
+import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { akitaDevtools, DevtoolsOptions } from '@datorama/akita';
-import { NG_ENTITY_SERVICE_CONFIG } from '@datorama/akita-ng-entity-service';
-import { AkitaNgRouterStoreModule } from '@datorama/akita-ng-router-store';
 import { Store, StoreModule } from '@ngrx/store';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -33,20 +32,16 @@ export function provideAkitaDevtools(options: Partial<DevtoolsOptions> = {}) {
   imports: [
     BrowserModule,
     AppRoutingModule,
+    HttpClientModule,
     BrowserAnimationsModule,
     StoreModule.forRoot({ ui: uiReducer }),
-    SharedModule,
-    AkitaNgRouterStoreModule
+    SharedModule
   ],
   providers: [
     Store,
     provideAkitaDevtools({
       name: 'NTC'
-    }),
-    {
-      provide: NG_ENTITY_SERVICE_CONFIG,
-      useValue: { baseUrl: 'https://jsonplaceholder.typicode.com' }
-    }
+    })
   ],
   bootstrap: [AppComponent]
 })

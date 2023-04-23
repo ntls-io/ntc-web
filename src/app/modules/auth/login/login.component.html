@@ -17,24 +17,18 @@
             <div class="input-group mb-3">
               <div class="input-group">
                 <input
-                  formControlName="email"
-                  type="email"
+                  formControlName="address"
+                  type="text"
                   class="form-control"
-                  placeholder="Email"
+                  placeholder="Address"
                 />
               </div>
-              <div *ngIf="submitted && f['email'].invalid">
+              <div *ngIf="loginForm.touched && f['address'].invalid">
                 <small
-                  *ngIf="f['email'].errors && f['email'].errors['required']"
+                  *ngIf="f['address'].errors && f['address'].errors['required']"
                   class="text-danger"
                 >
-                  email is required
-                </small>
-                <small
-                  *ngIf="f['email'].errors && f['email'].errors['email']"
-                  class="text-danger"
-                >
-                  email is not correct
+                  address is required
                 </small>
               </div>
             </div>
@@ -47,7 +41,7 @@
                   placeholder="Password"
                 />
               </div>
-              <div *ngIf="submitted && f['password'].invalid">
+              <div *ngIf="loginForm.touched && f['password'].invalid">
                 <small
                   *ngIf="
                     f['password'].errors && f['password'].errors['required']

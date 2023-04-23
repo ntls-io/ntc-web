@@ -10,7 +10,7 @@ import {
   SignTransactionResult
 } from '../schema/actions';
 import { AttestationReport } from '../schema/attestation';
-import { TweetNaClCrypto } from '../schema/crypto';
+import { PublicKey, TweetNaClCrypto } from '../schema/crypto';
 import { from_msgpack_as } from '../schema/msgpack';
 import { seal_msgpack_as, unseal_msgpack_as } from '../schema/sealing';
 
