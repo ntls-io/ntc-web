@@ -1,12 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import url('https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.3.0/css/flag-icon.min.css');
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700');
-
-@import '~admin-lte/plugins/fontawesome-free/css/all.min.css';
-/* @import '~admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css'; */
-@import '~admin-lte/dist/css/alt/adminlte.core.min.css';
 
 @import '~ng-wizard/themes/ng_wizard.min.css';
 @import '~bootstrap-icons/font/bootstrap-icons.css';
@@ -14,6 +8,8 @@
 @import '~ng-wizard/themes/ng_wizard_theme_circles.min.css';
 @import '~ng-wizard/themes/ng_wizard_theme_dots.min.css';
 @import '~ng-wizard/themes/ng_wizard_theme_arrows.min.css';
+
+@import '@sweetalert2/theme-bootstrap-4/bootstrap-4.scss';
 
 body {
   width: 100vw;
@@ -52,6 +48,11 @@ body {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
-.cdk-overlay-container {
-  z-index: 9999 !important;
+// .cdk-overlay-container {
+//   z-index: 9999 !important;
+// }
+
+.qrcode>svg {
+  width: 100% !important;
+  height: auto !important;
 }

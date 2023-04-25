@@ -1,0 +1,43 @@
+<div class="modal-body text-center">
+  <qrcode
+    [qrdata]="address"
+    elementType="svg"
+    errorCorrectionLevel="H"
+    [margin]="2"
+  ></qrcode>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col">
+        <h4>Address</h4>
+        <div class="alert alert-dark text-break" role="alert">
+          {{ address }}
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-6">
+        <button
+          class="btn btn-block btn-outline-primary"
+          (click)="copyAddress(address)"
+        >
+          Copy address
+        </button>
+      </div>
+      <div class="col-6">
+        <button class="btn btn-block btn-outline-primary" disabled>
+          Print address
+        </button>
+      </div>
+    </div>
+    <div class="row pt-3">
+      <div class="col-12">
+        <button
+          class="btn btn-block btn-outline-primary"
+          (click)="bsModalRef.hide()"
+        >
+          Access dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

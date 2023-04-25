@@ -6,7 +6,7 @@
     class="btn dropdown-toggle"
     aria-controls="dropdown-nav-user-menu"
   >
-    Full Name <span class="caret"></span>
+    {{ sessionQuery.username | async }} <span class="caret"></span>
   </button>
   <ul
     id="dropdown-nav-user-menu"

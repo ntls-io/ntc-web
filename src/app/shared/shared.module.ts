@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { QRCodeModule } from 'angularx-qrcode';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
@@ -18,7 +19,7 @@ import { MenuComponent } from './menu/menu.component';
     ReactiveFormsModule,
     BsDropdownModule.forRoot()
   ],
-  exports: [],
+  exports: [QRCodeModule],
   declarations: [
     HeaderComponent,
     FooterComponent,
@@ -27,6 +28,6 @@ import { MenuComponent } from './menu/menu.component';
     MainComponent,
     MenuItemComponent
   ],
-  providers: []
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SharedModule {}

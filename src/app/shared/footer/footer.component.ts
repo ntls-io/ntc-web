@@ -7,6 +7,5 @@ import { Component, HostBinding } from '@angular/core';
 })
 export class FooterComponent {
   @HostBinding('class') classes: string = 'main-footer';
-  // public appVersion = packageInfo.version;
-  //public currentYear: string = DateTime.now().toFormat('y');
+  public currentYear: string = new Date().getFullYear().toString();
 }

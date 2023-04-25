@@ -1,8 +1,8 @@
 import { Component, HostBinding, OnInit, Renderer2 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthenticationService } from '../../../core/services/authentication.service';
-import { UserService } from '../../../core/services/user.service';
+import { SessionQuery, SessionService } from 'src/app/states/session';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -10,65 +10,57 @@ import { UserService } from '../../../core/services/user.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  @HostBinding('class') class = 'login-box h-100 d-flex align-items-center';
-  public loginForm = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
+  @HostBinding('class') class = 'login-box vh-100 d-flex align-items-center';
+
+  loginForm = new FormGroup({
+    username: new FormControl('', [Validators.required]),
     password: new FormControl('', Validators.required)
   });
-  validateuser: boolean = false;
-  submitted: any = false;
+  isBusy = false;
+
   constructor(
     private router: Router,
     private renderer: Renderer2,
-    private loginservice: UserService,
-    private authenticationservice: AuthenticationService
+    private sessionService: SessionService,
+    private sessionQuery: SessionQuery
   ) {}
 
   ngOnInit(): void {
-    if (this.authenticationservice.isAuhenticated()) {
+    this.renderer.addClass(document.querySelector('app-root'), 'login-page');
+
+    const isAuthenticated = this.sessionQuery.isAuthenticated();
+    if (isAuthenticated) {
       this.router.navigate(['dashboard']);
     }
-    this.renderer.addClass(document.querySelector('app-root'), 'login-page');
   }
+
   get f() {
     return this.loginForm.controls;
   }
   async loginByAuth() {
-    this.router.navigate(['/']);
-    // this.submitted = true;
-    // if (this.loginForm.valid) {
-    //   this.ngxService.start();
+    this.loginForm.markAsTouched();
+    if (this.loginForm.valid) {
+      this.isBusy = true;
+      const { username, password } = this.loginForm.value;
 
-    //   var data1 = {
-    //     email: this.loginForm.value.email,
-    //     password: this.loginForm.value.password,
-    //   };
-    //   this.loginservice.login().subscribe((data: any[]) => {
-    //     let userlist = data;
-    //     userlist.forEach((x) => {
-    //       if (
-    //         x.email.toLowerCase() == data1.email &&
-    //         x.password == data1.password
-    //       ) {
-    //         this.validateuser = true;
-    //         this.authenticationservice.setCurrentUser(x);
-    //         // this.toast.showSuccess('Login Successful', 'Login success');
-    //         // this.router.navigate(['/app/dashboard']);
-    //       }
-    //     });
-    //   });
-    //   await new Promise((f) => setTimeout(f, 3000));
-
-    //   // this.validateuser= this.loginservice.login(data);
-    //   if (this.validateuser) {
-    //     this.validateuser = false;
-    //     this.toast.showSuccess('Login Successful', 'Login success');
-    //     this.router.navigate(['/']);
-    //   } else {
-    //     this.toast.showError('User or email not exits', 'Login Error');
-    //   }
-    //   this.ngxService.stop();
-    // }
+      await this.sessionService
+        .login(username!, password!)
+        .then(result => {
+          if (result !== 'success') {
+            throw new Error(result);
+          }
+        })
+        .catch(error => {
+          Swal.fire({
+            icon: 'error',
+            titleText: 'Oops...',
+            text: error
+          });
+        })
+        .finally(() => {
+          this.isBusy = false;
+        });
+    }
   }
   ngOnDestroy() {
     this.renderer.removeClass(document.querySelector('app-root'), 'login-page');
