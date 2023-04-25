@@ -13,7 +13,7 @@ export class LoginComponent implements OnInit {
   @HostBinding('class') class = 'login-box vh-100 d-flex align-items-center';
 
   loginForm = new FormGroup({
-    address: new FormControl('', [Validators.required]),
+    username: new FormControl('', [Validators.required]),
     password: new FormControl('', Validators.required)
   });
   isBusy = false;
@@ -41,10 +41,10 @@ export class LoginComponent implements OnInit {
     this.loginForm.markAsTouched();
     if (this.loginForm.valid) {
       this.isBusy = true;
-      const { address, password } = this.loginForm.value;
+      const { username, password } = this.loginForm.value;
 
       await this.sessionService
-        .login(address!, password!)
+        .login(username!, password!)
         .then(result => {
           if (result !== 'success') {
             throw new Error(result);

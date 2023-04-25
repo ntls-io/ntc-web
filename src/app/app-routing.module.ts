@@ -10,7 +10,7 @@ const routes: Routes = [
       import('./modules/auth/auth.module').then(m => m.AuthModule)
   },
   {
-    path: 'dashboard',
+    path: '',
     component: MainComponent,
     canActivate: [AuthGuard],
     children: [
@@ -22,11 +22,6 @@ const routes: Routes = [
           )
       }
     ]
-  },
-  {
-    path: '',
-    redirectTo: 'auth',
-    pathMatch: 'full'
   }
 ];
 

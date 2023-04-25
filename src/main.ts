@@ -8,8 +8,9 @@ import { environment } from './environments/environment';
 if (environment.production) {
   enableProdMode();
   enableAkitaProdMode();
-  persistState();
 }
+
+persistState();
 
 platformBrowserDynamic()
   .bootstrapModule(AppModule)

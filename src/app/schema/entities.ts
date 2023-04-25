@@ -3,14 +3,12 @@
 import {
   AlgorandAccountSeedBytes,
   AlgorandAddressBase32,
-  WalletId
+  VaultId
 } from './types';
 
-/** A Nautilus wallet's basic displayable details. */
-export type WalletDisplay = {
-  wallet_id: WalletId;
-  owner_name: string;
-  phone_number?: string;
+export type VaultDisplay = {
+  vault_id: VaultId;
+  username: string;
   algorand_address_base32: AlgorandAddressBase32;
 };
 

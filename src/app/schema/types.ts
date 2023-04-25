@@ -8,11 +8,11 @@ export type Bytes32 = Bytes;
 export type Bytes24 = Bytes;
 export type Bytes16 = Bytes;
 
-/** Nautilus Wallet ID. */
-export type WalletId = string;
+/** Nautilus Vault ID. */
+export type VaultId = string;
 
-/** A wallet owner's authenticating PIN. */
-export type WalletPin = string;
+/** A vault owner's authenticating PIN. */
+export type VaultPassword = string;
 
 /** Algorand account seed, as bytes. */
 export type AlgorandAccountSeedBytes = Bytes32;

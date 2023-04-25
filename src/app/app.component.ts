@@ -16,10 +16,10 @@ export class AppComponent {
 
   initializeApp() {
     this.sessionQuery
-      .select('wallet')
+      .select('vault')
       .pipe(untilDestroyed(this))
-      .subscribe(wallet => {
-        const path = wallet?.owner_name ? 'dashboard' : 'auth';
+      .subscribe(vault => {
+        const path = vault?.username ? '' : 'auth';
         this.router.navigate([path]);
       });
   }

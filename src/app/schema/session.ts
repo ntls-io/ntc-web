@@ -1,5 +1,5 @@
 /**
- * Simple session support for the wallet enclave.
+ * Simple session support for the vault enclave.
  *
  * For functionality that requires multiple exchanges between the client and
  * enclave, it is necessary to establish a session cryptographically linking
@@ -9,22 +9,22 @@
 import { HMAC } from '@stablelib/hmac/lib/hmac';
 import { SHA256 } from '@stablelib/sha256/lib/sha256';
 import { DiffieHellman, PublicKey, SharedSecret } from './crypto';
-import { Bytes, Bytes32, WalletId } from './types';
+import { Bytes, Bytes32, VaultId } from './types';
 
 export class StartSgxSession {
   protected context: Bytes;
   protected x25519: DiffieHellman;
 
-  protected constructor(wallet_id: WalletId) {
+  protected constructor(vault_id: VaultId) {
     /*
-     * Concatenate wallet id and supplied context into a combined context
+     * Concatenate vault id and supplied context into a combined context
      */
-    this.context = new TextEncoder().encode(wallet_id);
+    this.context = new TextEncoder().encode(vault_id);
     this.x25519 = DiffieHellman.new(this.context);
   }
 
-  static new = (wallet_id: WalletId): StartSgxSession =>
-    new StartSgxSession(wallet_id);
+  static new = (vault_id: VaultId): StartSgxSession =>
+    new StartSgxSession(vault_id);
 
   /**
    * Add on additional context

@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
 
-  nautilusWalletServer: 'http://localhost:4200/api/nautilus/'
+  nautilusVaultServer: 'http://localhost:4200/api/nautilus/'
 };

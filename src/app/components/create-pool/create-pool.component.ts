@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {
   NgWizardConfig,
-  NgWizardService,
   StepChangedArgs,
   StepValidationArgs,
   STEP_STATE,
@@ -46,11 +45,7 @@ export class CreatePoolComponent implements OnInit {
 
   scPrevModal?: BsModalRef;
 
-  constructor(
-    private ngWizardService: NgWizardService,
-    private ajv: AjvService,
-    private modalService: BsModalService
-  ) {}
+  constructor(private ajv: AjvService, private modalService: BsModalService) {}
 
   ngOnInit() {}
 

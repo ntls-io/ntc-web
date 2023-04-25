@@ -17,15 +17,17 @@
             <div class="input-group mb-3">
               <div class="input-group">
                 <input
-                  formControlName="address"
-                  type="text"
+                  formControlName="username"
+                  type="email"
                   class="form-control"
-                  placeholder="Address"
+                  placeholder="Username"
                 />
               </div>
-              <div *ngIf="loginForm.touched && f['address'].invalid">
+              <div *ngIf="loginForm.touched && f['username'].invalid">
                 <small
-                  *ngIf="f['address'].errors && f['address'].errors['required']"
+                  *ngIf="
+                    f['username'].errors && f['username'].errors['required']
+                  "
                   class="text-danger"
                 >
                   address is required

@@ -48,6 +48,11 @@ body {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
-.cdk-overlay-container {
-  z-index: 9999 !important;
+// .cdk-overlay-container {
+//   z-index: 9999 !important;
+// }
+
+.qrcode>svg {
+  width: 100% !important;
+  height: auto !important;
 }

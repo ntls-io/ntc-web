@@ -4,8 +4,10 @@ import { lastValueFrom } from 'rxjs';
 import { withLoggedExchange } from 'src/app/utils/console.helpers';
 import { environment } from 'src/environments/environment';
 import {
-  OpenWallet,
-  OpenWalletResult,
+  CreateVault,
+  CreateVaultResult,
+  OpenVault,
+  OpenVaultResult,
   SignTransaction,
   SignTransactionResult
 } from '../schema/actions';
@@ -15,7 +17,7 @@ import { from_msgpack_as } from '../schema/msgpack';
 import { seal_msgpack_as, unseal_msgpack_as } from '../schema/sealing';
 
 /**
- * This service handles communication with the wallet enclave.
+ * This service handles communication with the vault enclave.
  */
 @Injectable({
   providedIn: 'root'
@@ -24,7 +26,7 @@ export class EnclaveService {
   constructor(private http: HttpClient) {}
 
   async getEnclaveReport(): Promise<AttestationReport> {
-    const bytes = await this.walletApiGetBytes('enclave-report');
+    const bytes = await this.vaultApiGetBytes('enclave-report');
     return from_msgpack_as<AttestationReport>(bytes);
   }
 
@@ -34,32 +36,42 @@ export class EnclaveService {
     return new Uint8Array(report.enclave_public_key);
   }
 
-  async openWallet(request: OpenWallet): Promise<OpenWalletResult> {
-    const walletRequest = { OpenWallet: request };
+  async createVault(request: CreateVault): Promise<CreateVaultResult> {
+    const vaultRequest = { CreateVault: request };
     const response = await this.postSealedExchange<
-      { OpenWallet: OpenWallet },
-      { OpenWallet: OpenWalletResult }
-    >(walletRequest);
-    const { OpenWallet: result } = response;
+      { CreateVault: CreateVault },
+      { CreateVault: CreateVaultResult }
+    >(vaultRequest);
+    const { CreateVault: result } = response;
+    return result;
+  }
+
+  async openVault(request: OpenVault): Promise<OpenVaultResult> {
+    const vaultRequest = { OpenVault: request };
+    const response = await this.postSealedExchange<
+      { OpenVault: OpenVault },
+      { OpenVault: OpenVaultResult }
+    >(vaultRequest);
+    const { OpenVault: result } = response;
     return result;
   }
 
   async signTransaction(
     request: SignTransaction
   ): Promise<SignTransactionResult> {
-    const walletRequest = { SignTransaction: request };
+    const vaultRequest = { SignTransaction: request };
     const response = await this.postSealedExchange<
       { SignTransaction: SignTransaction },
       { SignTransaction: SignTransactionResult }
-    >(walletRequest);
+    >(vaultRequest);
     const { SignTransaction: result } = response;
     return result;
   }
 
   // HTTP helpers
 
-  protected async walletApiGetBytes(path: string): Promise<Uint8Array> {
-    const url = this.getWalletApiUrl(path);
+  protected async vaultApiGetBytes(path: string): Promise<Uint8Array> {
+    const url = this.getVaultApiUrl(path);
     const arrayBuffer = await lastValueFrom(
       this.http.get(url, {
         responseType: 'arraybuffer'
@@ -68,11 +80,11 @@ export class EnclaveService {
     return arrayViewFromBuffer(arrayBuffer);
   }
 
-  protected async walletApiPostBytes(
+  protected async vaultApiPostBytes(
     path: string,
     bytes: Uint8Array
   ): Promise<Uint8Array> {
-    const url = this.getWalletApiUrl(path);
+    const url = this.getVaultApiUrl(path);
     const body = bufferFromArrayView(bytes);
     const arrayBuffer = await lastValueFrom(
       this.http.post(url, body, {
@@ -104,8 +116,8 @@ export class EnclaveService {
       enclavePublicKey,
       clientCrypto
     );
-    const sealedResponseBytes = await this.walletApiPostBytes(
-      'wallet-operation',
+    const sealedResponseBytes = await this.vaultApiPostBytes(
+      'vault-operation',
       sealedRequestBytes
     );
     const response = unseal_msgpack_as<Response>(
@@ -122,8 +134,8 @@ export class EnclaveService {
 
   // Configuration helpers:
 
-  protected getWalletApiUrl(path: string): string {
-    return new URL(path, environment.nautilusWalletServer).toString();
+  protected getVaultApiUrl(path: string): string {
+    return new URL(path, environment.nautilusVaultServer).toString();
   }
 }
 

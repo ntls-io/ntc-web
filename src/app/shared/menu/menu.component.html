@@ -1,5 +1,5 @@
 <!-- Brand Logo -->
-<a [routerLink]="['/']" class="brand-link">
+<a href="#" class="brand-link">
   <img
     src="/assets/img/logo.png"
     alt="Ntls Logo"
@@ -15,12 +15,7 @@
 <div class="sidebar">
   <!-- Sidebar Menu -->
   <nav class="mt-2" style="overflow-y: hidden">
-    <ul
-      class="nav nav-pills nav-sidebar flex-column"
-      data-widget="treeview"
-      role="menu"
-      data-accordion="false"
-    >
+    <ul class="nav nav-pills nav-sidebar flex-column" role="menu">
       <app-menu-item
         *ngFor="let item of menu"
         [menuItem]="item"

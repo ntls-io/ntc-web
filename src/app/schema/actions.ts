@@ -1,21 +1,28 @@
 /** Core request / response message types. */
 
-import { WalletDisplay } from './entities';
-import { Bytes, WalletId, WalletPin } from './types';
+import { VaultDisplay } from './entities';
+import { Bytes, VaultId, VaultPassword } from './types';
 
-export type OpenWallet = {
-  wallet_id: WalletId;
-  auth_pin: WalletPin;
+export type CreateVault = {
+  username: string;
+  auth_password: string;
 };
 
-export type OpenWalletResult =
-  | { Opened: WalletDisplay }
+export type CreateVaultResult = { Created: VaultDisplay } | { Failed: string };
+
+export type OpenVault = {
+  vault_id: VaultId;
+  auth_password: VaultPassword;
+};
+
+export type OpenVaultResult =
+  | { Opened: VaultDisplay }
   | { InvalidAuth: null }
   | { Failed: string };
 
 export type SignTransaction = {
-  wallet_id: WalletId;
-  auth_pin: WalletPin;
+  vault_id: VaultId;
+  auth_password: VaultPassword;
 
   transaction_to_sign: TransactionToSign;
 };
@@ -46,11 +53,11 @@ export type TransactionSigned =
       };
     };
 /** Dispatching enum for action requests. */
-export type WalletRequest =
-  | { OpenWallet: OpenWallet }
+export type VaultRequest =
+  | { OpenVault: OpenVault }
   | { SignTransaction: SignTransaction };
 
 /** Dispatching enum for action results. */
-export type WalletResponse =
-  | { OpenWallet: OpenWalletResult }
+export type VaultResponse =
+  | { OpenVault: OpenVaultResult }
   | { SignTransaction: SignTransactionResult };
