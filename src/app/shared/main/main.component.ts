@@ -18,32 +18,30 @@ export class MainComponent implements OnInit {
 
   ngOnInit(): void {
     this.ui = this.store.select('ui');
-    this.renderer.removeClass(document.querySelector('app-root'), 'login-page');
-    this.renderer.removeClass(
-      document.querySelector('app-root'),
-      'register-page'
+    this.renderer.removeClass(document.querySelector('body'), 'login-page');
+    this.renderer.removeClass(document.querySelector('body'), 'register-page');
+    this.renderer.addClass(document.querySelector('body'), 'layout-fixed');
+    this.renderer.addClass(
+      document.querySelector('body'),
+      'layout-navbar-fixed'
     );
-    this.renderer.addClass(document.querySelector('app-root'), 'layout-fixed');
 
     this.ui.subscribe(({ menuSidebarCollapsed }) => {
       if (menuSidebarCollapsed) {
         this.renderer.removeClass(
-          document.querySelector('app-root'),
+          document.querySelector('body'),
           'sidebar-open'
         );
         this.renderer.addClass(
-          document.querySelector('app-root'),
+          document.querySelector('body'),
           'sidebar-collapse'
         );
       } else {
         this.renderer.removeClass(
-          document.querySelector('app-root'),
+          document.querySelector('body'),
           'sidebar-collapse'
         );
-        this.renderer.addClass(
-          document.querySelector('app-root'),
-          'sidebar-open'
-        );
+        this.renderer.addClass(document.querySelector('body'), 'sidebar-open');
       }
     });
   }

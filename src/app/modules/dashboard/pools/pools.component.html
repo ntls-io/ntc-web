@@ -1,6 +1,6 @@
 <div class="container-fluid">
   <div class="row pb-3">
-    <div class="col-4">
+    <div class="col-auto">
       <app-create-pool></app-create-pool>
     </div>
   </div>
@@ -15,14 +15,27 @@
           </div>
         </div>
         <div class="card-body p-0">
-          <table class="table">
+          <table class="table mb-1">
             <thead>
               <tr class="bg-dark">
                 <th>Name</th>
                 <th>Description</th>
                 <th>Digital Rights</th>
+                <th></th>
               </tr>
             </thead>
+            <tbody>
+              <tr *ngFor="let i of [].constructor(5)">
+                <td>Data name</td>
+                <td>Lorem ipsum dolor sit amet.</td>
+                <td>DRT description</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary">
+                    Join Pool
+                  </button>
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>

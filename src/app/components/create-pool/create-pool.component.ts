@@ -33,7 +33,7 @@ export class CreatePoolComponent implements OnInit {
 
   config: NgWizardConfig = {
     selected: 0,
-    theme: THEME.arrows
+    theme: THEME.default
   };
 
   isValidTypeBoolean: boolean = true;

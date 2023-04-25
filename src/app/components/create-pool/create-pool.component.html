@@ -1,188 +1,195 @@
-<ng-wizard [config]="config" (stepChanged)="stepChanged($event)">
-  <ng-wizard-step
-    title="1"
-    description="Select files"
-    [canEnter]="isValidTypeBoolean"
-    [canExit]="validatePackage.bind(this)"
-    [state]="isPackageValid.state"
-  >
-    <form>
-      <div class="form-group">
-        <label>Select Schema Definition</label>
-        <select class="form-control">
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
-          <option>5</option>
-        </select>
-      </div>
+<div class="card border">
+  <ng-wizard [config]="config" (stepChanged)="stepChanged($event)">
+    <ng-wizard-step
+      title="1"
+      description="Select files"
+      [canEnter]="isValidTypeBoolean"
+      [canExit]="validatePackage.bind(this)"
+      [state]="isPackageValid.state"
+    >
+      <form>
+        <div class="form-group">
+          <label>Select Schema Definition</label>
+          <select class="form-control">
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+          </select>
+        </div>
 
-      <ng-container>
-        <ul
-          class="list-group my-3"
-          *ngIf="uploaderSchema.queue?.[0]?.file as file; else noSchema"
-        >
-          <li
-            class="list-group-item d-flex justify-content-between align-items-center p-2"
+        <ng-container>
+          <ul
+            class="list-group my-3"
+            *ngIf="uploaderSchema.queue?.[0]?.file as file; else noSchema"
           >
-            <span>
-              <small class="badge badge-info">Schema file</small>
-              <div>
-                {{ file.name }}
-              </div>
-            </span>
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center p-2"
+            >
+              <span>
+                <small class="badge badge-info">Schema file</small>
+                <div>
+                  {{ file.name }}
+                </div>
+              </span>
 
-            <div class="btn-group" role="group">
+              <div class="btn-group" role="group">
+                <button
+                  *ngIf="isSchemaValid?.success"
+                  class="btn btn-sm btn-outline-secondary"
+                  type="button"
+                  (click)="previewModal(uploaderSchema.queue[0]._file)"
+                >
+                  <i class="bi bi-eye-fill"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-outline-secondary"
+                  type="button"
+                  (click)="uploaderSchema.clearQueue()"
+                >
+                  <i class="bi bi-trash-fill"></i>
+                </button>
+              </div>
+            </li>
+            <li
+              class="list-group-item list-group-item-danger px-2 py-1"
+              *ngIf="!isSchemaValid?.success"
+            >
+              <small>{{ isSchemaValid?.error }}</small>
+            </li>
+          </ul>
+
+          <ng-template #noSchema>
+            <div class="form-group mt-3">
+              <label>Select schema file</label>
+              <div class="input-group is-invalid">
+                <div class="custom-file">
+                  <input
+                    type="file"
+                    class="custom-file-input"
+                    ng2FileSelect
+                    accept="application/json"
+                    [uploader]="uploaderSchema"
+                    (onFileSelected)="
+                      validateSchema($event); resetPackageStep()
+                    "
+                  />
+                  <label class="custom-file-label"> Choose schema... </label>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </ng-container>
+
+        <ng-container>
+          <ul
+            class="list-group my-3"
+            *ngIf="uploaderData.queue?.[0]?.file as file; else noData"
+          >
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center p-2"
+            >
+              <span>
+                <small class="badge badge-primary">Data file</small>
+                <div>
+                  {{ file.name }}
+                </div>
+              </span>
+
               <button
-                *ngIf="isSchemaValid?.success"
                 class="btn btn-sm btn-outline-secondary"
                 type="button"
-                (click)="previewModal(uploaderSchema.queue[0]._file)"
-              >
-                <i class="bi bi-eye-fill"></i>
-              </button>
-              <button
-                class="btn btn-sm btn-outline-secondary"
-                type="button"
-                (click)="uploaderSchema.clearQueue()"
+                (click)="uploaderData.clearQueue(); resetPackageStep()"
               >
                 <i class="bi bi-trash-fill"></i>
               </button>
-            </div>
-          </li>
-          <li
-            class="list-group-item list-group-item-danger px-2 py-1"
-            *ngIf="!isSchemaValid?.success"
-          >
-            <small>{{ isSchemaValid?.error }}</small>
-          </li>
-        </ul>
+            </li>
+          </ul>
 
-        <ng-template #noSchema>
-          <div class="form-group mt-3">
-            <label>Select schema file</label>
-            <div class="input-group is-invalid">
-              <div class="custom-file">
-                <input
-                  type="file"
-                  class="custom-file-input"
-                  ng2FileSelect
-                  accept="application/json"
-                  [uploader]="uploaderSchema"
-                  (onFileSelected)="validateSchema($event); resetPackageStep()"
-                />
-                <label class="custom-file-label"> Choose schema... </label>
+          <ng-template #noData>
+            <div class="form-group">
+              <label>Select data file</label>
+              <div class="input-group is-invalid">
+                <div class="custom-file">
+                  <input
+                    type="file"
+                    class="custom-file-input"
+                    ng2FileSelect
+                    accept="application/json"
+                    (onFileSelected)="resetPackageStep()"
+                    [uploader]="uploaderData"
+                  />
+                  <label class="custom-file-label">Choose data...</label>
+                </div>
               </div>
             </div>
-          </div>
-        </ng-template>
-      </ng-container>
+          </ng-template>
+        </ng-container>
+      </form>
 
-      <ng-container>
-        <ul
-          class="list-group my-3"
-          *ngIf="uploaderData.queue?.[0]?.file as file; else noData"
-        >
-          <li
-            class="list-group-item d-flex justify-content-between align-items-center p-2"
-          >
-            <span>
-              <small class="badge badge-primary">Data file</small>
-              <div>
-                {{ file.name }}
-              </div>
-            </span>
+      <div
+        *ngIf="isPackageValid?.message"
+        class="alert alert-danger"
+        role="alert"
+      >
+        {{ isPackageValid.message }}
+      </div>
+    </ng-wizard-step>
 
-            <button
-              class="btn btn-sm btn-outline-secondary"
-              type="button"
-              (click)="uploaderData.clearQueue(); resetPackageStep()"
-            >
-              <i class="bi bi-trash-fill"></i>
-            </button>
-          </li>
-        </ul>
-
-        <ng-template #noData>
-          <div class="form-group">
-            <label>Select data file</label>
-            <div class="input-group is-invalid">
-              <div class="custom-file">
-                <input
-                  type="file"
-                  class="custom-file-input"
-                  ng2FileSelect
-                  accept="application/json"
-                  (onFileSelected)="resetPackageStep()"
-                  [uploader]="uploaderData"
-                />
-                <label class="custom-file-label">Choose data...</label>
-              </div>
-            </div>
-          </div>
-        </ng-template>
-      </ng-container>
-    </form>
-
-    <div
-      *ngIf="isPackageValid?.message"
-      class="alert alert-danger"
-      role="alert"
+    <ng-wizard-step
+      title="2"
+      description="Add digital rights"
+      [canEnter]="isValidTypeBoolean"
+      [canExit]="isValidFunctionReturnsBoolean.bind(this)"
     >
-      {{ isPackageValid.message }}
-    </div>
-  </ng-wizard-step>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>DRT Name</td>
+            <td>Lorem Ipsum</td>
+            <td>
+              <div class="form-check">
+                <input
+                  class="form-check-input position-static"
+                  type="checkbox"
+                />
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-wizard-step>
 
-  <ng-wizard-step
-    title="2"
-    description="Add digital rights"
-    [canEnter]="isValidTypeBoolean"
-    [canExit]="isValidFunctionReturnsBoolean.bind(this)"
-  >
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Description</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>DRT Name</td>
-          <td>Lorem Ipsum</td>
-          <td>
-            <div class="form-check">
-              <input class="form-check-input position-static" type="checkbox" />
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </ng-wizard-step>
-
-  <ng-wizard-step
-    title="3"
-    description="Add description"
-    [canEnter]="isValidFunctionReturnsObservable.bind(this)"
-    [canExit]="isValidFunctionReturnsBoolean.bind(this)"
-  >
-    <div class="form-group">
-      <label>Give your pool a name</label>
-      <input type="text" class="form-control" placeholder="Enter name" />
-      <small class="form-text text-muted">Max 50 characters</small>
-    </div>
-    <div class="form-group">
-      <label>Give a high level description of your pool</label>
-      <textarea
-        class="form-control"
-        rows="3"
-        placeholder="Enter description"
-      ></textarea>
-      <small id="emailHelp" class="form-text text-muted"
-        >Max 200 characters
-      </small>
-    </div>
-  </ng-wizard-step>
-</ng-wizard>
+    <ng-wizard-step
+      title="3"
+      description="Add description"
+      [canEnter]="isValidFunctionReturnsObservable.bind(this)"
+      [canExit]="isValidFunctionReturnsBoolean.bind(this)"
+    >
+      <div class="form-group">
+        <label>Give your pool a name</label>
+        <input type="text" class="form-control" placeholder="Enter name" />
+        <small class="form-text text-muted">Max 50 characters</small>
+      </div>
+      <div class="form-group">
+        <label>Give a high level description of your pool</label>
+        <textarea
+          class="form-control"
+          rows="3"
+          placeholder="Enter description"
+        ></textarea>
+        <small id="emailHelp" class="form-text text-muted"
+          >Max 200 characters
+        </small>
+      </div>
+    </ng-wizard-step>
+  </ng-wizard>
+</div>

@@ -38,7 +38,6 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {
     this.renderer.addClass(document.querySelector('app-root'), 'register-page');
-    this.showWalletModal('dfdsiybfdufnrieyburniundwioueni');
   }
 
   async registerByAuth() {

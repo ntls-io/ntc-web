@@ -13,7 +13,6 @@
 
 body {
   width: 100vw;
-  height: 100vh;
 }
 
 ::-webkit-scrollbar {
@@ -38,10 +37,10 @@ body {
   transform: none;
 }
 
-html,
-body {
-  height: 100%;
-}
+// html,
+// body {
+//   height: 100%;
+// }
 
 body {
   margin: 0;
@@ -55,4 +54,17 @@ body {
 .qrcode>svg {
   width: 100% !important;
   height: auto !important;
+}
+
+.ng-wizard-main {
+  box-shadow: none !important;
+
+  .ng-wizard-theme-dots>ul.step-anchor>li>a:before {
+    background: none;
+  }
+
+}
+
+table td {
+  vertical-align: middle !important;
 }
