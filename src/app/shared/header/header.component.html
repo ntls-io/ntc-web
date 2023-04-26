@@ -11,11 +11,13 @@
     <div class="btn-group btn-group-sm" role="group">
       <button
         type="button"
-        class="btn btn-outline-dark d-flex align-items-center"
+        class="btn btn-outline-dark d-flex align-items-baseline"
+        style="opacity: 1"
+        disabled
       >
-        <img src="/assets/img/algorand_logo_mark_black.png" width="16" />
+        <img src="/assets/img/algorand_logo_mark_black.png" width="10" />
 
-        25.00
+        <strong class="pl-1">{{ algoQuery.balance | async }}</strong>
       </button>
       <button type="button" class="btn btn-dark">Withdraw</button>
       <button type="button" class="btn btn-success">Top up</button>
