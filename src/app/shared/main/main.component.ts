@@ -1,6 +1,8 @@
 import { Component, HostBinding, OnInit, Renderer2 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { AlgoService } from 'src/app/states/algo';
+import { SessionQuery } from 'src/app/states/session';
 import { AppState } from '../../store/state';
 import { ToggleSidebarMenu } from '../../store/ui/actions';
 import { UiState } from '../../store/ui/state';
@@ -14,7 +16,14 @@ export class MainComponent implements OnInit {
   @HostBinding('class') class = 'wrapper';
   public ui: Observable<UiState> = new Observable<UiState>();
 
-  constructor(private renderer: Renderer2, private store: Store<AppState>) {}
+  constructor(
+    private renderer: Renderer2,
+    private store: Store<AppState>,
+    private sessionQuery: SessionQuery,
+    private algoService: AlgoService
+  ) {
+    this.loadAlgoAccount();
+  }
 
   ngOnInit(): void {
     this.ui = this.store.select('ui');
@@ -47,5 +56,12 @@ export class MainComponent implements OnInit {
   }
   onToggleMenuSidebar() {
     this.store.dispatch(new ToggleSidebarMenu());
+  }
+
+  loadAlgoAccount() {
+    const { vault } = this.sessionQuery.getValue();
+
+    if (vault?.algorand_address_base32)
+      this.algoService.getAccountData(vault.algorand_address_base32);
   }
 }
