@@ -20,7 +20,7 @@
                   formControlName="username"
                   type="email"
                   class="form-control"
-                  placeholder="Username"
+                  placeholder="Email"
                 />
               </div>
               <div *ngIf="loginForm.touched && f['username'].invalid">
@@ -30,7 +30,13 @@
                   "
                   class="text-danger"
                 >
-                  address is required
+                  Email is required
+                </small>
+                <small
+                  *ngIf="f['username'].errors && f['username'].errors['email']"
+                  class="text-danger"
+                >
+                  Email is not valid
                 </small>
               </div>
             </div>
@@ -50,7 +56,7 @@
                   "
                   class="text-danger"
                 >
-                  password is required
+                  Password is required
                 </small>
               </div>
             </div>

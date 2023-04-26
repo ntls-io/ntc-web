@@ -21,7 +21,7 @@
                   formControlName="username"
                   type="email"
                   class="form-control"
-                  placeholder="Username"
+                  placeholder="Email"
                 />
               </div>
               <div *ngIf="f['username'].touched && f['username'].invalid">
@@ -31,13 +31,13 @@
                   "
                   class="text-danger"
                 >
-                  Username is required
+                  Email is required
                 </small>
                 <small
                   *ngIf="f['username'].errors && f['username'].errors['email']"
                   class="text-danger"
                 >
-                  email is not correct
+                  Email is not correct
                 </small>
               </div>
             </div>
@@ -61,7 +61,7 @@
                   "
                   class="text-danger"
                 >
-                  password is required
+                  Password is required
                 </small>
               </div>
             </div>
@@ -86,7 +86,7 @@
                     f['confirm_auth_password'].errors['required']
                   "
                   class="text-danger"
-                  >password confirmation is required.
+                  >Password confirmation is required.
                 </small>
                 <small
                   *ngIf="
@@ -94,7 +94,7 @@
                     f['confirm_auth_password'].errors['matching']
                   "
                   class="text-danger"
-                  >password confirmation is not matching.
+                  >Password confirmation is not matching.
                 </small>
               </div>
             </div>
