@@ -13,7 +13,7 @@ export class LoginComponent implements OnInit {
   @HostBinding('class') class = 'login-box vh-100 d-flex align-items-center';
 
   loginForm = new FormGroup({
-    username: new FormControl('', [Validators.required]),
+    username: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', Validators.required)
   });
   isBusy = false;
@@ -54,7 +54,19 @@ export class LoginComponent implements OnInit {
           Swal.fire({
             icon: 'error',
             titleText: 'Oops...',
-            text: error
+            html:
+              error +
+              '<hr><p>If you have not created an account yet please sign up</p>',
+            confirmButtonText: 'Sign up',
+            confirmButtonColor: '#ff7042',
+            showCancelButton: true,
+            cancelButtonText: 'Try again',
+            cancelButtonColor: '#28ba62',
+            reverseButtons: true
+          }).then(({ isConfirmed }) => {
+            if (isConfirmed) {
+              this.router.navigate(['auth', 'register']);
+            }
           });
         })
         .finally(() => {
