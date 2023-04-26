@@ -16,9 +16,21 @@
                 <th>Name</th>
                 <th>Description</th>
                 <th>State</th>
-                <th>Listed On Marketplace</th>
+                <th></th>
               </tr>
             </thead>
+
+            <tbody>
+              <tr *ngFor="let i of [].constructor(5)">
+                <td>Data Pool</td>
+                <td>Lorem Ipsum</td>
+                <td>Redeemed</td>
+                <td class="text-right">
+                  <button class="btn btn-sm btn-outline-dark">Sell</button>
+                  <button class="btn btn-sm btn-outline-dark">Redeem</button>
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>

@@ -16,8 +16,20 @@
                 <th>Name</th>
                 <th>Description</th>
                 <th>Digital Rights</th>
+                <th></th>
               </tr>
             </thead>
+
+            <tbody>
+              <tr *ngFor="let i of [].constructor(5)">
+                <td>Data Pool</td>
+                <td>Lorem Ipsum</td>
+                <td>Lorem Ipsum</td>
+                <td class="text-right">
+                  <button class="btn btn-sm btn-outline-dark">Buy</button>
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>

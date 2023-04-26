@@ -14,15 +14,37 @@
   </div>
   <div class="row">
     <div class="col-12">
-      <table class="table">
-        <thead>
-          <tr class="bg-dark">
-            <th>Name</th>
-            <th>Description</th>
-            <th>Digital Rights</th>
-          </tr>
-        </thead>
-      </table>
+      <div class="card border">
+        <div class="card-header bg-white">
+          <div class="row">
+            <div class="col-auto">
+              <input class="form-control" type="text" placeholder="Search" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body p-0">
+          <table class="table">
+            <thead>
+              <tr class="bg-dark">
+                <th>Name</th>
+                <th>Description</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let i of [].constructor(5)">
+                <td>Data Pool</td>
+                <td>Lorem Ipsum</td>
+                <td class="text-right">
+                  <button class="btn btn-sm btn-outline-dark">Issue DRT</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </div>

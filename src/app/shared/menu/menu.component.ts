@@ -23,7 +23,7 @@ export const MENU = [
     path: ['/home']
   },
   {
-    name: 'Pools',
+    name: 'Data Pools',
     iconClasses: 'bi-columns-gap',
     path: ['/pools']
   },
