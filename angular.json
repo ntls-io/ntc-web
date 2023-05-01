@@ -51,6 +51,14 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "sandbox": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           },
           "defaultConfiguration": "production"
@@ -63,6 +71,9 @@
             },
             "development": {
               "browserTarget": "ntls-ntc:build:development"
+            },
+            "sandbox": {
+              "browserTarget": "ntls-ntc:build:sandbox"
             }
           },
           "defaultConfiguration": "development"
