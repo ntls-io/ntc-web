@@ -164,6 +164,7 @@ export const DEMO_createSetupDataPoolTxn = async (
       onComplete: onComplete,
       appArgs: appArgs,
       accounts: [creator.addr],
+      // foreignApps: [Number(appID)],
       boxes: [
         {
           appIndex: Number(appID),
@@ -213,7 +214,9 @@ export const createInitClaimContributorTxn = async (
       boxes: [
         {
           appIndex: Number(appID),
-          name: new Uint8Array(Buffer.from(JSON.stringify(contributorAssetID)))
+          name: new Uint8Array(
+            Buffer.from(algosdk.encodeUint64(contributorAssetID))
+          )
         },
         {
           appIndex: Number(appID),

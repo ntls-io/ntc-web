@@ -28,7 +28,6 @@ const createDataPoolMethod = async (
       enclaveAccount,
       client
     );
-    // console.log(txn1);
 
     const txId_1 = await txn1?.txID().toString();
 
@@ -39,21 +38,19 @@ const createDataPoolMethod = async (
     // intervene above with authenticateion
 
     const appID = await sendDeployContractTxn(signedtxn1, client, txId_1!);
-    // console.log(appID);
+    console.log('Deployment Txn');
 
     /// Transaction 2 - Fund Contract
-    var fundAmount = 1000000;
+    var fundAmount = 2000000;
     const txn2 = await createFundContractTxn(
       appID,
       fundAmount,
       creatorAccount,
       client
     );
-    // console.log(txn2);
     var txId_2 = await txn2?.txID().toString();
     // Sign the transaction, here we have to intervene
     const signedtxn2 = txn2?.signTxn(creatorSecret);
-    // console.log(signedtxn2);
     const txn2Result = await sendFundContractTxn(
       signedtxn2,
       client,
@@ -62,8 +59,9 @@ const createDataPoolMethod = async (
       appID,
       fundAmount
     );
+    console.log('Fund Smart Contract Txn');
 
-    /// Transaction 3 - Setup Data Pool
+    /// Transaction 3 - Setup Data Pool DEMO
     var noRowsContributed = 4;
     var dataPoolHash = 'HBKHJB-DataPool-DJKDB';
     var appendDRTName = 'Append DRT';
@@ -87,13 +85,12 @@ const createDataPoolMethod = async (
       appendDRTurlBinary,
       appendDRTBinaryHash
     );
-    // console.log(txn3);
     var txId_3 = await txn3?.txID().toString();
     //Sign the transaction, here we have to intervene
     const enclaveSecret = enclaveAccount?.sk;
     const signedtxn3 = txn3?.signTxn(enclaveSecret);
-
     const setupResult = await sendSetupDataPoolTxn(signedtxn3, client, txId_3!);
+    console.log('DEMO enclave Setup Txn');
 
     // transaction 4 - Optin to contributor token
     const txn4 = await createAssetOptinTxn(
@@ -105,13 +102,13 @@ const createDataPoolMethod = async (
     var txId_4 = await txn4?.txID().toString();
     // Sign the transaction, here we have to intervene
     const signedtxn4 = txn4?.signTxn(creatorSecret);
-    // console.log(signedtxn2);
     const txn4Result = await sendAssetOptinTxn(
       signedtxn4,
       client,
       txId_4!,
       creatorAccount
     );
+    console.log('Asset optin txn');
 
     // Transaction 5 - claim contributor token
     const txn5 = await createInitClaimContributorTxn(
@@ -121,20 +118,17 @@ const createDataPoolMethod = async (
       setupResult?.contributorCreatorID,
       setupResult?.appendDrtID
     );
-    // console.log(txn2);
-    // console.log(txn5);
     var txId_5 = await txn5?.txID().toString();
     // Sign the transaction, here we have to intervene
     const signedtxn5 = txn5?.signTxn(creatorSecret);
-    // console.log(signedtxn2);
     const txn5Result = await sendInitClaimContributorTxn(
       signedtxn5,
       client,
       txId_5!
     );
+    console.log('Claim contributor Txn');
     const contributorCreatorID = setupResult?.contributorCreatorID;
     const appendDrtID = setupResult?.appendDrtID;
-    // console.log(txn5Result);
     return { appID, contributorCreatorID, appendDrtID };
   } catch (err) {
     console.log(err);
