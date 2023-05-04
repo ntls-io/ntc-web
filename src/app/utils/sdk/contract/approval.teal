@@ -319,7 +319,7 @@ retsub
 computeroyaltybox_7:
 proto 1 1
 frame_dig -1
-callsub itoa_1
+itob
 box_get
 store 34
 store 33
@@ -403,7 +403,7 @@ byte ""
 callsub innerassetcreatetxn_4
 store 0
 load 0
-callsub itoa_1
+itob
 txna ApplicationArgs 6
 txna ApplicationArgs 5
 concat
@@ -416,7 +416,7 @@ byte "CONTRIB"
 int 1
 itob
 global CurrentApplicationID
-callsub itoa_1
+itob
 byte base64(y9OJ5MRLCHQj8GqbikAUKMBI7hom+SOj8dlopNdNHXI=)
 byte ""
 callsub innerassetcreatetxn_4
@@ -504,7 +504,7 @@ int 1
 +
 app_global_put
 load 3
-callsub itoa_1
+itob
 load 4
 app_global_put
 int 1
@@ -529,7 +529,7 @@ global CreatorAddress
 ==
 load 5
 frame_dig -1
-callsub itoa_1
+itob
 app_global_get
 int 8
 extract_uint64
@@ -554,14 +554,14 @@ global CurrentApplicationAddress
 concat
 int 0
 frame_dig -1
-callsub itoa_1
+itob
 app_global_get
 int 10001
 itob
 concat
 box_replace
 frame_dig -1
-callsub itoa_1
+itob
 app_global_del
 int 1
 return
@@ -996,12 +996,12 @@ load 22
 &&
 assert
 load 22
-callsub itoa_1
+itob
 int 500
 box_create
 pop
 load 22
-callsub itoa_1
+itob
 int 0
 load 23
 box_replace
@@ -1036,14 +1036,14 @@ global CurrentApplicationAddress
 concat
 int 0
 txna Assets 1
-callsub itoa_1
+itob
 app_global_get
 int 10001
 itob
 concat
 box_replace
 txna Assets 1
-callsub itoa_1
+itob
 app_global_del
 int 1
 return
@@ -1057,7 +1057,7 @@ asset_holding_get AssetBalance
 store 27
 store 26
 frame_dig -1
-callsub itoa_1
+itob
 int 16
 int 32
 box_extract
@@ -1114,7 +1114,7 @@ frame_dig -1
 callsub computeroyaltybox_7
 callsub innersendPayment_3
 frame_dig -1
-callsub itoa_1
+itob
 int 0
 byte "drt_payment_row_average"
 app_global_get
@@ -1234,7 +1234,7 @@ return
 contributorownershipchange_20:
 proto 0 0
 gtxn 0 XferAsset
-callsub itoa_1
+itob
 int 16
 int 32
 box_extract
@@ -1298,13 +1298,13 @@ byte "contributor_ID"
 gtxn 0 XferAsset
 app_global_put
 gtxn 0 XferAsset
-callsub itoa_1
+itob
 int 16
 gtxn 3 Sender
 box_replace
 byte "new_contributor"
 gtxn 0 XferAsset
-callsub itoa_1
+itob
 int 16
 int 32
 box_extract
