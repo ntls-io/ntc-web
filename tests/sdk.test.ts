@@ -1,5 +1,6 @@
 import algosdk, { getApplicationAddress } from 'algosdk';
 import { createDataPoolMethod } from '../src/app/utils/sdk/methods/createPool';
+import { createDRTMethod } from '../src/app/utils/sdk/methods/dataPoolOperations';
 
 test('Testnet: Smart Contract Creation ', async () => {
   // setup client to testnet
@@ -86,4 +87,17 @@ test('Testnet: Smart Contract Creation ', async () => {
     '\nCreators Contributor Token ID: ',
     dataPool?.contributorCreatorID
   );
+
+  console.log('\nCreate DRT for Data Pool');
+  const drtID = await createDRTMethod(
+    creatorAccount,
+    dataPool?.appID,
+    client,
+    'testDRT',
+    10,
+    1000000,
+    'drt_binary',
+    'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+  );
+  console.log('DRT Created: ', drtID);
 }, 300000);
