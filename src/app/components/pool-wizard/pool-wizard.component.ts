@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import {
   NgWizardConfig,
   StepChangedArgs,
@@ -19,11 +19,12 @@ const uploaderConfig = {
 };
 
 @Component({
-  selector: 'app-create-pool',
-  templateUrl: './create-pool.component.html',
-  styleUrls: ['./create-pool.component.scss']
+  selector: 'app-pool-wizard',
+  templateUrl: './pool-wizard.component.html',
+  styleUrls: ['./pool-wizard.component.scss']
 })
-export class CreatePoolComponent implements OnInit {
+export class PoolWizardComponent {
+  @Input() mode: 'join' | 'create' = 'create';
   stepStates = {
     normal: STEP_STATE.normal,
     disabled: STEP_STATE.disabled,
@@ -78,10 +79,14 @@ export class CreatePoolComponent implements OnInit {
   }
 
   async validateDataSchema() {
-    const result = await this.ajv.validateJsonDataAgainstSchema(
-      this.uploaderData.queue[0]._file,
-      this.uploaderSchema.queue[0]._file
-    );
+    let result = { success: true, error: '' };
+
+    if (this.mode === 'create') {
+      result = await this.ajv.validateJsonDataAgainstSchema(
+        this.uploaderData.queue[0]._file,
+        this.uploaderSchema.queue[0]._file
+      );
+    }
     this.isPackageValid = result.success
       ? { state: STEP_STATE.normal, message: '' }
       : { state: STEP_STATE.error, message: result.error };

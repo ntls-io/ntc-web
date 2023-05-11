@@ -3,7 +3,6 @@
     <ng-wizard-step
       title="1"
       description="Select files"
-      [canEnter]="isValidTypeBoolean"
       [canExit]="validatePackage.bind(this)"
       [state]="isPackageValid.state"
     >
@@ -19,7 +18,7 @@
           </select>
         </div>
 
-        <ng-container>
+        <ng-container *ngIf="mode === 'create'">
           <ul
             class="list-group my-3"
             *ngIf="uploaderSchema.queue?.[0]?.file as file; else noSchema"
