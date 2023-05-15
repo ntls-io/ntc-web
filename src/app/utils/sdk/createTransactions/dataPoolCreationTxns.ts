@@ -101,7 +101,6 @@ export const createFundContractTxn = async (
     const appArgs = [];
 
     const params = await client.getTransactionParams().do();
-    const program = await readTeal();
 
     const onComplete = algosdk.OnApplicationComplete.NoOpOC;
 
@@ -179,7 +178,7 @@ export const DEMO_createSetupDataPoolTxn = async (
   }
 };
 
-// create unsigned transaction DEMO until the enclave can create their own transactions
+// create unsigned transaction to claim contributor token during smart contract creation
 export const createInitClaimContributorTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
