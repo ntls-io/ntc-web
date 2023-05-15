@@ -251,7 +251,7 @@ export const createJoinPoolPendingTxn = async (
   contributor: { addr: string },
   appendID: number | bigint,
   assetAmount: number | bigint,
-  paymentAmount: number | bigint
+  executionFee: number | bigint
 ) => {
   try {
     // Transaction 1 - asset transfer
@@ -275,7 +275,7 @@ export const createJoinPoolPendingTxn = async (
     // Transaction 2 - payment transaction
     const payTxn = await createPaymentTxn(
       contributor.addr,
-      paymentAmount,
+      executionFee,
       contractAddr,
       client
     );
@@ -344,6 +344,82 @@ export const createClaimContributorTxn = async (
       ]
     });
     return txn;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const createRedeemDRTTxn = async (
+  client: algosdk.Algodv2,
+  appID: number | bigint,
+  redeemer: { addr: string },
+  drtId: number | bigint,
+  assetAmount: number | bigint,
+  executionFee: number | bigint
+) => {
+  try {
+    // Transaction 1 - asset transfer
+    const contractAddr = algosdk.getApplicationAddress(appID);
+
+    const params = await client.getTransactionParams().do();
+
+    const onComplete = algosdk.OnApplicationComplete.NoOpOC;
+
+    params.fee = 1000;
+    params.flatFee = true;
+
+    const assetTransferTxn = await createAssetTransferTxn(
+      client,
+      redeemer.addr,
+      contractAddr,
+      drtId,
+      assetAmount
+    );
+
+    // Transaction 2 - payment transaction
+    const payTxn = await createPaymentTxn(
+      redeemer.addr,
+      executionFee,
+      contractAddr,
+      client
+    );
+
+    // Transaction 3 - execute DRT instruction
+    const appArgs = [new Uint8Array(Buffer.from('execute_drt'))];
+
+    const assetBytes = algosdk.encodeUint64(drtId);
+    const pkContract = algosdk.decodeAddress(contractAddr).publicKey;
+    var boxNameApp = new Uint8Array(assetBytes.length + pkContract.length);
+    boxNameApp.set(assetBytes);
+    boxNameApp.set(pkContract, assetBytes.length);
+
+    const pkRedeemer = algosdk.decodeAddress(redeemer.addr).publicKey;
+    var boxNameOwner = new Uint8Array(assetBytes.length + pkRedeemer.length);
+    boxNameOwner.set(assetBytes);
+    boxNameOwner.set(pkRedeemer, assetBytes.length);
+
+    const executeDRTTxn = algosdk.makeApplicationCallTxnFromObject({
+      from: redeemer.addr,
+      appIndex: Number(appID),
+      suggestedParams: params,
+      onComplete: onComplete,
+      appArgs: appArgs,
+      foreignAssets: [Number(drtId)],
+      boxes: [
+        {
+          appIndex: Number(appID),
+          name: boxNameOwner
+        },
+        {
+          appIndex: Number(appID),
+          name: boxNameApp
+        }
+      ]
+    });
+
+    assignGroupID([assetTransferTxn!, payTxn!, executeDRTTxn]);
+
+    return { assetTransferTxn, payTxn, executeDRTTxn };
   } catch (err) {
     console.log(err);
   }

@@ -6,7 +6,8 @@ import {
   createDRTMethod,
   delistDRTMethod,
   joinPoolPendingMethod,
-  listDRTMethod
+  listDRTMethod,
+  redeemDRTMethod
 } from '../src/app/utils/sdk/methods/dataPoolOperations';
 import { DEMO_approvalContributorTransaction } from '../src/app/utils/sdk/sdkTest';
 
@@ -183,5 +184,17 @@ test('Testnet: Smart Contract Creation ', async () => {
     claimContributor!['confirmed-round']
   );
 
-  // execute DRT
+  // Redeem DRT
+  const redeemDRT = await redeemDRTMethod(
+    client,
+    analystAccount,
+    dataPool?.appID,
+    drtID,
+    1,
+    1000000
+  );
+  console.log(
+    'Redeemed DRT transaction confirmed in round : ',
+    redeemDRT!['confirmed-round']
+  );
 }, 300000);
