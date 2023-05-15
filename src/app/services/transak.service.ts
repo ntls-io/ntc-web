@@ -11,11 +11,12 @@ export class TransakService {
 
   constructor(private sessionQuery: SessionQuery) {
     const { vault } = this.sessionQuery.getValue();
+    const { apiKey, cryptoCurrencyCode } = environment.transak;
 
     this.transak = new Transak({
-      apiKey: environment.transakApiKey,
-      environment: 'PRODUCTION',
-      cryptoCurrencyCode: 'ALGO',
+      apiKey,
+      cryptoCurrencyCode,
+      environment: environment.production ? 'PRODUCTION' : 'STAGING',
       widgetHeight: '550px',
       walletAddress: vault?.algorand_address_base32,
       email: vault?.username

@@ -7,5 +7,8 @@ export const environment = {
     port: '',
     token: { 'X-API-Key': 'J7eo2jPb5m4OiBneIV6r0ajgRLeSaHqk3QplGETk' }
   },
-  transakApiKey: 'd6c4c5f4-0b4a-4b1a-8b0a-4b0b4b0b4b0b'
+  transak: {
+    apiKey: 'd6c4c5f4-0b4a-4b1a-8b0a-4b0b4b0b4b0b',
+    cryptoCurrencyCode: 'ALGO'
+  }
 };
