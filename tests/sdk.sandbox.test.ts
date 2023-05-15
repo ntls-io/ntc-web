@@ -62,19 +62,6 @@ test('Testnet: Smart Contract Creation ', async () => {
     creatorAccountInfo['amount']
   );
 
-  //   const traderMnemonic =
-  //     'pattern setup bacon drop young cupboard easy session north slim blouse ostrich visual orphan step once middle just scissors cave lady slide setup able rib';
-  //   const traderAccount = algosdk.mnemonicToSecretKey(traderMnemonic);
-  //   const traderAddr = traderAccount.addr;
-  //   let traderAccountInfo = await client.accountInformation(traderAddr).do();
-  //   console.log(
-  //     'Trader Account address: ',
-  //     traderAddr,
-  //     '\nTrader Account balance: ',
-  //     traderAccountInfo['amount']
-  //   );
-
-  //   create data pool method
   let dataPool = await createDataPoolMethod(
     creatorAccount,
     enclaveAccount,
@@ -118,7 +105,7 @@ test('Testnet: Smart Contract Creation ', async () => {
   );
   console.log('Buy DRT confirmed in round : ', buydrt!['confirmed-round']);
 
-  // delist test
+  // delist
   const delistDRT = await delistDRTMethod(
     client,
     dataPool?.appID,
@@ -130,8 +117,7 @@ test('Testnet: Smart Contract Creation ', async () => {
     delistDRT!['confirmed-round']
   );
 
-  //try and buy DRT ( shouldnt be able to unless list again)
-  // delist test
+  // list
   const listDRT = await listDRTMethod(
     client,
     dataPool?.appID,
@@ -140,6 +126,7 @@ test('Testnet: Smart Contract Creation ', async () => {
   );
   console.log('Re-list drt confirmed in round : ', listDRT!['confirmed-round']);
 
+  // analyst buys DRT again
   const buydrt2 = await buyDRTMethod(
     client,
     dataPool?.appID,
@@ -191,5 +178,10 @@ test('Testnet: Smart Contract Creation ', async () => {
     analystAccount,
     contributorTokenID
   );
-  console.log(claimContributor);
+  console.log(
+    'Claimed contributor token confirmed in round : ',
+    claimContributor!['confirmed-round']
+  );
+
+  // execute DRT
 }, 300000);
