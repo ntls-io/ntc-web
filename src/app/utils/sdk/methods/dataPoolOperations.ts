@@ -232,6 +232,23 @@ const claimContributorMethod = async (
   contributorAssetId: number
 ) => {
   try {
+    /// Transaction 1 - Optin to contributor token if not already
+    let txnOpt = await createAssetOptinTxn(
+      contributorAssetId,
+      contributorAccount,
+      client
+    );
+
+    const txId_Opt = await txnOpt?.txID().toString();
+
+    // Sign the transaction, here we have to intervene
+    const contributorSecret = contributorAccount?.sk;
+    const signedtxnOpt = txnOpt?.signTxn(contributorSecret);
+    // pai(username, password, signedTxn)
+    // intervene above with authenticateion
+
+    const optin = await sendAssetOptinTxn(signedtxnOpt, client, txId_Opt!);
+
     let txn1 = await createClaimContributorTxn(
       appID,
       client,
@@ -241,7 +258,6 @@ const claimContributorMethod = async (
     const txId_1 = await txn1?.txID().toString();
 
     // Sign the transaction, here we have to intervene
-    const contributorSecret = contributorAccount?.sk;
     const signedtxn1 = txn1?.signTxn(contributorSecret);
     // pai(username, password, signedTxn)
     // intervene above with authenticateion
