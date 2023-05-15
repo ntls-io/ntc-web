@@ -1,11 +1,7 @@
 declare module '@transak/transak-sdk' {
-  export enum Foo {
-    STAGING = 'STAGING',
-    PRODUCTION = 'PRODUCTION'
-  }
   export interface Settings {
     apiKey: string;
-    environment: string; // tried to set this to be ->  environment: 'STAGING' | 'PRODUCTION', but it gave error: 'string is not assignable to type 'STAGING' | 'PRODUCTION''
+    environment: 'STAGING' | 'PRODUCTION';
     cryptoCurrencyCode?: string;
     network?: string;
     themeColor?: string;
