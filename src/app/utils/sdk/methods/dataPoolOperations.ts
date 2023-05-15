@@ -7,7 +7,8 @@ import {
   createCreateDRTTxn,
   createDelistDRTTxn,
   createJoinPoolPendingTxn,
-  createlistDRTTxn
+  createlistDRTTxn,
+  createRedeemDRTTxn
 } from '../createTransactions/dataPoolOperationTxns';
 import { createAssetOptinTxn } from '../createTransactions/utilityTxns';
 import {
@@ -16,6 +17,7 @@ import {
   sendClaimDRTTxn,
   sendCreateDRTTxn,
   sendDelistDRTTxn,
+  sendExecuteDRTTxn,
   sendJoinPoolPendingTxn,
   sendListDRTTxn
 } from '../sendTransactions/sendDataPoolTxns';
@@ -270,11 +272,55 @@ const claimContributorMethod = async (
   }
 };
 
+const redeemDRTMethod = async (
+  client: algosdk.Algodv2,
+  redeemerAccount: algosdk.Account,
+  appID: number | bigint,
+  assetId: number,
+  assetAmount: number,
+  executionFee: number
+) => {
+  try {
+    let txn = await createRedeemDRTTxn(
+      client,
+      appID,
+      redeemerAccount,
+      assetId,
+      assetAmount,
+      executionFee
+    );
+
+    const txId_1 = await txn?.assetTransferTxn?.txID().toString();
+    const txId_2 = await txn?.payTxn?.txID().toString();
+    const txId_3 = await txn?.executeDRTTxn.txID().toString();
+
+    // // Sign the transaction, here we have to intervene
+    const contributorSecret = redeemerAccount?.sk;
+
+    const signedtxn1 = txn?.assetTransferTxn?.signTxn(contributorSecret);
+    const signedtxn2 = txn?.payTxn?.signTxn(contributorSecret);
+    const signedtxn3 = txn?.executeDRTTxn.signTxn(contributorSecret);
+    // // pai(username, password, signedTxn)
+    // // intervene above with authenticateion
+
+    // send group transaction
+    const result = await sendExecuteDRTTxn(
+      [signedtxn1, signedtxn2, signedtxn3],
+      client,
+      txId_3!
+    );
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export {
   createDRTMethod,
   buyDRTMethod,
   delistDRTMethod,
   listDRTMethod,
   joinPoolPendingMethod,
-  claimContributorMethod
+  claimContributorMethod,
+  redeemDRTMethod
 };

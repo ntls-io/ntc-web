@@ -136,3 +136,21 @@ export const sendClaimContributorTxn = async (
     console.log(err);
   }
 };
+export const sendExecuteDRTTxn = async (
+  signedTxn: any,
+  client: algosdk.Algodv2,
+  txId: string
+) => {
+  try {
+    await client.sendRawTransaction(signedTxn).do();
+    // Wait for transaction to be confirmed
+    const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
+
+    const transactionResponse = await client
+      .pendingTransactionInformation(txId)
+      .do();
+    return transactionResponse;
+  } catch (err) {
+    console.log(err);
+  }
+};
