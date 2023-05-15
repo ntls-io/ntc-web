@@ -38,7 +38,7 @@ const createDataPoolMethod = async (
     // intervene above with authenticateion
 
     const appID = await sendDeployContractTxn(signedtxn1, client, txId_1!);
-    console.log('Deployment Txn');
+    console.log('Deployment Txn confirmed, app ID: ', appID);
 
     /// Transaction 2 - Fund Contract
     var fundAmount = 2000000;
@@ -59,7 +59,10 @@ const createDataPoolMethod = async (
       appID,
       fundAmount
     );
-    console.log('Fund Smart Contract Txn');
+    console.log(
+      'Fund Smart Contract Txn confirmed in round: ',
+      txn2Result!['confirmed-round']
+    );
 
     /// Transaction 3 - Setup Data Pool DEMO
     var noRowsContributed = 4;
@@ -90,7 +93,10 @@ const createDataPoolMethod = async (
     const enclaveSecret = enclaveAccount?.sk;
     const signedtxn3 = txn3?.signTxn(enclaveSecret);
     const setupResult = await sendSetupDataPoolTxn(signedtxn3, client, txId_3!);
-    console.log('DEMO enclave Setup Txn');
+    console.log(
+      'DEMO enclave Setup Txn confirmed, setup results: ',
+      setupResult
+    );
 
     // transaction 4 - Optin to contributor token
     const txn4 = await createAssetOptinTxn(
@@ -102,13 +108,11 @@ const createDataPoolMethod = async (
     var txId_4 = await txn4?.txID().toString();
     // Sign the transaction, here we have to intervene
     const signedtxn4 = txn4?.signTxn(creatorSecret);
-    const txn4Result = await sendAssetOptinTxn(
-      signedtxn4,
-      client,
-      txId_4!,
-      creatorAccount
+    const txn4Result = await sendAssetOptinTxn(signedtxn4, client, txId_4!);
+    console.log(
+      'Asset optin txn confirmed in round: ',
+      txn4Result!['confirmed-round']
     );
-    console.log('Asset optin txn');
 
     // Transaction 5 - claim contributor token
     const txn5 = await createInitClaimContributorTxn(
@@ -126,7 +130,10 @@ const createDataPoolMethod = async (
       client,
       txId_5!
     );
-    console.log('Claim contributor Txn');
+    console.log(
+      'Claim contributor Txn confirmed in round: ',
+      txn5Result!['confirmed-round']
+    );
     const contributorCreatorID = setupResult?.contributorCreatorID;
     const appendDrtID = setupResult?.appendDrtID;
     return { appID, contributorCreatorID, appendDrtID };

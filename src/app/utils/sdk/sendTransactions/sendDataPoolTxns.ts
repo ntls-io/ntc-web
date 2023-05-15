@@ -41,3 +41,98 @@ export const sendClaimDRTTxn = async (
     console.log(err);
   }
 };
+
+export const sendBuyDRTTxn = async (
+  signedTxn: any,
+  client: algosdk.Algodv2,
+  txId: string
+) => {
+  try {
+    await client.sendRawTransaction(signedTxn).do();
+    // Wait for transaction to be confirmed
+    const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
+
+    const transactionResponse = await client
+      .pendingTransactionInformation(txId)
+      .do();
+    return transactionResponse;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const sendListDRTTxn = async (
+  signedTxn: any,
+  client: algosdk.Algodv2,
+  txId: string
+) => {
+  try {
+    await client.sendRawTransaction(signedTxn).do();
+    // Wait for transaction to be confirmed
+    const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
+
+    const transactionResponse = await client
+      .pendingTransactionInformation(txId)
+      .do();
+    return transactionResponse;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const sendDelistDRTTxn = async (
+  signedTxn: any,
+  client: algosdk.Algodv2,
+  txId: string
+) => {
+  try {
+    await client.sendRawTransaction(signedTxn).do();
+    // Wait for transaction to be confirmed
+    const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
+
+    const transactionResponse = await client
+      .pendingTransactionInformation(txId)
+      .do();
+    return transactionResponse;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const sendJoinPoolPendingTxn = async (
+  signedTxn: any,
+  client: algosdk.Algodv2,
+  txId: string
+) => {
+  try {
+    await client.sendRawTransaction(signedTxn).do();
+    // Wait for transaction to be confirmed
+    const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
+
+    const transactionResponse = await client
+      .pendingTransactionInformation(txId)
+      .do();
+    return transactionResponse;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const sendClaimContributorTxn = async (
+  signedTxn: any,
+  client: algosdk.Algodv2,
+  txId: string
+) => {
+  try {
+    await client.sendRawTransaction(signedTxn).do();
+    // Wait for transaction to be confirmed
+    const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
+
+    const transactionResponse = await client
+      .pendingTransactionInformation(txId)
+      .do();
+    return transactionResponse;
+  } catch (err) {
+    console.log(err);
+  }
+};

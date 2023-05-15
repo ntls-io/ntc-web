@@ -3,8 +3,7 @@ import algosdk from 'algosdk';
 export const sendAssetOptinTxn = async (
   signedTxn: any,
   client: algosdk.Algodv2,
-  txId: string,
-  account: any
+  txId: string
 ) => {
   try {
     // Submit the transaction
