@@ -3,9 +3,11 @@ import * as assert from 'assert';
 
 // CREATE APP
 // create unsigned transaction
-export const sendDeployContractTxn = async (signedTxn: any,
+export const sendDeployContractTxn = async (
+  signedTxn: any,
   client: algosdk.Algodv2,
-  txId: string) => {
+  txId: string
+) => {
   try {
     //console.log('Signed transaction with txID: %s', txId);
     // Submit the transaction
@@ -40,14 +42,14 @@ export const sendFundContractTxn = async (
   signedTxn: any,
   client: algosdk.Algodv2,
   txId: string,
-  sender: { addr: any; },
+  senderAddr: algosdk.Account['addr'],
   appID: any,
   fundAmount: number
 ) => {
   try {
     const contractAddr = algosdk.getApplicationAddress(appID);
     // console.log('Signed transaction with txID: %s', txId);
-    const senderInfo = await client.accountInformation(sender.addr).do();
+    const senderInfo = await client.accountInformation(senderAddr).do();
     assert(
       senderInfo.amount > fundAmount,
       'Not enough funds in senders account.'
@@ -80,9 +82,10 @@ export const sendFundContractTxn = async (
 export const sendSetupDataPoolTxn = async (
   signedTxn: any,
   client: algosdk.Algodv2,
-  txId: string) => {
+  txId: string
+) => {
   try {
-   // console.log('Signed transaction with txID: %s', txId);
+    // console.log('Signed transaction with txID: %s', txId);
     // Submit the transaction
     await client.sendRawTransaction(signedTxn).do();
     // Wait for transaction to be confirmed
@@ -110,11 +113,13 @@ export const sendSetupDataPoolTxn = async (
   }
 };
 
-export const sendInitClaimContributorTxn = async (signedTxn: any,
+export const sendInitClaimContributorTxn = async (
+  signedTxn: any,
   client: algosdk.Algodv2,
-  txId: string) => {
+  txId: string
+) => {
   try {
-   //  console.log('Signed transaction with txID: %s', txId);
+    //  console.log('Signed transaction with txID: %s', txId);
     // Submit the transaction
     await client.sendRawTransaction(signedTxn).do();
     // Wait for transaction to be confirmed

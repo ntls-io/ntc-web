@@ -17,20 +17,19 @@ import { createAssetOptinTxn } from '../createTransactions/utilityTxns';
 import { sendAssetOptinTxn } from '../sendTransactions/sendUtilityTxns';
 
 const createDataPoolMethod = async (
-  creatorAccount: algosdk.Account,
-  enclaveAccount: algosdk.Account,
-  client: algosdk.Algodv2
+  client: algosdk.Algodv2,
+  creatorAccount: algosdk.Account, //to be removed (TBR) when signing functionality is imported
+  enclaveAccount: algosdk.Account, // to be removed
+  creatorAddr: algosdk.Account['addr'],
+  enclaveAddr: algosdk.Account['addr']
 ) => {
   try {
     /// Transaction 1 - Deploy Contract
-    let txn1 = await createDeployContractTxn(
-      creatorAccount,
-      enclaveAccount,
-      client
-    );
+    let txn1 = await createDeployContractTxn(creatorAddr, enclaveAddr, client);
 
     const txId_1 = await txn1?.txID().toString();
 
+    // TBR
     // Sign the transaction, here we have to intervene
     const creatorSecret = creatorAccount?.sk;
     const signedtxn1 = txn1?.signTxn(creatorSecret);
@@ -45,7 +44,7 @@ const createDataPoolMethod = async (
     const txn2 = await createFundContractTxn(
       appID,
       fundAmount,
-      creatorAccount,
+      creatorAddr,
       client
     );
     var txId_2 = await txn2?.txID().toString();
@@ -55,7 +54,7 @@ const createDataPoolMethod = async (
       signedtxn2,
       client,
       txId_2!,
-      creatorAccount,
+      creatorAddr,
       appID,
       fundAmount
     );
@@ -101,11 +100,13 @@ const createDataPoolMethod = async (
     // transaction 4 - Optin to contributor token
     const txn4 = await createAssetOptinTxn(
       setupResult?.contributorCreatorID,
-      creatorAccount,
+      creatorAddr,
       client
     );
     // console.log(txn2);
     var txId_4 = await txn4?.txID().toString();
+
+    // TBR
     // Sign the transaction, here we have to intervene
     const signedtxn4 = txn4?.signTxn(creatorSecret);
     const txn4Result = await sendAssetOptinTxn(signedtxn4, client, txId_4!);
@@ -118,7 +119,7 @@ const createDataPoolMethod = async (
     const txn5 = await createInitClaimContributorTxn(
       appID,
       client,
-      creatorAccount,
+      creatorAddr,
       setupResult?.contributorCreatorID,
       setupResult?.appendDrtID
     );
