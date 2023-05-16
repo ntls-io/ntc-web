@@ -5,7 +5,7 @@ import { createAssetTransferTxn, createPaymentTxn } from './utilityTxns';
 export const createCreateDRTTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
-  creator: { addr: string },
+  creatorAddr: algosdk.Account['addr'],
   drtName: string,
   drtSupply: number | bigint,
   drtPrice: number | bigint,
@@ -30,12 +30,12 @@ export const createCreateDRTTxn = async (
     params.flatFee = true;
 
     const txn = algosdk.makeApplicationCallTxnFromObject({
-      from: creator.addr,
+      from: creatorAddr,
       appIndex: Number(appID),
       suggestedParams: params,
       onComplete: onComplete,
       appArgs: appArgs,
-      accounts: [creator.addr]
+      accounts: [creatorAddr]
     });
 
     return txn;
@@ -47,7 +47,7 @@ export const createCreateDRTTxn = async (
 export const createClaimDRTTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
-  creator: { addr: string },
+  creatorAddr: algosdk.Account['addr'],
   drtID: number | bigint
 ) => {
   try {
@@ -67,7 +67,7 @@ export const createClaimDRTTxn = async (
     boxName.set(pk, assetBytes.length);
 
     const txn = algosdk.makeApplicationCallTxnFromObject({
-      from: creator.addr,
+      from: creatorAddr,
       appIndex: Number(appID),
       suggestedParams: params,
       onComplete: onComplete,
@@ -90,7 +90,7 @@ export const createClaimDRTTxn = async (
 export const createBuyDRTTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
-  buyer: { addr: string },
+  buyerAddr: algosdk.Account['addr'],
   drtID: number | bigint,
   amountToBuy: number | bigint,
   paymentAmount: number | bigint
@@ -111,7 +111,7 @@ export const createBuyDRTTxn = async (
     boxNameExisting.set(assetBytes);
     boxNameExisting.set(pkContract, assetBytes.length);
 
-    const pkBuyer = algosdk.decodeAddress(buyer.addr).publicKey;
+    const pkBuyer = algosdk.decodeAddress(buyerAddr).publicKey;
     var boxNameNew = new Uint8Array(assetBytes.length + pkBuyer.length);
     boxNameNew.set(assetBytes);
     boxNameNew.set(pkBuyer, assetBytes.length);
@@ -122,7 +122,7 @@ export const createBuyDRTTxn = async (
     ];
 
     const buyTxn = algosdk.makeApplicationCallTxnFromObject({
-      from: buyer.addr,
+      from: buyerAddr,
       appIndex: Number(appID),
       suggestedParams: params,
       onComplete: onComplete,
@@ -141,7 +141,7 @@ export const createBuyDRTTxn = async (
     });
 
     const payTxn = await createPaymentTxn(
-      buyer.addr,
+      buyerAddr,
       paymentAmount,
       contractAddr,
       client
@@ -158,7 +158,7 @@ export const createBuyDRTTxn = async (
 export const createDelistDRTTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
-  creator: { addr: string },
+  creatorAddr: algosdk.Account['addr'],
   drtID: number | bigint
 ) => {
   try {
@@ -180,7 +180,7 @@ export const createDelistDRTTxn = async (
     const appArgs = [new Uint8Array(Buffer.from('de_list_drt'))];
 
     const delistTxn = algosdk.makeApplicationCallTxnFromObject({
-      from: creator.addr,
+      from: creatorAddr,
       appIndex: Number(appID),
       suggestedParams: params,
       onComplete: onComplete,
@@ -203,7 +203,7 @@ export const createDelistDRTTxn = async (
 export const createlistDRTTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
-  creator: { addr: string },
+  creatorAddr: algosdk.Account['addr'],
   drtID: number | bigint
 ) => {
   try {
@@ -225,7 +225,7 @@ export const createlistDRTTxn = async (
     const appArgs = [new Uint8Array(Buffer.from('list_drt'))];
 
     const listTxn = algosdk.makeApplicationCallTxnFromObject({
-      from: creator.addr,
+      from: creatorAddr,
       appIndex: Number(appID),
       suggestedParams: params,
       onComplete: onComplete,
@@ -248,7 +248,7 @@ export const createlistDRTTxn = async (
 export const createJoinPoolPendingTxn = async (
   client: algosdk.Algodv2,
   appID: number | bigint,
-  contributor: { addr: string },
+  contributorAddr: algosdk.Account['addr'],
   appendID: number | bigint,
   assetAmount: number | bigint,
   executionFee: number | bigint
@@ -266,7 +266,7 @@ export const createJoinPoolPendingTxn = async (
 
     const assetTransferTxn = await createAssetTransferTxn(
       client,
-      contributor.addr,
+      contributorAddr,
       contractAddr,
       appendID,
       assetAmount
@@ -274,7 +274,7 @@ export const createJoinPoolPendingTxn = async (
 
     // Transaction 2 - payment transaction
     const payTxn = await createPaymentTxn(
-      contributor.addr,
+      contributorAddr,
       executionFee,
       contractAddr,
       client
@@ -282,10 +282,10 @@ export const createJoinPoolPendingTxn = async (
 
     // Transaction 3 - add user as pending contributor
     const appArgs = [new Uint8Array(Buffer.from('add_contributor_pending'))];
-    const boxName = algosdk.decodeAddress(contributor.addr).publicKey;
+    const boxName = algosdk.decodeAddress(contributorAddr).publicKey;
 
     const addPendingContributorTxn = algosdk.makeApplicationCallTxnFromObject({
-      from: contributor.addr,
+      from: contributorAddr,
       appIndex: Number(appID),
       suggestedParams: params,
       onComplete: onComplete,
@@ -310,7 +310,7 @@ export const createJoinPoolPendingTxn = async (
 export const createClaimContributorTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
-  contributorAccount: { addr: string },
+  contributorAddr: algosdk.Account['addr'],
   contributorAssetID: number
 ) => {
   try {
@@ -324,7 +324,7 @@ export const createClaimContributorTxn = async (
     params.flatFee = true;
 
     const txn = algosdk.makeApplicationCallTxnFromObject({
-      from: contributorAccount.addr,
+      from: contributorAddr,
       appIndex: Number(appID),
       suggestedParams: params,
       onComplete: onComplete,
@@ -339,7 +339,7 @@ export const createClaimContributorTxn = async (
         },
         {
           appIndex: Number(appID),
-          name: algosdk.decodeAddress(contributorAccount.addr).publicKey
+          name: algosdk.decodeAddress(contributorAddr).publicKey
         }
       ]
     });
@@ -352,7 +352,7 @@ export const createClaimContributorTxn = async (
 export const createRedeemDRTTxn = async (
   client: algosdk.Algodv2,
   appID: number | bigint,
-  redeemer: { addr: string },
+  redeemerAddr: algosdk.Account['addr'],
   drtId: number | bigint,
   assetAmount: number | bigint,
   executionFee: number | bigint
@@ -370,7 +370,7 @@ export const createRedeemDRTTxn = async (
 
     const assetTransferTxn = await createAssetTransferTxn(
       client,
-      redeemer.addr,
+      redeemerAddr,
       contractAddr,
       drtId,
       assetAmount
@@ -378,7 +378,7 @@ export const createRedeemDRTTxn = async (
 
     // Transaction 2 - payment transaction
     const payTxn = await createPaymentTxn(
-      redeemer.addr,
+      redeemerAddr,
       executionFee,
       contractAddr,
       client
@@ -393,13 +393,13 @@ export const createRedeemDRTTxn = async (
     boxNameApp.set(assetBytes);
     boxNameApp.set(pkContract, assetBytes.length);
 
-    const pkRedeemer = algosdk.decodeAddress(redeemer.addr).publicKey;
+    const pkRedeemer = algosdk.decodeAddress(redeemerAddr).publicKey;
     var boxNameOwner = new Uint8Array(assetBytes.length + pkRedeemer.length);
     boxNameOwner.set(assetBytes);
     boxNameOwner.set(pkRedeemer, assetBytes.length);
 
     const executeDRTTxn = algosdk.makeApplicationCallTxnFromObject({
-      from: redeemer.addr,
+      from: redeemerAddr,
       appIndex: Number(appID),
       suggestedParams: params,
       onComplete: onComplete,

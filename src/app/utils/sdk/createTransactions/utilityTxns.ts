@@ -3,7 +3,7 @@ import algosdk from 'algosdk';
 // create unsigned transaction
 export const createAssetOptinTxn = async (
   assetID: any,
-  account: { addr: string },
+  accountAddr: algosdk.Account['addr'],
   client: algosdk.Algodv2
 ) => {
   try {
@@ -20,8 +20,8 @@ export const createAssetOptinTxn = async (
 
     // signing and sending "txn" allows sender to begin accepting asset specified by creator and index
     let opttxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
-      account.addr,
-      account.addr,
+      accountAddr,
+      accountAddr,
       closeRemainderTo,
       revocationTarget,
       Number(0),

@@ -12,19 +12,12 @@ import {
 import { DEMO_approvalContributorTransaction } from '../src/app/utils/sdk/sdkTest';
 
 test('Testnet: Smart Contract Creation ', async () => {
-  // setup client to testnet
-  //   const baseServer = 'https://testnet-algorand.api.purestake.io/ps2';
-  //   const port = '';
-  //   const token = {
-  //     'X-API-Key': 'J7eo2jPb5m4OiBneIV6r0ajgRLeSaHqk3QplGETk'
-  //   };
+  // setup client to sandbox
   const algodToken =
     'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
   const baseServer = 'http://localhost';
   const port = '4001';
   const client = new algosdk.Algodv2(algodToken, baseServer, port);
-
-  //   const client = new algosdk.Algodv2(token, baseServer, port);
 
   // Import Testnet Accounts
   const enclaveMnemonic =
@@ -63,10 +56,13 @@ test('Testnet: Smart Contract Creation ', async () => {
     creatorAccountInfo['amount']
   );
 
+  // create data pool
   let dataPool = await createDataPoolMethod(
-    creatorAccount,
-    enclaveAccount,
-    client
+    client,
+    creatorAccount, // TBR
+    enclaveAccount, // TBR
+    creatorAddr,
+    enclaveAddr
   );
 
   const smartContractAddress = getApplicationAddress(dataPool?.appID);
@@ -84,7 +80,8 @@ test('Testnet: Smart Contract Creation ', async () => {
   );
 
   const drtID = await createDRTMethod(
-    creatorAccount,
+    creatorAccount, //TBR
+    creatorAddr,
     dataPool?.appID,
     client,
     'testDRT',
@@ -99,7 +96,8 @@ test('Testnet: Smart Contract Creation ', async () => {
   const buydrt = await buyDRTMethod(
     client,
     dataPool?.appID,
-    analystAccount,
+    analystAccount, // TBR
+    analystAddr,
     drtID,
     1,
     1000000
@@ -110,7 +108,8 @@ test('Testnet: Smart Contract Creation ', async () => {
   const delistDRT = await delistDRTMethod(
     client,
     dataPool?.appID,
-    creatorAccount,
+    creatorAccount, // TBR
+    creatorAddr,
     drtID
   );
   console.log(
@@ -122,7 +121,8 @@ test('Testnet: Smart Contract Creation ', async () => {
   const listDRT = await listDRTMethod(
     client,
     dataPool?.appID,
-    creatorAccount,
+    creatorAccount, // TBR
+    creatorAddr,
     drtID
   );
   console.log('Re-list drt confirmed in round : ', listDRT!['confirmed-round']);
@@ -132,6 +132,7 @@ test('Testnet: Smart Contract Creation ', async () => {
     client,
     dataPool?.appID,
     analystAccount,
+    analystAddr,
     drtID,
     1,
     1000000
@@ -145,7 +146,8 @@ test('Testnet: Smart Contract Creation ', async () => {
   // join Data Pool step 1 - add user as pending contributor
   const addPendingContributor = await joinPoolPendingMethod(
     client,
-    analystAccount,
+    analystAccount, // TBR
+    analystAddr,
     dataPool?.appID,
     dataPool?.appendDrtID,
     1,
@@ -157,7 +159,7 @@ test('Testnet: Smart Contract Creation ', async () => {
     addPendingContributor!['confirmed-round']
   );
 
-  // DEMO enclave approval of contributor
+  // TBR - DEMO enclave approval of contributor
   const demoApproval = await DEMO_approvalContributorTransaction(
     client,
     dataPool?.appID,
@@ -176,7 +178,8 @@ test('Testnet: Smart Contract Creation ', async () => {
   const claimContributor = await claimContributorMethod(
     client,
     dataPool?.appID,
-    analystAccount,
+    analystAccount, // TBR
+    analystAddr,
     contributorTokenID
   );
   console.log(
@@ -188,6 +191,7 @@ test('Testnet: Smart Contract Creation ', async () => {
   const redeemDRT = await redeemDRTMethod(
     client,
     analystAccount,
+    analystAddr,
     dataPool?.appID,
     drtID,
     1,

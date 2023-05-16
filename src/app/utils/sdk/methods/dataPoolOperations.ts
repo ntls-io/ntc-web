@@ -25,6 +25,7 @@ import { sendAssetOptinTxn } from '../sendTransactions/sendUtilityTxns';
 
 const createDRTMethod = async (
   creatorAccount: algosdk.Account,
+  creatorAddr: algosdk.Account['addr'],
   appID: number | bigint,
   client: algosdk.Algodv2,
   drtName: string,
@@ -38,7 +39,7 @@ const createDRTMethod = async (
     let txn1 = await createCreateDRTTxn(
       appID,
       client,
-      creatorAccount,
+      creatorAddr,
       drtName,
       drtSupply,
       drtPrice,
@@ -55,7 +56,7 @@ const createDRTMethod = async (
     // intervene above with authenticateion
 
     const drtID = await sendCreateDRTTxn(signedtxn1, client, txId_1!, appID);
-    const txn2 = await createClaimDRTTxn(appID, client, creatorAccount, drtID);
+    const txn2 = await createClaimDRTTxn(appID, client, creatorAddr, drtID);
     const txId_2 = await txn2?.txID().toString();
 
     // Sign the transaction, here we have to intervene
@@ -74,6 +75,7 @@ const buyDRTMethod = async (
   client: algosdk.Algodv2,
   appID: number | bigint,
   buyerAccount: algosdk.Account,
+  buyerAddr: algosdk.Account['addr'],
   drtId: number,
   amountToBuy: number,
   paymentAmount: number
@@ -82,7 +84,7 @@ const buyDRTMethod = async (
     /// Transaction 1 - Optin to DRT if not already
     // const hasOptedIn = client.accountAssetInformation(buyerAccount.addr, drtId);
     // console.log(hasOptedIn);
-    let txn1 = await createAssetOptinTxn(drtId, buyerAccount, client);
+    let txn1 = await createAssetOptinTxn(drtId, buyerAddr, client);
 
     const txId_1 = await txn1?.txID().toString();
 
@@ -98,7 +100,7 @@ const buyDRTMethod = async (
     const txn2 = await createBuyDRTTxn(
       appID,
       client,
-      buyerAccount,
+      buyerAddr,
       drtId,
       amountToBuy,
       paymentAmount
@@ -129,10 +131,11 @@ const delistDRTMethod = async (
   client: algosdk.Algodv2,
   appID: number | bigint,
   creatorAccount: algosdk.Account,
+  creatorAddr: algosdk.Account['addr'],
   drtId: number
 ) => {
   try {
-    let txn1 = await createDelistDRTTxn(appID, client, creatorAccount, drtId);
+    let txn1 = await createDelistDRTTxn(appID, client, creatorAddr, drtId);
     const txId_1 = await txn1?.txID().toString();
 
     // Sign the transaction, here we have to intervene
@@ -153,10 +156,11 @@ const listDRTMethod = async (
   client: algosdk.Algodv2,
   appID: number | bigint,
   creatorAccount: algosdk.Account,
+  creatorAddr: algosdk.Account['addr'],
   drtId: number
 ) => {
   try {
-    let txn1 = await createlistDRTTxn(appID, client, creatorAccount, drtId);
+    let txn1 = await createlistDRTTxn(appID, client, creatorAddr, drtId);
     const txId_1 = await txn1?.txID().toString();
 
     // Sign the transaction, here we have to intervene
@@ -176,6 +180,7 @@ const listDRTMethod = async (
 const joinPoolPendingMethod = async (
   client: algosdk.Algodv2,
   contributorAccount: algosdk.Account,
+  contributorAddr: algosdk.Account['addr'],
   appID: number | bigint,
   appendId: number,
   assetAmount: number,
@@ -188,6 +193,7 @@ const joinPoolPendingMethod = async (
       client,
       appID,
       contributorAccount,
+      contributorAddr,
       appendId,
       assetAmount,
       assetFee
@@ -196,7 +202,7 @@ const joinPoolPendingMethod = async (
     let txn = await createJoinPoolPendingTxn(
       client,
       appID,
-      contributorAccount,
+      contributorAddr,
       appendId,
       assetAmount,
       executionFee
@@ -231,13 +237,14 @@ const claimContributorMethod = async (
   client: algosdk.Algodv2,
   appID: number | bigint,
   contributorAccount: algosdk.Account,
+  contributorAddr: algosdk.Account['addr'],
   contributorAssetId: number
 ) => {
   try {
     /// Transaction 1 - Optin to contributor token if not already
     let txnOpt = await createAssetOptinTxn(
       contributorAssetId,
-      contributorAccount,
+      contributorAddr,
       client
     );
 
@@ -254,7 +261,7 @@ const claimContributorMethod = async (
     let txn1 = await createClaimContributorTxn(
       appID,
       client,
-      contributorAccount,
+      contributorAddr,
       contributorAssetId
     );
     const txId_1 = await txn1?.txID().toString();
@@ -275,6 +282,7 @@ const claimContributorMethod = async (
 const redeemDRTMethod = async (
   client: algosdk.Algodv2,
   redeemerAccount: algosdk.Account,
+  redeemerAddr: algosdk.Account['addr'],
   appID: number | bigint,
   assetId: number,
   assetAmount: number,
@@ -284,7 +292,7 @@ const redeemDRTMethod = async (
     let txn = await createRedeemDRTTxn(
       client,
       appID,
-      redeemerAccount,
+      redeemerAddr,
       assetId,
       assetAmount,
       executionFee
