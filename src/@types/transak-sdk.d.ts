@@ -1,7 +1,7 @@
 declare module '@transak/transak-sdk' {
   export interface Settings {
     apiKey: string;
-    environment: 'STAGING' | 'PRODUCTION';
+    environment: string;
     cryptoCurrencyCode?: string;
     network?: string;
     themeColor?: string;
@@ -10,6 +10,7 @@ declare module '@transak/transak-sdk' {
     email?: string;
     widgetHeight?: string;
     widgetWidth?: string;
+    disableWalletAddressForm?: boolean;
   }
 
   export interface EventData {

@@ -3,20 +3,13 @@ import Transak, { Settings } from '@transak/transak-sdk';
 import { environment } from 'src/environments/environment';
 import { SessionQuery } from '../states/session';
 
-const { apiKey, cryptoCurrencyCode } = environment.transak;
-
-const transakSettings: Settings = {
-  apiKey,
-  cryptoCurrencyCode,
-  environment: environment.production ? 'PRODUCTION' : 'STAGING',
-  widgetHeight: '550px'
-};
+const settings: Settings = environment.transak;
 
 @Injectable({
   providedIn: 'root'
 })
 export class TransakService {
-  transak = new Transak(transakSettings);
+  transak = new Transak(settings);
 
   constructor(private sessionQuery: SessionQuery) {
     this.listen();
@@ -39,7 +32,7 @@ export class TransakService {
     const { vault } = this.sessionQuery.getValue();
 
     this.transak = new Transak({
-      ...transakSettings,
+      ...settings,
       walletAddress: vault?.algorand_address_base32,
       email: vault?.username
     });

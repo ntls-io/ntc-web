@@ -9,6 +9,9 @@ export const environment = {
   },
   transak: {
     apiKey: 'd6c4c5f4-0b4a-4b1a-8b0a-4b0b4b0b4b0b',
-    cryptoCurrencyCode: 'ALGO'
+    cryptoCurrencyCode: 'ALGO',
+    environment: 'PRODUCTION',
+    widgetHeight: '570px',
+    disableWalletAddressForm: true
   }
 };
