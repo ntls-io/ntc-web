@@ -1,4 +1,4 @@
-import { Component, HostBinding, OnInit, Renderer2 } from '@angular/core';
+import { Component, HostBinding } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
@@ -13,8 +13,8 @@ import Swal from 'sweetalert2';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
-export class RegisterComponent implements OnInit {
-  @HostBinding('class') class = 'register-box vh-100 d-flex align-items-center';
+export class RegisterComponent {
+  @HostBinding('class') class = 'vh-100 d-flex align-items-center';
   registerForm = new FormGroup(
     {
       username: new FormControl('', [Validators.required, Validators.email]),
@@ -27,17 +27,12 @@ export class RegisterComponent implements OnInit {
   );
   isBusy = false;
   constructor(
-    private renderer: Renderer2,
     private sessionService: SessionService,
     private modalService: BsModalService
   ) {}
 
   get f() {
     return this.registerForm.controls;
-  }
-
-  ngOnInit(): void {
-    this.renderer.addClass(document.querySelector('app-root'), 'register-page');
   }
 
   async registerByAuth() {
@@ -93,12 +88,5 @@ export class RegisterComponent implements OnInit {
   async login() {
     const { username, auth_password } = this.registerForm.value;
     await this.sessionService.login(username!, auth_password!);
-  }
-
-  ngOnDestroy() {
-    this.renderer.removeClass(
-      document.querySelector('app-root'),
-      'register-page'
-    );
   }
 }
