@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Algodv2, IntDecoding } from 'algosdk';
 import AlgodClient from 'algosdk/dist/types/client/v2/algod/algod';
@@ -11,7 +10,7 @@ const {} = environment.algorand;
 export class AlgoService {
   protected algodClient: AlgodClient;
 
-  constructor(private algoStore: AlgoStore, private http: HttpClient) {
+  constructor(private algoStore: AlgoStore) {
     this.algodClient = this.getAlgodClientFromEnvironment();
   }
 
