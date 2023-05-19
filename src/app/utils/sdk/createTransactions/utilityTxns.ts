@@ -1,11 +1,11 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import algosdk from 'algosdk';
-import * as assert from 'assert';
-import { send } from 'process';
 
 // create unsigned transaction
-export const createAssetOptinTxn = async (assetID: any, account: { addr: string; }, client: algosdk.Algodv2) => {
+export const createAssetOptinTxn = async (
+  assetID: any,
+  accountAddr: algosdk.Account['addr'],
+  client: algosdk.Algodv2
+) => {
   try {
     const params = await client.getTransactionParams().do();
 
@@ -20,8 +20,8 @@ export const createAssetOptinTxn = async (assetID: any, account: { addr: string;
 
     // signing and sending "txn" allows sender to begin accepting asset specified by creator and index
     let opttxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
-      account.addr,
-      account.addr,
+      accountAddr,
+      accountAddr,
       closeRemainderTo,
       revocationTarget,
       Number(0),
@@ -36,7 +36,67 @@ export const createAssetOptinTxn = async (assetID: any, account: { addr: string;
   }
 };
 
+export const createPaymentTxn = async (
+  sender: string,
+  amount: any,
+  receiver: string,
+  client: algosdk.Algodv2
+) => {
+  try {
+    const appArgs = [];
 
+    const params = await client.getTransactionParams().do();
+
+    const onComplete = algosdk.OnApplicationComplete.NoOpOC;
+
+    params.fee = 1000;
+    params.flatFee = true;
+
+    const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+      from: sender,
+      to: receiver,
+      amount: amount,
+      suggestedParams: params
+    });
+
+    return txn;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const createAssetTransferTxn = async (
+  client: algosdk.Algodv2,
+  sender: string,
+  receiver: string,
+  assetID: number | bigint,
+  amount: number | bigint
+) => {
+  try {
+    const appArgs = [];
+
+    const params = await client.getTransactionParams().do();
+
+    const onComplete = algosdk.OnApplicationComplete.NoOpOC;
+
+    params.fee = 1000;
+    params.flatFee = true;
+
+    const txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+      from: sender,
+      to: receiver,
+      assetIndex: Number(assetID),
+      amount: Number(amount),
+      suggestedParams: params
+    });
+
+    return txn;
+  } catch (err) {
+    console.log(err);
+  }
+};
 module.exports = {
-  createAssetOptinTxn
+  createAssetOptinTxn,
+  createPaymentTxn,
+  createAssetTransferTxn
 };

@@ -12,29 +12,16 @@ import {
 import { DEMO_approvalContributorTransaction } from '../src/app/utils/sdk/sdkTest';
 
 test('Testnet: Smart Contract Creation ', async () => {
-  // setup client to testnet
-  const baseServer = 'https://testnet-algorand.api.purestake.io/ps2';
-  const port = '';
-  const token = {
-    'X-API-Key': 'J7eo2jPb5m4OiBneIV6r0ajgRLeSaHqk3QplGETk'
-  };
-
-  const client = new algosdk.Algodv2(token, baseServer, port);
-
-  // Use this code to generate new test accounts if the account becomes to large.
-  // var account = generateAccount();
-  // console.log('address account 1:', account.addr);
-  // console.log('mnemonic account 1:', algosdk.secretKeyToMnemonic(account.sk));
-  // var account2 = generateAccount();
-  // console.log('address account 2:', account2.addr);
-  // console.log('mnemonic account 2:', algosdk.secretKeyToMnemonic(account2.sk));
-  // var account3 = generateAccount();
-  // console.log('address account 3:', account3.addr);
-  // console.log('mnemonic account 3:', algosdk.secretKeyToMnemonic(account3.sk));
+  // setup client to sandbox
+  const algodToken =
+    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+  const baseServer = 'http://localhost';
+  const port = '4001';
+  const client = new algosdk.Algodv2(algodToken, baseServer, port);
 
   // Import Testnet Accounts
   const enclaveMnemonic =
-    'network canal remember oppose actor demise trend wisdom scissors tongue master shed list club try resource recycle foster child slight spawn dash ketchup absorb entry';
+    'asthma genuine aunt dumb concert solar blast spy monster before sudden census denial hope cost wasp legal system angle soup evolve young guilt able width';
   const enclaveAccount = algosdk.mnemonicToSecretKey(enclaveMnemonic);
   const enclaveAddr = enclaveAccount.addr;
   let enclaveAccountInfo = await client.accountInformation(enclaveAddr).do();
@@ -46,7 +33,7 @@ test('Testnet: Smart Contract Creation ', async () => {
   );
 
   const analystMnemonic =
-    'soft vivid slow issue dog layer nose couple appear maple hollow people reform question visa soda fossil bleak float host empty denial omit abandon venue';
+    'degree wedding board canoe unit iron patient apple law defense goose cushion obtain copper barrel erosion casual strike decrease fork crystal magic bus abandon essay';
   const analystAccount = algosdk.mnemonicToSecretKey(analystMnemonic);
   const analystAddr = analystAccount.addr;
   let analystAccountInfo = await client.accountInformation(analystAddr).do();
@@ -58,7 +45,7 @@ test('Testnet: Smart Contract Creation ', async () => {
   );
 
   const creatorMnemonic =
-    'boat ride forget when brass safe quantum draw punch special slow example increase vehicle tenant patch party equal must scrub solve tower estate able spawn';
+    'mandate response curve hunt century approve infant spoil donkey negative hidden cricket erode daring begin enough stove basket turkey tool still series similar abstract manual';
   const creatorAccount = algosdk.mnemonicToSecretKey(creatorMnemonic);
   const creatorAddr = creatorAccount.addr;
   let creatorAccountInfo = await client.accountInformation(creatorAddr).do();
@@ -67,18 +54,6 @@ test('Testnet: Smart Contract Creation ', async () => {
     creatorAddr,
     '\nCreator Account balance: ',
     creatorAccountInfo['amount']
-  );
-
-  const traderMnemonic =
-    'pattern setup bacon drop young cupboard easy session north slim blouse ostrich visual orphan step once middle just scissors cave lady slide setup able rib';
-  const traderAccount = algosdk.mnemonicToSecretKey(traderMnemonic);
-  const traderAddr = traderAccount.addr;
-  let traderAccountInfo = await client.accountInformation(traderAddr).do();
-  console.log(
-    'Trader Account address: ',
-    traderAddr,
-    '\nTrader Account balance: ',
-    traderAccountInfo['amount']
   );
 
   // create data pool

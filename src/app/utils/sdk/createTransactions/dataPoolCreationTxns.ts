@@ -41,8 +41,8 @@ const compileContract = async (
 
 // create unsigned transaction
 export const createDeployContractTxn = async (
-  creator: { addr: any },
-  enclave: { addr: string },
+  creatorAddr: algosdk.Account['addr'],
+  enclaveAddr: algosdk.Account['addr'],
   client: algosdk.Algodv2
 ) => {
   try {
@@ -68,7 +68,7 @@ export const createDeployContractTxn = async (
     const extraPagesNo = 2;
 
     const txn = algosdk.makeApplicationCreateTxnFromObject({
-      from: creator.addr,
+      from: creatorAddr,
       suggestedParams: params,
       onComplete: onComplete,
       approvalProgram: compiledApprovalProgram,
@@ -78,7 +78,7 @@ export const createDeployContractTxn = async (
       numGlobalByteSlices: globalBytes,
       numGlobalInts: globalInts,
       appArgs: appArgs,
-      accounts: [enclave.addr],
+      accounts: [enclaveAddr],
       extraPages: extraPagesNo
     });
 
@@ -92,7 +92,7 @@ export const createDeployContractTxn = async (
 export const createFundContractTxn = async (
   appID: number | bigint,
   fundAmount: any,
-  account: { addr: any },
+  accountAddr: algosdk.Account['addr'],
   client: algosdk.Algodv2
 ) => {
   try {
@@ -101,7 +101,6 @@ export const createFundContractTxn = async (
     const appArgs = [];
 
     const params = await client.getTransactionParams().do();
-    const program = await readTeal();
 
     const onComplete = algosdk.OnApplicationComplete.NoOpOC;
 
@@ -109,7 +108,7 @@ export const createFundContractTxn = async (
     params.flatFee = true;
 
     const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-      from: account.addr,
+      from: accountAddr,
       to: contractAddr,
       amount: fundAmount,
       suggestedParams: params
@@ -179,11 +178,11 @@ export const DEMO_createSetupDataPoolTxn = async (
   }
 };
 
-// create unsigned transaction DEMO until the enclave can create their own transactions
+// create unsigned transaction to claim contributor token during smart contract creation
 export const createInitClaimContributorTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
-  creator: { addr: string },
+  creatorAddr: algosdk.Account['addr'],
   contributorAssetID: number,
   appendAssetID: number | bigint
 ) => {
@@ -205,7 +204,7 @@ export const createInitClaimContributorTxn = async (
     boxName.set(pk, assetBytes.length);
 
     const txn = algosdk.makeApplicationCallTxnFromObject({
-      from: creator.addr,
+      from: creatorAddr,
       appIndex: Number(appID),
       suggestedParams: params,
       onComplete: onComplete,
@@ -224,7 +223,7 @@ export const createInitClaimContributorTxn = async (
         },
         {
           appIndex: Number(appID),
-          name: algosdk.decodeAddress(creator.addr).publicKey
+          name: algosdk.decodeAddress(creatorAddr).publicKey
         }
       ]
     });
