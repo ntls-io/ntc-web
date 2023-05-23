@@ -75,7 +75,8 @@ describe('PoolCreation', () => {
       'alex@ntls.io',
       'password'
     );
-    //console.log(signedtxn);
+
+    //const submittxn = await client.sendRawTransaction(signedtxn!).do();
   });
 });
 
