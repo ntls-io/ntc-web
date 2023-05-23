@@ -1,5 +1,4 @@
 import algosdk from 'algosdk';
-import * as assert from 'assert';
 
 // CREATE APP
 // create unsigned transaction
@@ -50,10 +49,9 @@ export const sendFundContractTxn = async (
     const contractAddr = algosdk.getApplicationAddress(appID);
     // console.log('Signed transaction with txID: %s', txId);
     const senderInfo = await client.accountInformation(senderAddr).do();
-    assert(
-      senderInfo.amount > fundAmount,
-      'Not enough funds in senders account.'
-    );
+
+    if (senderInfo.amount > fundAmount)
+      throw new Error('Not enough funds in senders account.');
 
     const contractInfo = await client.accountInformation(contractAddr).do();
     // console.log(contractInfo.amount);
@@ -144,11 +142,4 @@ export const sendInitClaimContributorTxn = async (
   } catch (err) {
     console.log(err);
   }
-};
-
-exports = {
-  sendDeployContractTxn,
-  sendSetupDataPoolTxn,
-  sendFundContractTxn,
-  sendInitClaimContributorTxn
 };

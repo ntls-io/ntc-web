@@ -1,29 +1,5 @@
 import algosdk from 'algosdk';
-import * as fs from 'fs';
-import * as path from 'path';
-
-// Read Teal File
-const readTeal = async () => {
-  let approvalProgram = '';
-  let clearStateProgram = '';
-
-  try {
-    approvalProgram = fs.readFileSync(
-      path.resolve(__dirname, '../contract/approval.teal'),
-      'utf8'
-    );
-    clearStateProgram = fs.readFileSync(
-      path.resolve(__dirname, '../contract/clear.teal'),
-      'utf8'
-    );
-
-    return [approvalProgram, clearStateProgram];
-    // console.log(approvalProgram);
-    // console.log(clearStateProgram);
-  } catch (err) {
-    console.error(err);
-  }
-};
+import * as base64js from 'base64-js';
 
 // Compile Program
 const compileContract = async (
@@ -34,8 +10,9 @@ const compileContract = async (
   const programBytes = encoder.encode(programSource);
   const compileResponse = await client.compile(programBytes).do();
   const compiledBytes = new Uint8Array(
-    Buffer.from(compileResponse.result, 'base64')
+    base64js.toByteArray(compileResponse.result)
   );
+
   return compiledBytes;
 };
 
@@ -43,22 +20,27 @@ const compileContract = async (
 export const createDeployContractTxn = async (
   creatorAddr: algosdk.Account['addr'],
   enclaveAddr: algosdk.Account['addr'],
-  client: algosdk.Algodv2
+  client: algosdk.Algodv2,
+  approvalProgram: any,
+  clearProgram: any
 ) => {
   try {
     // declare application state storage (immutable)
     const localInts = 0;
     const localBytes = 0;
-    const globalInts = 10; // # 4 for setup + 20 for choices. Use a larger number for more choices.
+    const globalInts = 10; //
     const globalBytes = 5;
 
     const appArgs: never[] = [];
 
     const params = await client.getTransactionParams().do();
-    const program = await readTeal();
+    //const program = await readTeal();
 
-    const compiledApprovalProgram = await compileContract(client, program![0]);
-    const compiledClearProgram = await compileContract(client, program![1]);
+    const compiledApprovalProgram = await compileContract(
+      client,
+      approvalProgram
+    );
+    const compiledClearProgram = await compileContract(client, clearProgram);
 
     const onComplete = algosdk.OnApplicationComplete.NoOpOC;
 
@@ -125,7 +107,7 @@ export const DEMO_createSetupDataPoolTxn = async (
   appID: number | bigint,
   account: { addr: any },
   client: algosdk.Algodv2,
-  creator: { addr: string },
+  creatorAddr: string,
   noRowsContributed: number | bigint,
   dataPoolHash: string,
   appendDRTName: string,
@@ -162,12 +144,12 @@ export const DEMO_createSetupDataPoolTxn = async (
       suggestedParams: params,
       onComplete: onComplete,
       appArgs: appArgs,
-      accounts: [creator.addr],
+      accounts: [creatorAddr],
       // foreignApps: [Number(appID)],
       boxes: [
         {
           appIndex: Number(appID),
-          name: algosdk.decodeAddress(creator.addr).publicKey
+          name: algosdk.decodeAddress(creatorAddr).publicKey
         }
       ]
     });
@@ -231,11 +213,4 @@ export const createInitClaimContributorTxn = async (
   } catch (err) {
     console.log(err);
   }
-};
-
-module.exports = {
-  createDeployContractTxn,
-  createFundContractTxn,
-  DEMO_createSetupDataPoolTxn,
-  createInitClaimContributorTxn
 };

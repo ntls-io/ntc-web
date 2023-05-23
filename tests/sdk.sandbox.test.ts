@@ -1,15 +1,9 @@
 import algosdk, { getApplicationAddress } from 'algosdk';
-import { createDataPoolMethod } from '../src/app/utils/sdk/methods/createPool';
-import {
-  buyDRTMethod,
-  claimContributorMethod,
-  createDRTMethod,
-  delistDRTMethod,
-  joinPoolPendingMethod,
-  listDRTMethod,
-  redeemDRTMethod
-} from '../src/app/utils/sdk/methods/dataPoolOperations';
+import { createDataPoolMethod } from '../src/app/utils/sdk/methods/createPool/createPool';
 import { DEMO_approvalContributorTransaction } from '../src/app/utils/sdk/sdkTest';
+import { PoolOperations } from '../src/app/utils/sdk/methods/dataPoolOperations/dataPoolOperations';
+import { EnclaveService } from 'src/app/services/enclave.service';
+
 
 test('Testnet: Smart Contract Creation ', async () => {
   // setup client to sandbox
@@ -79,7 +73,7 @@ test('Testnet: Smart Contract Creation ', async () => {
     dataPool?.contributorCreatorID
   );
 
-  const drtID = await createDRTMethod(
+  const drtID = new PoolOperations(EnclaveService) createDRTMethod(
     creatorAccount, //TBR
     creatorAddr,
     dataPool?.appID,
