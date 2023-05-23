@@ -42,8 +42,3 @@ export const sendPaymentTxn = async (
     console.log(err);
   }
 };
-
-exports = {
-  sendAssetOptinTxn,
-  sendPaymentTxn
-};

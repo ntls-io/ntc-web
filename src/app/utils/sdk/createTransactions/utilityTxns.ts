@@ -95,8 +95,3 @@ export const createAssetTransferTxn = async (
     console.log(err);
   }
 };
-module.exports = {
-  createAssetOptinTxn,
-  createPaymentTxn,
-  createAssetTransferTxn
-};

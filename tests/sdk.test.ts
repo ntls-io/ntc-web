@@ -1,5 +1,5 @@
 import algosdk, { getApplicationAddress } from 'algosdk';
-import { createDataPoolMethod } from '../src/app/utils/sdk/methods/createPool';
+import { createDataPoolMethod } from '../src/app/utils/sdk/methods/createPool/createPool';
 import {
   buyDRTMethod,
   claimContributorMethod,
@@ -8,7 +8,7 @@ import {
   joinPoolPendingMethod,
   listDRTMethod,
   redeemDRTMethod
-} from '../src/app/utils/sdk/methods/dataPoolOperations';
+} from '../src/app/utils/sdk/methods/dataPoolOperations/dataPoolOperations';
 import { DEMO_approvalContributorTransaction } from '../src/app/utils/sdk/sdkTest';
 
 test('Testnet: Smart Contract Creation ', async () => {
@@ -20,6 +20,10 @@ test('Testnet: Smart Contract Creation ', async () => {
   };
 
   const client = new algosdk.Algodv2(token, baseServer, port);
+
+  // const http: HttpClient;
+  // const enclaveService = new EnclaveService(new HttpClient()); // Create an instance of EnclaveService
+  // const poolOperations = new PoolOperations(enclaveService);
 
   // Use this code to generate new test accounts if the account becomes to large.
   // var account = generateAccount();

@@ -1,7 +1,7 @@
 import algosdk from 'algosdk';
 
 // create unsigned transaction
-const testPayment = async (
+export const testPayment = async (
   sender: algosdk.Account,
   amount: any,
   receiver: algosdk.Account,
@@ -92,5 +92,3 @@ export const DEMO_approvalContributorTransaction = async (
     console.log(err);
   }
 };
-
-export { testPayment };
