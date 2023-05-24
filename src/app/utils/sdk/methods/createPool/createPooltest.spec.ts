@@ -6,6 +6,7 @@ import { throwError } from 'rxjs';
 import { PoolCreate } from './createPool';
 
 describe('PoolCreation', () => {
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; //20 seconds
   const baseServer = 'https://testnet-algorand.api.purestake.io/ps2';
   const port = '';
   const token = {
@@ -26,6 +27,9 @@ describe('PoolCreation', () => {
   let myService: PoolCreate;
   let httpMock: HttpTestingController;
   let httpClient: HttpClient;
+
+  // Data Pool constants
+  let appID: number;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -65,9 +69,9 @@ describe('PoolCreation', () => {
       );
     }
   });
-  it('should sign the transaction using the singing service', async () => {
+  it('should create a Data Pool', async () => {
     // Fetch the file content
-    const signedtxn = await myService.createDataPoolMethod(
+    appID = await myService.createDataPoolMethod(
       client,
       enclaveAccount,
       creatorAddr,
@@ -75,9 +79,22 @@ describe('PoolCreation', () => {
       'alex@ntls.io',
       'password'
     );
-
-    //const submittxn = await client.sendRawTransaction(signedtxn!).do();
+    console.log(appID);
+    expect(typeof appID).toBe('number'); // Expect appID to be a integer
   });
+  // it('should delete the application', async () => {
+  //   // Fetch the file content
+  //   appID = await myService.createDataPoolMethod(
+  //     client,
+  //     enclaveAccount,
+  //     creatorAddr,
+  //     enclaveAddr,
+  //     'alex@ntls.io',
+  //     'password'
+  //   );
+  //   console.log(appID);
+  //   expect(typeof appID).toBe('number'); // Expect appID to be a integer
+  // });
 });
 
 // import { TestBed } from '@angular/core/testing';

@@ -15,13 +15,13 @@ export const sendDeployContractTxn = async (
     // Wait for transaction to be confirmed
     const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
 
-    // Get the completed Transaction
-    // console.log(
-    //   'Deploy Contract Transaction ' +
-    //     txId +
-    //     ' confirmed in round ' +
-    //     confirmedTxn['confirmed-round']
-    // );
+    //Get the completed Transaction
+    console.log(
+      'Deploy Contract Transaction ' +
+        txId +
+        ' confirmed in round ' +
+        confirmedTxn['confirmed-round']
+    );
     // display results
     const transactionResponse = await client
       .pendingTransactionInformation(txId)
@@ -49,9 +49,10 @@ export const sendFundContractTxn = async (
     const contractAddr = algosdk.getApplicationAddress(appID);
     // console.log('Signed transaction with txID: %s', txId);
     const senderInfo = await client.accountInformation(senderAddr).do();
-
-    if (senderInfo.amount > fundAmount)
-      throw new Error('Not enough funds in senders account.');
+    console.log('funds of sender', senderInfo.amount);
+    console.log('funded amount to send', fundAmount);
+    // if (senderInfo.amount > fundAmount)
+    //   throw new Error('Not enough funds in senders account.');
 
     const contractInfo = await client.accountInformation(contractAddr).do();
     // console.log(contractInfo.amount);
@@ -60,14 +61,13 @@ export const sendFundContractTxn = async (
     // Wait for transaction to be confirmed
     const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
 
-    // Get the completed Transaction
-    // console.log(
-    //   'Smart Contract Funding Transaction ' +
-    //     txId +
-    //     ' confirmed in round ' +
-    //     confirmedTxn['confirmed-round']
-    // );
-    // display results
+    //  Get the completed Transaction
+    console.log(
+      'Smart Contract Funding Transaction ' +
+        txId +
+        ' confirmed in round ' +
+        confirmedTxn['confirmed-round']
+    );
     const transactionResponse = await client
       .pendingTransactionInformation(txId)
       .do();
