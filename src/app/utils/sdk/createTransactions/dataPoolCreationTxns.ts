@@ -21,8 +21,8 @@ export const createDeployContractTxn = async (
   creatorAddr: algosdk.Account['addr'],
   enclaveAddr: algosdk.Account['addr'],
   client: algosdk.Algodv2,
-  approvalProgram: any,
-  clearProgram: any
+  approvalProgram: string | undefined,
+  clearProgram: string | undefined
 ) => {
   try {
     // declare application state storage (immutable)
@@ -64,7 +64,23 @@ export const createDeployContractTxn = async (
       extraPages: extraPagesNo
     });
 
-    return txn;
+    const modifiedTransaction = {
+      ...txn,
+      apl: txn!.type,
+      snd: txn?.from.publicKey,
+      apgs: { nui: txn?.appGlobalInts, nbs: txn?.appGlobalByteSlices },
+      apap: txn?.appApprovalProgram,
+      apsu: txn?.appClearProgram,
+      apat: [txn!.appAccounts![0].publicKey],
+      apep: txn!.extraPages,
+      fv: txn!.firstRound,
+      lv: txn!.lastRound,
+      gen: txn!.genesisID,
+      gh: txn!.genesisHash
+    };
+
+    const txnID = txn!.txID().toString();
+    return { modifiedTransaction, txnID };
   } catch (err) {
     console.log(err);
   }
@@ -96,7 +112,20 @@ export const createFundContractTxn = async (
       suggestedParams: params
     });
 
-    return txn;
+    const modifiedTransaction = {
+      ...txn,
+      apl: txn!.type, // type
+      snd: txn!.from.publicKey, // sender
+      rcv: txn!.to.publicKey, // receiver,
+      amt: txn!.amount, // amount
+      fv: txn!.firstRound,
+      lv: txn!.lastRound,
+      gen: txn!.genesisID,
+      gh: txn!.genesisHash
+    };
+
+    const txnID = txn!.txID().toString();
+    return { modifiedTransaction, txnID };
   } catch (err) {
     console.log(err);
   }
