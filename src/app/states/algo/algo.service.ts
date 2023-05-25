@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Algodv2, IntDecoding } from 'algosdk';
 import AlgodClient from 'algosdk/dist/types/client/v2/algod/algod';
 import { environment } from 'src/environments/environment';
+import { SessionQuery } from '../session';
 import { AlgoStore } from './algo.store';
 
 const {} = environment.algorand;
@@ -10,7 +11,10 @@ const {} = environment.algorand;
 export class AlgoService {
   protected algodClient: AlgodClient;
 
-  constructor(private algoStore: AlgoStore) {
+  constructor(
+    private algoStore: AlgoStore,
+    private sessionQuery: SessionQuery
+  ) {
     this.algodClient = this.getAlgodClientFromEnvironment();
   }
 
@@ -26,9 +30,11 @@ export class AlgoService {
     return client;
   }
 
-  async getAccountData(address: string) {
+  async getAccountData() {
+    const { vault } = this.sessionQuery.getValue();
+    if (!vault) return;
     await this.algodClient
-      .accountInformation(address)
+      .accountInformation(vault.algorand_address_base32)
       .do()
       .then(accountInformation => {
         this.algoStore.update({ accountInformation });

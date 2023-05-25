@@ -1,5 +1,6 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { TransakService } from 'src/app/services/transak.service';
 import { AlgoQuery } from 'src/app/states/algo';
 import { AppState } from '../../store/state';
 import { ToggleSidebarMenu } from '../../store/ui/actions';
@@ -15,7 +16,11 @@ export class HeaderComponent implements OnInit {
   @HostBinding('class') classes: string = BASE_CLASSES;
   public ui: any;
 
-  constructor(private store: Store<AppState>, public algoQuery: AlgoQuery) {}
+  constructor(
+    private store: Store<AppState>,
+    public algoQuery: AlgoQuery,
+    private transakService: TransakService
+  ) {}
 
   ngOnInit() {
     this.ui = this.store.select('ui');
@@ -23,5 +28,9 @@ export class HeaderComponent implements OnInit {
 
   onToggleMenuSidebar() {
     this.store.dispatch(new ToggleSidebarMenu());
+  }
+
+  topUpBalance() {
+    this.transakService.open();
   }
 }

@@ -20,7 +20,9 @@
         <strong class="pl-1">{{ algoQuery.balance | async }}</strong>
       </button>
       <button type="button" class="btn btn-dark">Withdraw</button>
-      <button type="button" class="btn btn-success">Top up</button>
+      <button type="button" class="btn btn-success" (click)="topUpBalance()">
+        Top up
+      </button>
     </div>
   </li>
   <app-user></app-user>
