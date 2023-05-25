@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <h4 class="modal-title pull-left">Pool Name</h4>
+  <h5 class="modal-title">Pool Name</h5>
   <button
     type="button"
     class="btn-close close pull-right"
@@ -10,5 +10,15 @@
   </button>
 </div>
 <div class="modal-body">
+  <p>Pool Description</p>
+
+  <div class="container-fluid px-0 pb-1">
+    <h5>Digital Righs</h5>
+    <div class="row">
+      <div class="col-auto p-1" *ngFor="let i of [].constructor(3)">
+        <button class="btn btn-outline-secondary">DRT example</button>
+      </div>
+    </div>
+  </div>
   <app-pool-wizard mode="join"></app-pool-wizard>
 </div>
