@@ -1,4 +1,4 @@
-import { Component, HostBinding, OnInit, Renderer2 } from '@angular/core';
+import { Component, HostBinding, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SessionQuery, SessionService } from 'src/app/states/session';
@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  @HostBinding('class') class = 'login-box vh-100 d-flex align-items-center';
+  @HostBinding('class') class = 'vh-100 d-flex align-items-center';
 
   loginForm = new FormGroup({
     username: new FormControl('', [Validators.required, Validators.email]),
@@ -20,14 +20,11 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private renderer: Renderer2,
     private sessionService: SessionService,
     private sessionQuery: SessionQuery
   ) {}
 
   ngOnInit(): void {
-    this.renderer.addClass(document.querySelector('app-root'), 'login-page');
-
     const isAuthenticated = this.sessionQuery.isAuthenticated();
     if (isAuthenticated) {
       this.router.navigate(['dashboard']);
@@ -73,8 +70,5 @@ export class LoginComponent implements OnInit {
           this.isBusy = false;
         });
     }
-  }
-  ngOnDestroy() {
-    this.renderer.removeClass(document.querySelector('app-root'), 'login-page');
   }
 }
