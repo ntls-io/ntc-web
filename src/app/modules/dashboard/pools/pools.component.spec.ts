@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { BsModalService } from 'ngx-bootstrap/modal';
 import { PoolsComponent } from './pools.component';
 
 describe('PoolsComponent', () => {
@@ -8,7 +9,8 @@ describe('PoolsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PoolsComponent]
+      declarations: [PoolsComponent],
+      providers: [BsModalService]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PoolsComponent);
