@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { CreatePoolComponent } from './create-pool.component';
+import { PoolWizardComponent } from './pool-wizard.component';
 
-describe('CreatePoolComponent', () => {
-  let component: CreatePoolComponent;
-  let fixture: ComponentFixture<CreatePoolComponent>;
+describe('PoolWizardComponent', () => {
+  let component: PoolWizardComponent;
+  let fixture: ComponentFixture<PoolWizardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CreatePoolComponent],
+      declarations: [PoolWizardComponent],
       providers: [BsModalService]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(CreatePoolComponent);
+    fixture = TestBed.createComponent(PoolWizardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

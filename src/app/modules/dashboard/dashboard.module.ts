@@ -4,7 +4,8 @@ import { NgModule } from '@angular/core';
 import { NgWizardConfig, NgWizardModule, THEME } from 'ng-wizard';
 import { FileUploadModule } from 'ng2-file-upload';
 import { ModalModule } from 'ngx-bootstrap/modal';
-import { CreatePoolComponent } from 'src/app/components/create-pool/create-pool.component';
+import { JoinPoolComponent } from 'src/app/components/join-pool/join-pool.component';
+import { PoolWizardComponent } from 'src/app/components/pool-wizard/pool-wizard.component';
 import { SchemaPreviewComponent } from 'src/app/components/schema-preview/schema-preview.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { AnalysisComponent } from './analysis/analysis.component';
@@ -21,7 +22,8 @@ const ngWizardConfig: NgWizardConfig = {
   declarations: [
     HomeComponent,
     PoolsComponent,
-    CreatePoolComponent,
+    PoolWizardComponent,
+    JoinPoolComponent,
     SchemaPreviewComponent,
     MarketComponent,
     AnalysisComponent

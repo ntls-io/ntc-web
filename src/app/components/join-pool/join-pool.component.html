@@ -1,0 +1,24 @@
+<div class="modal-header">
+  <h5 class="modal-title">Pool Name</h5>
+  <button
+    type="button"
+    class="btn-close close pull-right"
+    aria-label="Close"
+    (click)="bsModalRef.hide()"
+  >
+    <span aria-hidden="true" class="visually-hidden">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <p>Pool Description</p>
+
+  <div class="container-fluid px-0 pb-1">
+    <h5>Digital Righs</h5>
+    <div class="row">
+      <div class="col-auto p-1" *ngFor="let i of [].constructor(3)">
+        <button class="btn btn-outline-secondary">DRT example</button>
+      </div>
+    </div>
+  </div>
+  <app-pool-wizard mode="join"></app-pool-wizard>
+</div>
