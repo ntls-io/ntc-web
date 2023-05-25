@@ -1,4 +1,4 @@
-import { Component, HostBinding, OnInit, Renderer2 } from '@angular/core';
+import { Component, HostBinding, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { AlgoService } from 'src/app/states/algo';
@@ -16,7 +16,6 @@ export class MainComponent implements OnInit {
   public ui: Observable<UiState> = new Observable<UiState>();
 
   constructor(
-    private renderer: Renderer2,
     private store: Store<AppState>,
     private algoService: AlgoService
   ) {
@@ -25,30 +24,16 @@ export class MainComponent implements OnInit {
 
   ngOnInit(): void {
     this.ui = this.store.select('ui');
-    this.renderer.removeClass(document.querySelector('body'), 'login-page');
-    this.renderer.removeClass(document.querySelector('body'), 'register-page');
-    this.renderer.addClass(document.querySelector('body'), 'layout-fixed');
-    this.renderer.addClass(
-      document.querySelector('body'),
-      'layout-navbar-fixed'
-    );
+    const body = document.querySelector('body');
+    body?.classList.add('layout-fixed', 'layout-navbar-fixed');
 
     this.ui.subscribe(({ menuSidebarCollapsed }) => {
       if (menuSidebarCollapsed) {
-        this.renderer.removeClass(
-          document.querySelector('body'),
-          'sidebar-open'
-        );
-        this.renderer.addClass(
-          document.querySelector('body'),
-          'sidebar-collapse'
-        );
+        body?.classList.remove('sidebar-open');
+        body?.classList.add('sidebar-collapse');
       } else {
-        this.renderer.removeClass(
-          document.querySelector('body'),
-          'sidebar-collapse'
-        );
-        this.renderer.addClass(document.querySelector('body'), 'sidebar-open');
+        body?.classList.remove('sidebar-collapse');
+        body?.classList.add('sidebar-open');
       }
     });
   }
