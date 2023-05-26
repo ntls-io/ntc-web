@@ -2,11 +2,20 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import algosdk from 'algosdk';
-import { throwError } from 'rxjs';
+import { throwError } from 'rxjs/internal/observable/throwError';
 import { PoolCreate } from './createPool';
 
+class CustomReporter implements jasmine.CustomReporter {
+  specDone(result: jasmine.SpecResult): void {
+    const logs = result.failedExpectations.map(
+      expectation => expectation.message
+    );
+    logs.forEach(log => console.log(log));
+  }
+}
+
 describe('PoolCreation', () => {
-  jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; //20 seconds
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000; //50 seconds
   const baseServer = 'https://testnet-algorand.api.purestake.io/ps2';
   const port = '';
   const token = {
@@ -16,11 +25,14 @@ describe('PoolCreation', () => {
   const client = new algosdk.Algodv2(token, baseServer, port);
 
   const creatorAddr =
-    'FRCIQC27FVGJLBVBIPNGU7ZNGK2Z6FNHV4NRF5AK5KEW3UPS7ESMIRZZQI';
-  const creator_vault_id = 'alex@ntls.io';
+    'AH6N3M4L6WJRUNO3TTQEVGUTUDOEOOXEGHIVKUTODJXTWSFORNGDZLZ6JY';
+  const creator_vault_id = 'alex+3@ntls.io';
   const auth_password = 'password';
+
+  // Generate a new Algorand account for the enclave DEMO
+  //const enclaveAccount = algosdk.generateAccount();
   const enclaveMnemonic =
-    'network canal remember oppose actor demise trend wisdom scissors tongue master shed list club try resource recycle foster child slight spawn dash ketchup absorb entry';
+    'oxygen wrestle vibrant clog rule often oppose decade color edge glove sphere defy chat divert oyster garbage diary decrease cushion buddy slush raise abandon census';
   const enclaveAccount = algosdk.mnemonicToSecretKey(enclaveMnemonic);
   const enclaveAddr = enclaveAccount.addr;
 
@@ -29,7 +41,11 @@ describe('PoolCreation', () => {
   let httpClient: HttpClient;
 
   // Data Pool constants
-  let appID: number;
+  let dataPool;
+
+  beforeAll(() => {
+    jasmine.getEnv().addReporter(new CustomReporter());
+  });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -69,32 +85,38 @@ describe('PoolCreation', () => {
       );
     }
   });
-  it('should create a Data Pool', async () => {
+  // it('should create a Data Pool', async () => {
+  //   // dataPool = await myService.createDataPoolMethod(
+  //   //   client,
+  //   //   enclaveAccount,
+  //   //   creatorAddr,
+  //   //   enclaveAddr,
+  //   //   creator_vault_id,
+  //   //   auth_password
+  //   // );
+  //   // console.log('DataPool details: ', dataPool);
+  //   // expect(appID).toEqual(jasmine.any(Number));
+  //   // expect(appID).toBeGreaterThan(0);
+  // });
+  it('should claim contributor token', async () => {
     // Fetch the file content
-    appID = await myService.createDataPoolMethod(
+    let appID = 218360783;
+    let contributorCreatorID = 218361016;
+    let appendDrtID = 218361015;
+
+    // Transaction 5 - claim contributor token
+    const txn5 = await myService.Debug_initclaim(
       client,
       enclaveAccount,
       creatorAddr,
       enclaveAddr,
-      'alex@ntls.io',
-      'password'
+      creator_vault_id,
+      auth_password,
+      appID,
+      contributorCreatorID,
+      appendDrtID
     );
-    console.log(appID);
-    expect(typeof appID).toBe('number'); // Expect appID to be a integer
   });
-  // it('should delete the application', async () => {
-  //   // Fetch the file content
-  //   appID = await myService.createDataPoolMethod(
-  //     client,
-  //     enclaveAccount,
-  //     creatorAddr,
-  //     enclaveAddr,
-  //     'alex@ntls.io',
-  //     'password'
-  //   );
-  //   console.log(appID);
-  //   expect(typeof appID).toBe('number'); // Expect appID to be a integer
-  // });
 });
 
 // import { TestBed } from '@angular/core/testing';

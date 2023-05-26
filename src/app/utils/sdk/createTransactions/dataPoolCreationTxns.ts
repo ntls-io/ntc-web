@@ -1,4 +1,4 @@
-import algosdk from 'algosdk';
+import algosdk, { BoxReference } from 'algosdk';
 import * as base64js from 'base64-js';
 
 // Compile Program
@@ -149,17 +149,21 @@ export const DEMO_createSetupDataPoolTxn = async (
   try {
     const contractAddr = algosdk.getApplicationAddress(appID);
 
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+
     const appArgs = [
-      new Uint8Array(Buffer.from('init_contract')),
-      new Uint8Array(Buffer.from(algosdk.encodeUint64(noRowsContributed))),
-      new Uint8Array(Buffer.from(dataPoolHash)),
-      new Uint8Array(Buffer.from(appendDRTName)),
-      new Uint8Array(Buffer.from(appendDRTUnitName)),
-      new Uint8Array(Buffer.from(algosdk.encodeUint64(appendDRTSupply))),
-      new Uint8Array(Buffer.from(algosdk.encodeUint64(appendDRTPrice))),
-      new Uint8Array(Buffer.from(appendDRTurlBinary)),
-      new Uint8Array(Buffer.from(appendDRTBinaryHash))
+      encoder.encode('init_contract'),
+      algosdk.encodeUint64(noRowsContributed),
+      encoder.encode(dataPoolHash),
+      encoder.encode(appendDRTName),
+      encoder.encode(appendDRTUnitName),
+      algosdk.encodeUint64(appendDRTSupply),
+      algosdk.encodeUint64(appendDRTPrice),
+      encoder.encode(appendDRTurlBinary),
+      encoder.encode(appendDRTBinaryHash)
     ];
+
     const params = await client.getTransactionParams().do();
 
     const onComplete = algosdk.OnApplicationComplete.NoOpOC;
@@ -174,7 +178,6 @@ export const DEMO_createSetupDataPoolTxn = async (
       onComplete: onComplete,
       appArgs: appArgs,
       accounts: [creatorAddr],
-      // foreignApps: [Number(appID)],
       boxes: [
         {
           appIndex: Number(appID),
@@ -182,7 +185,7 @@ export const DEMO_createSetupDataPoolTxn = async (
         }
       ]
     });
-
+    console.log(Number(appID));
     return txn;
   } catch (err) {
     console.log(err);
@@ -198,7 +201,8 @@ export const createInitClaimContributorTxn = async (
   appendAssetID: number | bigint
 ) => {
   try {
-    const appArgs = [new Uint8Array(Buffer.from('add_contributor_claim'))];
+    const encoder = new TextEncoder();
+    const appArgs = [encoder.encode('add_contributor_claim')];
 
     const params = await client.getTransactionParams().do();
 
@@ -210,10 +214,25 @@ export const createInitClaimContributorTxn = async (
     const contractAddr = algosdk.getApplicationAddress(appID);
     const assetBytes = algosdk.encodeUint64(appendAssetID);
     const pk = algosdk.decodeAddress(contractAddr).publicKey;
+
     var boxName = new Uint8Array(assetBytes.length + pk.length);
     boxName.set(assetBytes);
     boxName.set(pk, assetBytes.length);
 
+    const boxReferences: BoxReference[] = [
+      { appIndex: Number(appID), name: new Uint8Array([1, 2, 3, 4]) },
+      { appIndex: Number(appID), name: new Uint8Array([5, 6, 7, 8]) }
+    ];
+
+    // // Create the application call transaction object
+    // const txn = algosdk.makeApplicationCallTxnFromObject({
+    //   from: creatorAddr,
+    //   suggestedParams: params,
+    //   appIndex: Number(appID),
+    //   onComplete: algosdk.OnApplicationComplete.NoOpOC,
+    //   appArgs: appArgs,
+    //   boxes: boxReferences
+    // });
     const txn = algosdk.makeApplicationCallTxnFromObject({
       from: creatorAddr,
       appIndex: Number(appID),
@@ -221,24 +240,39 @@ export const createInitClaimContributorTxn = async (
       onComplete: onComplete,
       appArgs: appArgs,
       foreignAssets: [contributorAssetID, Number(appendAssetID)],
-      boxes: [
-        {
-          appIndex: Number(appID),
-          name: new Uint8Array(
-            Buffer.from(algosdk.encodeUint64(contributorAssetID))
-          )
-        },
-        {
-          appIndex: Number(appID),
-          name: boxName
-        },
-        {
-          appIndex: Number(appID),
-          name: algosdk.decodeAddress(creatorAddr).publicKey
-        }
-      ]
+      boxes: boxReferences
     });
-    return txn;
+
+    const apbx = [];
+    apbx.push({
+      i: Number(appID),
+      n: algosdk.encodeUint64(contributorAssetID)
+    });
+    apbx.push({ i: Number(appID), n: boxName });
+    apbx.push({
+      i: Number(appID),
+      n: algosdk.decodeAddress(creatorAddr).publicKey
+    });
+
+    // Create the apbx field with the box references
+    var modifiedTransaction = {
+      ...txn,
+      apl: txn!.type, //type
+      snd: txn?.from.publicKey, //sender
+      apid: txn!.appIndex, //app ID
+      apaa: [txn!.appArgs![0]], //app args
+      apas: [txn!.appForeignAssets![0], txn!.appForeignAssets![1]],
+      apbx: [algosdk.decodeAddress(creatorAddr).publicKey],
+      fv: txn!.firstRound,
+      lv: txn!.lastRound,
+      gen: txn!.genesisID,
+      gh: txn!.genesisHash
+    };
+
+    console.log(modifiedTransaction);
+    const txnID = txn!.txID().toString();
+
+    return { modifiedTransaction, txnID };
   } catch (err) {
     console.log(err);
   }

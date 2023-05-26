@@ -10,7 +10,12 @@ export const sendAssetOptinTxn = async (
     await client.sendRawTransaction(signedTxn).do();
     // Wait for transaction to be confirmed
     const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
-
+    console.log(
+      'Append Asset Optin Transaction ' +
+        txId +
+        ' confirmed in round ' +
+        confirmedTxn['confirmed-round']
+    );
     const transactionResponse = await client
       .pendingTransactionInformation(txId)
       .do();
