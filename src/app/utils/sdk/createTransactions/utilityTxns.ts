@@ -19,7 +19,7 @@ export const createAssetOptinTxn = async (
     const note = undefined;
 
     // signing and sending "txn" allows sender to begin accepting asset specified by creator and index
-    let opttxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
+    let txn = algosdk.makeAssetTransferTxnWithSuggestedParams(
       accountAddr,
       accountAddr,
       closeRemainderTo,
@@ -30,7 +30,54 @@ export const createAssetOptinTxn = async (
       params
     );
 
-    return opttxn;
+    return txn;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const createAssetOptinTxn_new = async (
+  assetID: any,
+  accountAddr: algosdk.Account['addr'],
+  client: algosdk.Algodv2
+) => {
+  try {
+    const params = await client.getTransactionParams().do();
+
+    // We set revocationTarget to undefined as
+    // This is not a clawback operation
+    let revocationTarget = undefined;
+    // CloseReaminerTo is set to undefined as
+    // we are not closing out an asset
+    let closeRemainderTo = undefined;
+
+    const note = undefined;
+
+    // signing and sending "txn" allows sender to begin accepting asset specified by creator and index
+    let txn = algosdk.makeAssetTransferTxnWithSuggestedParams(
+      accountAddr,
+      accountAddr,
+      closeRemainderTo,
+      revocationTarget,
+      Number(0),
+      note,
+      Number(assetID),
+      params
+    );
+    const modifiedTransaction = {
+      ...txn,
+      apl: txn!.type, // type
+      snd: txn!.from.publicKey, // sender
+      arcv: txn!.to.publicKey, // asset receiver,
+      xaid: txn!.assetIndex,
+      fv: txn!.firstRound,
+      lv: txn!.lastRound,
+      gen: txn!.genesisID,
+      gh: txn!.genesisHash
+    };
+
+    const txnID = txn!.txID().toString();
+    return { modifiedTransaction, txnID };
   } catch (err) {
     console.log(err);
   }

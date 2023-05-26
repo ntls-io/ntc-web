@@ -89,13 +89,13 @@ export const sendSetupDataPoolTxn = async (
     // Wait for transaction to be confirmed
     const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
 
-    // Get the completed Transaction
-    // console.log(
-    //   'Data Pool Initialisation Transaction ' +
-    //     txId +
-    //     ' confirmed in round ' +
-    //     confirmedTxn['confirmed-round']
-    // );
+    //Get the completed Transaction
+    console.log(
+      'Data Pool Enclave Setup Transaction ' +
+        txId +
+        ' confirmed in round ' +
+        confirmedTxn['confirmed-round']
+    );
     // display results
     const transactionResponse = await client
       .pendingTransactionInformation(txId)
