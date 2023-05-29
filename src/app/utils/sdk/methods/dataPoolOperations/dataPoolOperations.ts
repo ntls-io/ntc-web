@@ -12,7 +12,7 @@ import {
   createlistDRTTxn,
   createRedeemDRTTxn
 } from '../../createTransactions/dataPoolOperationTxns';
-import { createAssetOptinTxn } from '../../createTransactions/utilityTxns';
+import { createAssetOptinTxn_new } from '../../createTransactions/utilityTxns';
 import {
   sendBuyDRTTxn,
   sendClaimContributorTxn,
@@ -60,47 +60,70 @@ export class PoolOperations {
         drtBinaryHash
       );
 
-      const txId_1 = await txn1?.txID().toString();
-
-      let transaction = {
-        AlgorandTransaction: {
-          transaction_bytes: new Uint8Array(to_msgpack(txn1))
-        }
-      };
-
-      const transactionToSign = {
+      const signedtxn1 = await this.enclaveService.signTransaction({
         vault_id: vault_id,
         auth_password: auth_password,
-        transaction_to_sign: transaction
-      };
+        transaction_to_sign: {
+          AlgorandTransaction: {
+            transaction_bytes: new Uint8Array([
+              0x54,
+              0x58,
+              ...to_msgpack(txn1?.modifiedTransaction)
+            ]) // Add "TX" prefix tag
+          }
+        }
+      });
 
-      const signedtxn1 = await this.enclaveService.signTransaction(
-        transactionToSign
+      let signedtxn1_2;
+      if (
+        'Signed' in signedtxn1 &&
+        'AlgorandTransactionSigned' in signedtxn1.Signed
+      ) {
+        signedtxn1_2 =
+          signedtxn1.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
+      } else {
+        throw new Error(
+          '[Create DRT 1 Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        );
+      }
+
+      const drtID = await sendCreateDRTTxn(
+        signedtxn1,
+        client,
+        txn1!.txnID,
+        appID
       );
-
-      const drtID = await sendCreateDRTTxn(signedtxn1, client, txId_1!, appID);
 
       // Transaction 2 - Claim DRT
       const txn2 = await createClaimDRTTxn(appID, client, creatorAddr, drtID);
-      const txId_2 = await txn2?.txID().toString();
-
-      let transaction2 = {
-        AlgorandTransaction: {
-          transaction_bytes: new Uint8Array(to_msgpack(txn2))
-        }
-      };
-
-      const transactionToSign2 = {
+      const signedtxn2 = await this.enclaveService.signTransaction({
         vault_id: vault_id,
         auth_password: auth_password,
-        transaction_to_sign: transaction2
-      };
+        transaction_to_sign: {
+          AlgorandTransaction: {
+            transaction_bytes: new Uint8Array([
+              0x54,
+              0x58,
+              ...to_msgpack(txn2?.modifiedTransaction)
+            ]) // Add "TX" prefix tag
+          }
+        }
+      });
 
-      const signedtxn2 = await this.enclaveService.signTransaction(
-        transactionToSign2
-      );
+      let signedtxn2_2;
+      if (
+        'Signed' in signedtxn2 &&
+        'AlgorandTransactionSigned' in signedtxn2.Signed
+      ) {
+        signedtxn2_2 =
+          signedtxn2.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
+      } else {
+        throw new Error(
+          '[Claim DRT 2 Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        );
+      }
 
-      const result = await sendClaimDRTTxn(signedtxn2, client, txId_2!);
+      const result = await sendClaimDRTTxn(signedtxn2_2, client, txn2!.txnID);
       return drtID;
     } catch (err) {
       console.log(err);
@@ -110,27 +133,50 @@ export class PoolOperations {
   buyDRTMethod = async (
     client: algosdk.Algodv2,
     appID: number | bigint,
-    buyerAccount: algosdk.Account,
+    //buyerAccount: algosdk.Account,
     buyerAddr: algosdk.Account['addr'],
     drtId: number,
     amountToBuy: number,
-    paymentAmount: number
+    paymentAmount: number,
+    vault_id: string,
+    auth_password: string
   ) => {
     try {
-      /// Transaction 1 - Optin to DRT if not already
-      // const hasOptedIn = client.accountAssetInformation(buyerAccount.addr, drtId);
-      // console.log(hasOptedIn);
-      let txn1 = await createAssetOptinTxn(drtId, buyerAddr, client);
+      // transaction 1 - Optin to drt
+      const txn1 = await createAssetOptinTxn_new(drtId, buyerAddr, client);
 
-      const txId_1 = await txn1?.txID().toString();
+      // sign transaction
+      const signedtxn1 = await this.enclaveService.signTransaction({
+        vault_id: vault_id,
+        auth_password: auth_password,
+        transaction_to_sign: {
+          AlgorandTransaction: {
+            transaction_bytes: new Uint8Array([
+              0x54,
+              0x58,
+              ...to_msgpack(txn1?.modifiedTransaction)
+            ]) // Add "TX" prefix tag
+          }
+        }
+      });
 
-      // Sign the transaction, here we have to intervene
-      const buyerSecret = buyerAccount?.sk;
-      const signedtxn1 = txn1?.signTxn(buyerSecret);
-      // pai(username, password, signedTxn)
-      // intervene above with authenticateion
-
-      const optin = await sendAssetOptinTxn(signedtxn1, client, txId_1!);
+      let signedtxn1_2;
+      if (
+        'Signed' in signedtxn1 &&
+        'AlgorandTransactionSigned' in signedtxn1.Signed
+      ) {
+        signedtxn1_2 =
+          signedtxn1.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
+      } else {
+        throw new Error(
+          '[Asset Optin Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        );
+      }
+      const txn1Result = await sendAssetOptinTxn(
+        signedtxn1_2,
+        client,
+        txn1?.txnID!
+      );
 
       // /// Transaction 2 - Buy DRT group transaction
       const txn2 = await createBuyDRTTxn(
@@ -141,20 +187,67 @@ export class PoolOperations {
         amountToBuy,
         paymentAmount
       );
-      const txId_2 = await txn2?.buyTxn.txID().toString();
-      const txId_3 = await txn2?.payTxn?.txID().toString();
+      // sign transaction buy 1
+      const signedtxn2_buy = await this.enclaveService.signTransaction({
+        vault_id: vault_id,
+        auth_password: auth_password,
+        transaction_to_sign: {
+          AlgorandTransaction: {
+            transaction_bytes: new Uint8Array([
+              0x54,
+              0x58,
+              ...to_msgpack(txn2?.modifiedTransactionBuy)
+            ]) // Add "TX" prefix tag
+          }
+        }
+      });
+      // sign transaction buy 2
+      const signedtxn2_pay = await this.enclaveService.signTransaction({
+        vault_id: vault_id,
+        auth_password: auth_password,
+        transaction_to_sign: {
+          AlgorandTransaction: {
+            transaction_bytes: new Uint8Array([
+              0x54,
+              0x58,
+              ...to_msgpack(txn2?.modifiedTransactionPay)
+            ]) // Add "TX" prefix tag
+          }
+        }
+      });
 
-      // // Sign the transaction, here we have to intervene
-      const signedtxn2 = txn2?.buyTxn.signTxn(buyerSecret);
-      const signedtxn3 = txn2?.payTxn?.signTxn(buyerSecret);
-      // // pai(username, password, signedTxn)
-      // // intervene above with authenticateion
+      let signedtxn2_buy_2;
+      if (
+        'Signed' in signedtxn2_buy &&
+        'AlgorandTransactionSigned' in signedtxn2_buy.Signed
+      ) {
+        signedtxn2_buy_2 =
+          signedtxn2_buy.Signed.AlgorandTransactionSigned
+            .signed_transaction_bytes;
+      } else {
+        throw new Error(
+          '[Buy Txn 1] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        );
+      }
+      let signedtxn2_pay_2;
+      if (
+        'Signed' in signedtxn2_pay &&
+        'AlgorandTransactionSigned' in signedtxn2_pay.Signed
+      ) {
+        signedtxn2_pay_2 =
+          signedtxn2_pay.Signed.AlgorandTransactionSigned
+            .signed_transaction_bytes;
+      } else {
+        throw new Error(
+          '[Buy Txn 2] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        );
+      }
 
       // send group transaction
       const result = await sendBuyDRTTxn(
-        [signedtxn2, signedtxn3],
+        [signedtxn2_buy_2, signedtxn2_pay_2],
         client,
-        txId_2!
+        txn2?.txnID_Pay!
       );
       // console.log(result);
       return result;
@@ -166,21 +259,42 @@ export class PoolOperations {
   delistDRTMethod = async (
     client: algosdk.Algodv2,
     appID: number | bigint,
-    creatorAccount: algosdk.Account,
+    //creatorAccount: algosdk.Account,
     creatorAddr: algosdk.Account['addr'],
-    drtId: number
+    drtId: number,
+    vault_id: string,
+    auth_password: string
   ) => {
     try {
       let txn1 = await createDelistDRTTxn(appID, client, creatorAddr, drtId);
-      const txId_1 = await txn1?.txID().toString();
+      const signedtxn1 = await this.enclaveService.signTransaction({
+        vault_id: vault_id,
+        auth_password: auth_password,
+        transaction_to_sign: {
+          AlgorandTransaction: {
+            transaction_bytes: new Uint8Array([
+              0x54,
+              0x58,
+              ...to_msgpack(txn1?.modifiedTransaction)
+            ]) // Add "TX" prefix tag
+          }
+        }
+      });
 
-      // Sign the transaction, here we have to intervene
-      const buyerSecret = creatorAccount?.sk;
-      const signedtxn1 = txn1?.signTxn(buyerSecret);
-      // pai(username, password, signedTxn)
-      // intervene above with authenticateion
+      let signedtxn1_2;
+      if (
+        'Signed' in signedtxn1 &&
+        'AlgorandTransactionSigned' in signedtxn1.Signed
+      ) {
+        signedtxn1_2 =
+          signedtxn1.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
+      } else {
+        throw new Error(
+          '[De-list DRT 1 Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        );
+      }
 
-      const result = await sendDelistDRTTxn(signedtxn1, client, txId_1!);
+      const result = await sendDelistDRTTxn(signedtxn1_2, client, txn1?.txnID!);
 
       return result;
     } catch (err) {
@@ -191,21 +305,42 @@ export class PoolOperations {
   listDRTMethod = async (
     client: algosdk.Algodv2,
     appID: number | bigint,
-    creatorAccount: algosdk.Account,
+    //creatorAccount: algosdk.Account,
     creatorAddr: algosdk.Account['addr'],
-    drtId: number
+    drtId: number,
+    vault_id: string,
+    auth_password: string
   ) => {
     try {
       let txn1 = await createlistDRTTxn(appID, client, creatorAddr, drtId);
-      const txId_1 = await txn1?.txID().toString();
+      const signedtxn1 = await this.enclaveService.signTransaction({
+        vault_id: vault_id,
+        auth_password: auth_password,
+        transaction_to_sign: {
+          AlgorandTransaction: {
+            transaction_bytes: new Uint8Array([
+              0x54,
+              0x58,
+              ...to_msgpack(txn1?.modifiedTransaction)
+            ]) // Add "TX" prefix tag
+          }
+        }
+      });
 
-      // Sign the transaction, here we have to intervene
-      const creatorSecret = creatorAccount?.sk;
-      const signedtxn1 = txn1?.signTxn(creatorSecret);
-      // pai(username, password, signedTxn)
-      // intervene above with authenticateion
+      let signedtxn1_2;
+      if (
+        'Signed' in signedtxn1 &&
+        'AlgorandTransactionSigned' in signedtxn1.Signed
+      ) {
+        signedtxn1_2 =
+          signedtxn1.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
+      } else {
+        throw new Error(
+          '[De-list DRT 1 Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        );
+      }
 
-      const result = await sendListDRTTxn(signedtxn1, client, txId_1!);
+      const result = await sendListDRTTxn(signedtxn1_2, client, txn1!.txnID);
 
       return result;
     } catch (err) {
@@ -215,27 +350,31 @@ export class PoolOperations {
 
   joinPoolPendingMethod = async (
     client: algosdk.Algodv2,
-    contributorAccount: algosdk.Account,
+    //contributorAccount: algosdk.Account,
     contributorAddr: algosdk.Account['addr'],
     appID: number | bigint,
     appendId: number,
     assetAmount: number,
     assetFee: number,
-    executionFee: number
+    executionFee: number,
+    vault_id: string,
+    auth_password: string
   ) => {
     try {
       //invoke buy method for the append DRT
       const buyAppendDRT = await this.buyDRTMethod(
         client,
         appID,
-        contributorAccount,
+        //buyerAccount: algosdk.Account,
         contributorAddr,
         appendId,
         assetAmount,
-        assetFee
+        assetFee,
+        vault_id,
+        auth_password
       );
 
-      let txn = await createJoinPoolPendingTxn(
+      let txn2 = await createJoinPoolPendingTxn(
         client,
         appID,
         contributorAddr,
@@ -244,25 +383,93 @@ export class PoolOperations {
         executionFee
       );
 
-      const txId_1 = await txn?.assetTransferTxn?.txID().toString();
-      const txId_2 = await txn?.payTxn?.txID().toString();
-      const txId_3 = await txn?.addPendingContributorTxn.txID().toString();
+      // sign transaction join pool pending 1
+      const signedtxn1_pending = await this.enclaveService.signTransaction({
+        vault_id: vault_id,
+        auth_password: auth_password,
+        transaction_to_sign: {
+          AlgorandTransaction: {
+            transaction_bytes: new Uint8Array([
+              0x54,
+              0x58,
+              ...to_msgpack(txn2?.modifiedTransaction_assetTransfer)
+            ]) // Add "TX" prefix tag
+          }
+        }
+      });
+      // sign transaction buy 2
+      const signedtxn2_pending = await this.enclaveService.signTransaction({
+        vault_id: vault_id,
+        auth_password: auth_password,
+        transaction_to_sign: {
+          AlgorandTransaction: {
+            transaction_bytes: new Uint8Array([
+              0x54,
+              0x58,
+              ...to_msgpack(txn2?.modifiedTransaction_assetPayment)
+            ]) // Add "TX" prefix tag
+          }
+        }
+      });
+      const signedtxn3_pending = await this.enclaveService.signTransaction({
+        vault_id: vault_id,
+        auth_password: auth_password,
+        transaction_to_sign: {
+          AlgorandTransaction: {
+            transaction_bytes: new Uint8Array([
+              0x54,
+              0x58,
+              ...to_msgpack(txn2?.modifiedTransaction_addPending)
+            ]) // Add "TX" prefix tag
+          }
+        }
+      });
 
-      // // Sign the transaction, here we have to intervene
-      const contributorSecret = contributorAccount?.sk;
-
-      const signedtxn1 = txn?.assetTransferTxn?.signTxn(contributorSecret);
-      const signedtxn2 = txn?.payTxn?.signTxn(contributorSecret);
-      const signedtxn3 =
-        txn?.addPendingContributorTxn.signTxn(contributorSecret);
-      // // pai(username, password, signedTxn)
-      // // intervene above with authenticateion
+      let signedtxn1_pending_2;
+      if (
+        'Signed' in signedtxn1_pending &&
+        'AlgorandTransactionSigned' in signedtxn1_pending.Signed
+      ) {
+        signedtxn1_pending_2 =
+          signedtxn1_pending.Signed.AlgorandTransactionSigned
+            .signed_transaction_bytes;
+      } else {
+        throw new Error(
+          '[Add Pending Contributor Txn 1] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        );
+      }
+      let signedtxn2_pending_2;
+      if (
+        'Signed' in signedtxn2_pending &&
+        'AlgorandTransactionSigned' in signedtxn2_pending.Signed
+      ) {
+        signedtxn2_pending_2 =
+          signedtxn2_pending.Signed.AlgorandTransactionSigned
+            .signed_transaction_bytes;
+      } else {
+        throw new Error(
+          '[Add Pending Contributor Txn 2] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        );
+      }
+      let signedtxn3_pending_2;
+      if (
+        'Signed' in signedtxn3_pending &&
+        'AlgorandTransactionSigned' in signedtxn3_pending.Signed
+      ) {
+        signedtxn3_pending_2 =
+          signedtxn3_pending.Signed.AlgorandTransactionSigned
+            .signed_transaction_bytes;
+      } else {
+        throw new Error(
+          '[Add Pending Contributor Txn 3] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        );
+      }
 
       // send group transaction
       const result = await sendJoinPoolPendingTxn(
-        [signedtxn1, signedtxn2, signedtxn3],
+        [signedtxn1_pending_2, signedtxn2_pending_2, signedtxn3_pending_2],
         client,
-        txId_3!
+        txn2?.addPendingTxn_ID!
       );
       return result;
     } catch (err) {
@@ -273,42 +480,93 @@ export class PoolOperations {
   claimContributorMethod = async (
     client: algosdk.Algodv2,
     appID: number | bigint,
-    contributorAccount: algosdk.Account,
+    //contributorAccount: algosdk.Account,
     contributorAddr: algosdk.Account['addr'],
-    contributorAssetId: number
+    contributorAssetId: number,
+    vault_id: string,
+    auth_password: string
   ) => {
     try {
-      /// Transaction 1 - Optin to contributor token if not already
-      let txnOpt = await createAssetOptinTxn(
+      // transaction 1 - Optin to drt
+      const txn1 = await createAssetOptinTxn_new(
         contributorAssetId,
         contributorAddr,
         client
       );
 
-      const txId_Opt = await txnOpt?.txID().toString();
+      // sign transaction
+      const signedtxn1 = await this.enclaveService.signTransaction({
+        vault_id: vault_id,
+        auth_password: auth_password,
+        transaction_to_sign: {
+          AlgorandTransaction: {
+            transaction_bytes: new Uint8Array([
+              0x54,
+              0x58,
+              ...to_msgpack(txn1?.modifiedTransaction)
+            ]) // Add "TX" prefix tag
+          }
+        }
+      });
 
-      // Sign the transaction, here we have to intervene
-      const contributorSecret = contributorAccount?.sk;
-      const signedtxnOpt = txnOpt?.signTxn(contributorSecret);
-      // pai(username, password, signedTxn)
-      // intervene above with authenticateion
+      let signedtxn1_2;
+      if (
+        'Signed' in signedtxn1 &&
+        'AlgorandTransactionSigned' in signedtxn1.Signed
+      ) {
+        signedtxn1_2 =
+          signedtxn1.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
+      } else {
+        throw new Error(
+          '[Contributor Asset Optin Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        );
+      }
+      const txn1Result = await sendAssetOptinTxn(
+        signedtxn1_2,
+        client,
+        txn1?.txnID!
+      );
 
-      const optin = await sendAssetOptinTxn(signedtxnOpt, client, txId_Opt!);
-
-      let txn1 = await createClaimContributorTxn(
+      let txn2 = await createClaimContributorTxn(
         appID,
         client,
         contributorAddr,
         contributorAssetId
       );
-      const txId_1 = await txn1?.txID().toString();
 
-      // Sign the transaction, here we have to intervene
-      const signedtxn1 = txn1?.signTxn(contributorSecret);
-      // pai(username, password, signedTxn)
-      // intervene above with authenticateion
+      // sign transaction
+      const signedtxn2 = await this.enclaveService.signTransaction({
+        vault_id: vault_id,
+        auth_password: auth_password,
+        transaction_to_sign: {
+          AlgorandTransaction: {
+            transaction_bytes: new Uint8Array([
+              0x54,
+              0x58,
+              ...to_msgpack(txn2?.modifiedTransaction)
+            ]) // Add "TX" prefix tag
+          }
+        }
+      });
 
-      const result = await sendClaimContributorTxn(signedtxn1, client, txId_1!);
+      let signedtxn2_2;
+      if (
+        'Signed' in signedtxn2 &&
+        'AlgorandTransactionSigned' in signedtxn2.Signed
+      ) {
+        signedtxn2_2 =
+          signedtxn2.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
+      } else {
+        throw new Error(
+          '[Claim Contributor Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        );
+      }
+
+      const result = await sendClaimContributorTxn(
+        signedtxn2_2,
+        client,
+        txn2?.txnID!
+      );
 
       return result;
     } catch (err) {
@@ -324,7 +582,9 @@ export class PoolOperations {
     appID: number | bigint,
     assetId: number,
     assetAmount: number,
-    executionFee: number
+    executionFee: number,
+    vault_id: string,
+    auth_password: string
   ) => {
     try {
       let txn = await createRedeemDRTTxn(
@@ -336,24 +596,93 @@ export class PoolOperations {
         executionFee
       );
 
-      const txId_1 = await txn?.assetTransferTxn?.txID().toString();
-      const txId_2 = await txn?.payTxn?.txID().toString();
-      const txId_3 = await txn?.executeDRTTxn.txID().toString();
+      // sign transaction asset transfer
+      const signedtxn1_execute = await this.enclaveService.signTransaction({
+        vault_id: vault_id,
+        auth_password: auth_password,
+        transaction_to_sign: {
+          AlgorandTransaction: {
+            transaction_bytes: new Uint8Array([
+              0x54,
+              0x58,
+              ...to_msgpack(txn?.modifiedTransaction_assetTransfer)
+            ]) // Add "TX" prefix tag
+          }
+        }
+      });
+      // sign transaction payment
+      const signedtxn2_execute = await this.enclaveService.signTransaction({
+        vault_id: vault_id,
+        auth_password: auth_password,
+        transaction_to_sign: {
+          AlgorandTransaction: {
+            transaction_bytes: new Uint8Array([
+              0x54,
+              0x58,
+              ...to_msgpack(txn?.modifiedTransaction_ExecuteFee)
+            ]) // Add "TX" prefix tag
+          }
+        }
+      });
+      const signedtxn3_execute = await this.enclaveService.signTransaction({
+        vault_id: vault_id,
+        auth_password: auth_password,
+        transaction_to_sign: {
+          AlgorandTransaction: {
+            transaction_bytes: new Uint8Array([
+              0x54,
+              0x58,
+              ...to_msgpack(txn?.modifiedTransaction_executeDRTTxn)
+            ]) // Add "TX" prefix tag
+          }
+        }
+      });
 
-      // // Sign the transaction, here we have to intervene
-      const contributorSecret = redeemerAccount?.sk;
-
-      const signedtxn1 = txn?.assetTransferTxn?.signTxn(contributorSecret);
-      const signedtxn2 = txn?.payTxn?.signTxn(contributorSecret);
-      const signedtxn3 = txn?.executeDRTTxn.signTxn(contributorSecret);
-      // // pai(username, password, signedTxn)
-      // // intervene above with authenticateion
+      let signedtxn1_execute_2;
+      if (
+        'Signed' in signedtxn1_execute &&
+        'AlgorandTransactionSigned' in signedtxn1_execute.Signed
+      ) {
+        signedtxn1_execute_2 =
+          signedtxn1_execute.Signed.AlgorandTransactionSigned
+            .signed_transaction_bytes;
+      } else {
+        throw new Error(
+          '[Execute Txn 1] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        );
+      }
+      let signedtxn2_execute_2;
+      if (
+        'Signed' in signedtxn2_execute &&
+        'AlgorandTransactionSigned' in signedtxn2_execute.Signed
+      ) {
+        signedtxn2_execute_2 =
+          signedtxn2_execute.Signed.AlgorandTransactionSigned
+            .signed_transaction_bytes;
+      } else {
+        throw new Error(
+          '[Execute Txn 2] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        );
+      }
+      let signedtxn3_execute_2;
+      if (
+        'Signed' in signedtxn3_execute &&
+        'AlgorandTransactionSigned' in signedtxn3_execute.Signed
+      ) {
+        signedtxn3_execute_2 =
+          signedtxn3_execute.Signed.AlgorandTransactionSigned
+            .signed_transaction_bytes;
+      } else {
+        throw new Error(
+          '[Execute Txn 3] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        );
+      }
 
       // send group transaction
       const result = await sendExecuteDRTTxn(
-        [signedtxn1, signedtxn2, signedtxn3],
+        [signedtxn1_execute_2, signedtxn2_execute_2, signedtxn3_execute_2],
         client,
-        txId_3!
+        txn?.execeuteDRTTxn_ID!
       );
       return result;
     } catch (err) {

@@ -37,8 +37,28 @@ export const createCreateDRTTxn = async (
       appArgs: appArgs,
       accounts: [creatorAddr]
     });
+    const modifiedTransaction = {
+      ...txn,
+      apl: txn!.type,
+      snd: txn?.from.publicKey,
+      apid: txn!.appIndex, //app ID
+      apaa: [
+        txn!.appArgs![0],
+        txn!.appArgs![1],
+        txn!.appArgs![2],
+        txn!.appArgs![3],
+        txn!.appArgs![4],
+        txn!.appArgs![5]
+      ], //app args
+      apat: [txn!.appAccounts![0].publicKey], //foreign accounts
+      fv: txn!.firstRound,
+      lv: txn!.lastRound,
+      gen: txn!.genesisID,
+      gh: txn!.genesisHash
+    };
 
-    return txn;
+    const txnID = txn!.txID().toString();
+    return { modifiedTransaction, txnID };
   } catch (err) {
     console.log(err);
   }
@@ -80,8 +100,22 @@ export const createClaimDRTTxn = async (
         }
       ]
     });
+    const modifiedTransaction = {
+      ...txn,
+      apl: txn!.type,
+      snd: txn?.from.publicKey,
+      apid: txn!.appIndex, //app ID
+      apaa: [txn!.appArgs![0]], //app args
+      apas: [txn!.appForeignAssets![0]], //foreign assets
+      // apbx: [boxes] WIP TODO
+      fv: txn!.firstRound,
+      lv: txn!.lastRound,
+      gen: txn!.genesisID,
+      gh: txn!.genesisHash
+    };
 
-    return txn;
+    const txnID = txn!.txID().toString();
+    return { modifiedTransaction, txnID };
   } catch (err) {
     console.log(err);
   }
@@ -139,6 +173,7 @@ export const createBuyDRTTxn = async (
         }
       ]
     });
+    const txnID_Buy = buyTxn!.txID().toString();
 
     const payTxn = await createPaymentTxn(
       buyerAddr,
@@ -147,9 +182,35 @@ export const createBuyDRTTxn = async (
       client
     );
 
-    assignGroupID([buyTxn, payTxn!]);
+    assignGroupID([buyTxn, payTxn!.txn]);
 
-    return { buyTxn, payTxn };
+    const modifiedTransactionBuy = {
+      ...buyTxn,
+      apl: buyTxn!.type,
+      snd: buyTxn?.from.publicKey,
+      apid: buyTxn!.appIndex, //app ID
+      apaa: [buyTxn!.appArgs![0], buyTxn!.appArgs![1]], //app args
+      apas: [buyTxn!.appForeignAssets![0]], //foreign assets
+      // apbx: [boxes] WIP TODO
+      fv: buyTxn!.firstRound,
+      lv: buyTxn!.lastRound,
+      gen: buyTxn!.genesisID,
+      gh: buyTxn!.genesisHash,
+      grp: buyTxn.group
+    };
+    const modifiedTransactionPay = {
+      ...payTxn!.txn,
+      grp: payTxn!.txn.group
+    };
+    const txnID_Pay = payTxn?.txnID;
+    return {
+      modifiedTransactionBuy,
+      txnID_Buy,
+      modifiedTransactionPay,
+      txnID_Pay
+    };
+
+    //return { buyTxn, payTxn };
   } catch (err) {
     console.log(err);
   }
@@ -179,7 +240,7 @@ export const createDelistDRTTxn = async (
 
     const appArgs = [new Uint8Array(Buffer.from('de_list_drt'))];
 
-    const delistTxn = algosdk.makeApplicationCallTxnFromObject({
+    const txn = algosdk.makeApplicationCallTxnFromObject({
       from: creatorAddr,
       appIndex: Number(appID),
       suggestedParams: params,
@@ -193,8 +254,22 @@ export const createDelistDRTTxn = async (
         }
       ]
     });
+    const modifiedTransaction = {
+      ...txn,
+      apl: txn!.type,
+      snd: txn?.from.publicKey,
+      apid: txn!.appIndex, //app ID
+      apaa: [txn!.appArgs![0]], //app args
+      apas: [txn!.appForeignAssets![0]], //foreign assets
+      // apbx: [boxes] WIP TODO
+      fv: txn!.firstRound,
+      lv: txn!.lastRound,
+      gen: txn!.genesisID,
+      gh: txn!.genesisHash
+    };
 
-    return delistTxn;
+    const txnID = txn!.txID().toString();
+    return { modifiedTransaction, txnID };
   } catch (err) {
     console.log(err);
   }
@@ -224,7 +299,7 @@ export const createlistDRTTxn = async (
 
     const appArgs = [new Uint8Array(Buffer.from('list_drt'))];
 
-    const listTxn = algosdk.makeApplicationCallTxnFromObject({
+    const txn = algosdk.makeApplicationCallTxnFromObject({
       from: creatorAddr,
       appIndex: Number(appID),
       suggestedParams: params,
@@ -238,8 +313,22 @@ export const createlistDRTTxn = async (
         }
       ]
     });
+    const modifiedTransaction = {
+      ...txn,
+      apl: txn!.type,
+      snd: txn?.from.publicKey,
+      apid: txn!.appIndex, //app ID
+      apaa: [txn!.appArgs![0]], //app args
+      apas: [txn!.appForeignAssets![0]], //foreign assets
+      // apbx: [boxes] WIP TODO
+      fv: txn!.firstRound,
+      lv: txn!.lastRound,
+      gen: txn!.genesisID,
+      gh: txn!.genesisHash
+    };
 
-    return listTxn;
+    const txnID = txn!.txID().toString();
+    return { modifiedTransaction, txnID };
   } catch (err) {
     console.log(err);
   }
@@ -298,9 +387,49 @@ export const createJoinPoolPendingTxn = async (
       ]
     });
 
-    assignGroupID([assetTransferTxn!, payTxn!, addPendingContributorTxn]);
+    //assign groups
+    assignGroupID([
+      assetTransferTxn!.txn,
+      payTxn!.txn,
+      addPendingContributorTxn
+    ]);
 
-    return { assetTransferTxn, payTxn, addPendingContributorTxn };
+    const modifiedTransaction_assetTransfer = {
+      ...assetTransferTxn!.txn,
+      grp: assetTransferTxn!.txn.group
+    };
+    const modifiedTransaction_assetPayment = {
+      ...payTxn!.txn,
+      grp: payTxn!.txn.group
+    };
+
+    const modifiedTransaction_addPending = {
+      ...addPendingContributorTxn,
+      apl: addPendingContributorTxn!.type,
+      snd: addPendingContributorTxn?.from.publicKey,
+      apid: addPendingContributorTxn!.appIndex, //app ID
+      apaa: [addPendingContributorTxn!.appArgs![0]], //app args
+      apas: [addPendingContributorTxn!.appForeignAssets![0]], //foreign assets
+      // apbx: [boxes] WIP TODO
+      fv: addPendingContributorTxn!.firstRound,
+      lv: addPendingContributorTxn!.lastRound,
+      gen: addPendingContributorTxn!.genesisID,
+      gh: addPendingContributorTxn!.genesisHash,
+      grp: addPendingContributorTxn.group
+    };
+
+    const assetTransferTxn_ID = assetTransferTxn!.txn.txID().toString();
+    const assetPaymentTxn_ID = payTxn!.txn.txID().toString();
+    const addPendingTxn_ID = addPendingContributorTxn!.txID().toString();
+
+    return {
+      modifiedTransaction_assetTransfer,
+      assetTransferTxn_ID,
+      modifiedTransaction_assetPayment,
+      assetPaymentTxn_ID,
+      modifiedTransaction_addPending,
+      addPendingTxn_ID
+    };
   } catch (err) {
     console.log(err);
   }
@@ -343,7 +472,22 @@ export const createClaimContributorTxn = async (
         }
       ]
     });
-    return txn;
+    const modifiedTransaction = {
+      ...txn,
+      type: txn!.type,
+      snd: txn?.from.publicKey,
+      apid: txn!.appIndex, //app ID
+      apaa: [txn!.appArgs![0]], //app args
+      apas: [txn!.appForeignAssets![0]], //foreign assets
+      // apbx: [boxes] WIP TODO
+      fv: txn!.firstRound,
+      lv: txn!.lastRound,
+      gen: txn!.genesisID,
+      gh: txn!.genesisHash
+    };
+
+    const txnID = txn!.txID().toString();
+    return { modifiedTransaction, txnID };
   } catch (err) {
     console.log(err);
   }
@@ -416,10 +560,45 @@ export const createRedeemDRTTxn = async (
         }
       ]
     });
+    //assign groups
+    assignGroupID([assetTransferTxn!.txn, payTxn!.txn, executeDRTTxn]);
 
-    assignGroupID([assetTransferTxn!, payTxn!, executeDRTTxn]);
+    const modifiedTransaction_assetTransfer = {
+      ...assetTransferTxn!.txn,
+      grp: assetTransferTxn!.txn.group
+    };
+    const modifiedTransaction_ExecuteFee = {
+      ...payTxn!.txn,
+      grp: payTxn!.txn.group
+    };
 
-    return { assetTransferTxn, payTxn, executeDRTTxn };
+    const modifiedTransaction_executeDRTTxn = {
+      ...executeDRTTxn,
+      apl: executeDRTTxn!.type,
+      snd: executeDRTTxn?.from.publicKey,
+      apid: executeDRTTxn!.appIndex, //app ID
+      apaa: [executeDRTTxn!.appArgs![0]], //app args
+      apas: [executeDRTTxn!.appForeignAssets![0]], //foreign assets
+      // apbx: [boxes] WIP TODO
+      fv: executeDRTTxn!.firstRound,
+      lv: executeDRTTxn!.lastRound,
+      gen: executeDRTTxn!.genesisID,
+      gh: executeDRTTxn!.genesisHash,
+      grp: executeDRTTxn.group
+    };
+
+    const assetTransferTxn_ID = assetTransferTxn!.txn.txID().toString();
+    const ExecuteFeeTxn_ID = payTxn!.txn.txID().toString();
+    const execeuteDRTTxn_ID = executeDRTTxn!.txID().toString();
+
+    return {
+      modifiedTransaction_assetTransfer,
+      assetTransferTxn_ID,
+      modifiedTransaction_ExecuteFee,
+      ExecuteFeeTxn_ID,
+      modifiedTransaction_executeDRTTxn,
+      execeuteDRTTxn_ID
+    };
   } catch (err) {
     console.log(err);
   }

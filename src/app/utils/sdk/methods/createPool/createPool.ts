@@ -78,8 +78,11 @@ export class PoolCreate {
 
       // Access transaction properties
       // Access the sender address
-      console.log('decoded signed tranasction boxes', decodedTxn.txn.boxes); // Access the sender address
-
+      console.log(
+        'decoded signed tranasction boxes from sdk',
+        decodedTxn.txn.boxes
+      ); // Access the sender address
+      console.log('decoded signed tranasction boxes from sdk', decodedTxn.txn);
       // Transaction 5 - claim contributor token
       const txn5 = await createInitClaimContributorTxn(
         appID,
@@ -335,48 +338,48 @@ export class PoolCreate {
         txn4?.txnID!
       );
 
-      // Transaction 5 - claim contributor token
-      const txn5 = await createInitClaimContributorTxn(
-        appID,
-        client,
-        creatorAddr,
-        setupResult?.contributorCreatorID,
-        setupResult?.appendDrtID
-      );
+      // // Transaction 5 - claim contributor token
+      // const txn5 = await createInitClaimContributorTxn(
+      //   appID,
+      //   client,
+      //   creatorAddr,
+      //   setupResult?.contributorCreatorID,
+      //   setupResult?.appendDrtID
+      // );
 
-      // Sign the transaction, here we have to intervene
-      const signedtxn5 = await this.enclaveService.signTransaction({
-        vault_id: vault_id,
-        auth_password: auth_password,
-        transaction_to_sign: {
-          AlgorandTransaction: {
-            transaction_bytes: new Uint8Array([
-              0x54,
-              0x58,
-              ...to_msgpack(txn5?.modifiedTransaction)
-            ]) // Add "TX" prefix tag
-          }
-        }
-      });
+      // // Sign the transaction, here we have to intervene
+      // const signedtxn5 = await this.enclaveService.signTransaction({
+      //   vault_id: vault_id,
+      //   auth_password: auth_password,
+      //   transaction_to_sign: {
+      //     AlgorandTransaction: {
+      //       transaction_bytes: new Uint8Array([
+      //         0x54,
+      //         0x58,
+      //         ...to_msgpack(txn5?.modifiedTransaction)
+      //       ]) // Add "TX" prefix tag
+      //     }
+      //   }
+      // });
 
-      let signedtxn5_2;
-      if (
-        'Signed' in signedtxn5 &&
-        'AlgorandTransactionSigned' in signedtxn5.Signed
-      ) {
-        signedtxn5_2 =
-          signedtxn5.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
-      } else {
-        throw new Error(
-          '[Contributor Init Claim Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
-        );
-      }
+      // let signedtxn5_2;
+      // if (
+      //   'Signed' in signedtxn5 &&
+      //   'AlgorandTransactionSigned' in signedtxn5.Signed
+      // ) {
+      //   signedtxn5_2 =
+      //     signedtxn5.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
+      // } else {
+      //   throw new Error(
+      //     '[Contributor Init Claim Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+      //   );
+      // }
 
-      const txn5Result = await sendInitClaimContributorTxn(
-        signedtxn5_2,
-        client,
-        txn5?.txnID!
-      );
+      // const txn5Result = await sendInitClaimContributorTxn(
+      //   signedtxn5_2,
+      //   client,
+      //   txn5?.txnID!
+      // );
 
       const contributorCreatorID = setupResult?.contributorCreatorID;
       const appendDrtID = setupResult?.appendDrtID;
