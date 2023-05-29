@@ -577,7 +577,7 @@ export class PoolOperations {
   // Execute DRT
   redeemDRTMethod = async (
     client: algosdk.Algodv2,
-    redeemerAccount: algosdk.Account,
+    //redeemerAccount: algosdk.Account,
     redeemerAddr: algosdk.Account['addr'],
     appID: number | bigint,
     assetId: number,
