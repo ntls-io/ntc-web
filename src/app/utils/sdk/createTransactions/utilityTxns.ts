@@ -105,8 +105,20 @@ export const createPaymentTxn = async (
       amount: amount,
       suggestedParams: params
     });
+    const modifiedTransaction = {
+      ...txn,
+      apl: txn!.type, // type
+      snd: txn!.from.publicKey, // sender
+      rcv: txn!.to.publicKey, // receiver,
+      amt: txn!.amount, // amount
+      fv: txn!.firstRound,
+      lv: txn!.lastRound,
+      gen: txn!.genesisID,
+      gh: txn!.genesisHash
+    };
 
-    return txn;
+    const txnID = txn!.txID().toString();
+    return { modifiedTransaction, txn, txnID };
   } catch (err) {
     console.log(err);
   }
@@ -136,8 +148,21 @@ export const createAssetTransferTxn = async (
       amount: Number(amount),
       suggestedParams: params
     });
+    const modifiedTransaction = {
+      ...txn,
+      type: txn.type,
+      xaid: txn.assetIndex,
+      aamt: txn.assetTotal,
+      snd: txn!.from.publicKey, // sender
+      arcv: txn!.to.publicKey, // receiver,
+      fv: txn!.firstRound,
+      lv: txn!.lastRound,
+      gen: txn!.genesisID,
+      gh: txn!.genesisHash
+    };
 
-    return txn;
+    const txnID = txn!.txID().toString();
+    return { modifiedTransaction, txn, txnID };
   } catch (err) {
     console.log(err);
   }
