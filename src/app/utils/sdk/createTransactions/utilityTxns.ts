@@ -77,7 +77,7 @@ export const createAssetOptinTxn_new = async (
     };
 
     const txnID = txn!.txID().toString();
-    return { modifiedTransaction, txnID };
+    return { modifiedTransaction, txn, txnID };
   } catch (err) {
     console.log(err);
   }
@@ -114,7 +114,8 @@ export const createPaymentTxn = async (
       fv: txn!.firstRound,
       lv: txn!.lastRound,
       gen: txn!.genesisID,
-      gh: txn!.genesisHash
+      gh: txn!.genesisHash,
+      fee: txn!.fee
     };
 
     const txnID = txn!.txID().toString();

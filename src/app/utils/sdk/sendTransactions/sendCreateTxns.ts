@@ -8,7 +8,6 @@ export const sendDeployContractTxn = async (
   txId: string
 ) => {
   try {
-    //console.log('Signed transaction with txID: %s', txId);
     // Submit the transaction
     await client.sendRawTransaction(signedTxn).do();
 
@@ -47,21 +46,18 @@ export const sendFundContractTxn = async (
 ) => {
   try {
     const contractAddr = algosdk.getApplicationAddress(appID);
-    // console.log('Signed transaction with txID: %s', txId);
     const senderInfo = await client.accountInformation(senderAddr).do();
-    console.log('funds of sender', senderInfo.amount);
-    console.log('funded amount to send', fundAmount);
-    // if (senderInfo.amount > fundAmount)
-    //   throw new Error('Not enough funds in senders account.');
+    const senderBalance = senderInfo.amount;
+
+    if (senderBalance < fundAmount) {
+      throw new Error("Not enough funds in sender's account.");
+    }
 
     const contractInfo = await client.accountInformation(contractAddr).do();
-    // console.log(contractInfo.amount);
-    // Submit the transaction
+
     await client.sendRawTransaction(signedTxn).do();
-    // Wait for transaction to be confirmed
     const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
 
-    //  Get the completed Transaction
     console.log(
       'Smart Contract Funding Transaction ' +
         txId +
@@ -73,7 +69,8 @@ export const sendFundContractTxn = async (
       .do();
     return transactionResponse;
   } catch (err) {
-    console.log(err);
+    console.error(err);
+    throw err;
   }
 };
 
@@ -83,7 +80,6 @@ export const sendSetupDataPoolTxn = async (
   txId: string
 ) => {
   try {
-    // console.log('Signed transaction with txID: %s', txId);
     // Submit the transaction
     await client.sendRawTransaction(signedTxn).do();
     // Wait for transaction to be confirmed
@@ -117,27 +113,23 @@ export const sendInitClaimContributorTxn = async (
   txId: string
 ) => {
   try {
-    //  console.log('Signed transaction with txID: %s', txId);
     // Submit the transaction
     await client.sendRawTransaction(signedTxn).do();
     // Wait for transaction to be confirmed
     const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
 
     // Get the completed Transaction
-    // console.log(
-    //   'Claim Contributor Initialisation Transaction ' +
-    //     txId +
-    //     ' confirmed in round ' +
-    //     confirmedTxn['confirmed-round']
-    // );
+    console.log(
+      'Claim Contributor Initialisation Transaction ' +
+        txId +
+        ' confirmed in round ' +
+        confirmedTxn['confirmed-round']
+    );
     // display results
     const transactionResponse = await client
       .pendingTransactionInformation(txId)
       .do();
 
-    // const appendDrtID = transactionResponse['inner-txns'][0]['asset-index'];
-    // const contributorCreatorID =
-    //   transactionResponse['inner-txns'][1]['asset-index'];
     return transactionResponse;
   } catch (err) {
     console.log(err);

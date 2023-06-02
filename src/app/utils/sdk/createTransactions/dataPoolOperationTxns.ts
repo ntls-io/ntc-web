@@ -1,7 +1,6 @@
 import algosdk, { assignGroupID } from 'algosdk';
 import { createAssetTransferTxn, createPaymentTxn } from './utilityTxns';
 
-// create unsigned transaction DEMO until the enclave can create their own transactions
 export const createCreateDRTTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
@@ -14,13 +13,16 @@ export const createCreateDRTTxn = async (
 ) => {
   try {
     const contractAddr = algosdk.getApplicationAddress(appID);
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+
     const appArgs = [
-      new Uint8Array(Buffer.from('create_drt')),
-      new Uint8Array(Buffer.from(drtName)),
-      new Uint8Array(Buffer.from(algosdk.encodeUint64(drtSupply))),
-      new Uint8Array(Buffer.from(drtUrlBinary)),
-      new Uint8Array(Buffer.from(drtBinaryHash)),
-      new Uint8Array(Buffer.from(algosdk.encodeUint64(drtPrice)))
+      encoder.encode('create_drt'),
+      encoder.encode(drtName),
+      algosdk.encodeUint64(drtSupply),
+      encoder.encode(drtUrlBinary),
+      encoder.encode(drtBinaryHash),
+      algosdk.encodeUint64(drtPrice)
     ];
     const params = await client.getTransactionParams().do();
 
@@ -34,8 +36,8 @@ export const createCreateDRTTxn = async (
       appIndex: Number(appID),
       suggestedParams: params,
       onComplete: onComplete,
-      appArgs: appArgs,
-      accounts: [creatorAddr]
+      appArgs: appArgs
+      //accounts: [creatorAddr]
     });
     const modifiedTransaction = {
       ...txn,
@@ -50,11 +52,12 @@ export const createCreateDRTTxn = async (
         txn!.appArgs![4],
         txn!.appArgs![5]
       ], //app args
-      apat: [txn!.appAccounts![0].publicKey], //foreign accounts
+      //apat: [txn!.appAccounts![0].publicKey], //foreign accounts
       fv: txn!.firstRound,
       lv: txn!.lastRound,
       gen: txn!.genesisID,
-      gh: txn!.genesisHash
+      gh: txn!.genesisHash,
+      fee: txn!.fee
     };
 
     const txnID = txn!.txID().toString();
@@ -64,7 +67,7 @@ export const createCreateDRTTxn = async (
   }
 };
 
-export const createClaimDRTTxn = async (
+export const createStoreDRTTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
   creatorAddr: algosdk.Account['addr'],
@@ -72,7 +75,8 @@ export const createClaimDRTTxn = async (
 ) => {
   try {
     const contractAddr = algosdk.getApplicationAddress(appID);
-    const appArgs = [new Uint8Array(Buffer.from('drt_to_box'))];
+    const encoder = new TextEncoder();
+    const appArgs = [encoder.encode('drt_to_box')];
     const params = await client.getTransactionParams().do();
 
     const onComplete = algosdk.OnApplicationComplete.NoOpOC;
@@ -100,6 +104,12 @@ export const createClaimDRTTxn = async (
         }
       ]
     });
+    const apbx = [
+      {
+        i: 0,
+        n: txn.boxes![0].name
+      }
+    ];
     const modifiedTransaction = {
       ...txn,
       apl: txn!.type,
@@ -107,11 +117,12 @@ export const createClaimDRTTxn = async (
       apid: txn!.appIndex, //app ID
       apaa: [txn!.appArgs![0]], //app args
       apas: [txn!.appForeignAssets![0]], //foreign assets
-      // apbx: [boxes] WIP TODO
+      apbx: apbx, // boxes
       fv: txn!.firstRound,
       lv: txn!.lastRound,
       gen: txn!.genesisID,
-      gh: txn!.genesisHash
+      gh: txn!.genesisHash,
+      fee: txn!.fee
     };
 
     const txnID = txn!.txID().toString();
@@ -130,6 +141,8 @@ export const createBuyDRTTxn = async (
   paymentAmount: number | bigint
 ) => {
   try {
+    const encoder = new TextEncoder();
+
     const contractAddr = algosdk.getApplicationAddress(appID);
 
     const params = await client.getTransactionParams().do();
@@ -151,8 +164,8 @@ export const createBuyDRTTxn = async (
     boxNameNew.set(pkBuyer, assetBytes.length);
 
     const appArgs = [
-      new Uint8Array(Buffer.from('buy_drt')),
-      new Uint8Array(Buffer.from(algosdk.encodeUint64(amountToBuy)))
+      encoder.encode('buy_drt'),
+      algosdk.encodeUint64(amountToBuy)
     ];
 
     const buyTxn = algosdk.makeApplicationCallTxnFromObject({
@@ -173,7 +186,16 @@ export const createBuyDRTTxn = async (
         }
       ]
     });
-    const txnID_Buy = buyTxn!.txID().toString();
+    const apbxBuy = [
+      {
+        i: 0,
+        n: buyTxn.boxes![0].name
+      },
+      {
+        i: 0,
+        n: buyTxn.boxes![1].name
+      }
+    ];
 
     const payTxn = await createPaymentTxn(
       buyerAddr,
@@ -191,26 +213,29 @@ export const createBuyDRTTxn = async (
       apid: buyTxn!.appIndex, //app ID
       apaa: [buyTxn!.appArgs![0], buyTxn!.appArgs![1]], //app args
       apas: [buyTxn!.appForeignAssets![0]], //foreign assets
-      // apbx: [boxes] WIP TODO
+      apbx: apbxBuy,
       fv: buyTxn!.firstRound,
       lv: buyTxn!.lastRound,
       gen: buyTxn!.genesisID,
       gh: buyTxn!.genesisHash,
+      fee: buyTxn!.fee,
       grp: buyTxn.group
     };
+
     const modifiedTransactionPay = {
-      ...payTxn!.txn,
+      ...payTxn!.modifiedTransaction,
       grp: payTxn!.txn.group
     };
+
+    const txnID_Buy = buyTxn!.txID().toString();
     const txnID_Pay = payTxn?.txnID;
+
     return {
       modifiedTransactionBuy,
       txnID_Buy,
       modifiedTransactionPay,
       txnID_Pay
     };
-
-    //return { buyTxn, payTxn };
   } catch (err) {
     console.log(err);
   }
@@ -223,6 +248,7 @@ export const createDelistDRTTxn = async (
   drtID: number | bigint
 ) => {
   try {
+    const encoder = new TextEncoder();
     const contractAddr = algosdk.getApplicationAddress(appID);
 
     const params = await client.getTransactionParams().do();
@@ -238,7 +264,7 @@ export const createDelistDRTTxn = async (
     boxName.set(assetBytes);
     boxName.set(pkContract, assetBytes.length);
 
-    const appArgs = [new Uint8Array(Buffer.from('de_list_drt'))];
+    const appArgs = [encoder.encode('de_list_drt')];
 
     const txn = algosdk.makeApplicationCallTxnFromObject({
       from: creatorAddr,
@@ -254,6 +280,13 @@ export const createDelistDRTTxn = async (
         }
       ]
     });
+    const apbx = [
+      {
+        i: 0,
+        n: txn.boxes![0].name
+      }
+    ];
+
     const modifiedTransaction = {
       ...txn,
       apl: txn!.type,
@@ -261,11 +294,12 @@ export const createDelistDRTTxn = async (
       apid: txn!.appIndex, //app ID
       apaa: [txn!.appArgs![0]], //app args
       apas: [txn!.appForeignAssets![0]], //foreign assets
-      // apbx: [boxes] WIP TODO
+      apbx: apbx,
       fv: txn!.firstRound,
       lv: txn!.lastRound,
       gen: txn!.genesisID,
-      gh: txn!.genesisHash
+      gh: txn!.genesisHash,
+      fee: txn!.fee
     };
 
     const txnID = txn!.txID().toString();
@@ -282,6 +316,7 @@ export const createlistDRTTxn = async (
   drtID: number | bigint
 ) => {
   try {
+    const encoder = new TextEncoder();
     const contractAddr = algosdk.getApplicationAddress(appID);
 
     const params = await client.getTransactionParams().do();
@@ -297,7 +332,7 @@ export const createlistDRTTxn = async (
     boxName.set(assetBytes);
     boxName.set(pkContract, assetBytes.length);
 
-    const appArgs = [new Uint8Array(Buffer.from('list_drt'))];
+    const appArgs = [encoder.encode('list_drt')];
 
     const txn = algosdk.makeApplicationCallTxnFromObject({
       from: creatorAddr,
@@ -313,6 +348,13 @@ export const createlistDRTTxn = async (
         }
       ]
     });
+    const apbx = [
+      {
+        i: 0,
+        n: txn.boxes![0].name
+      }
+    ];
+
     const modifiedTransaction = {
       ...txn,
       apl: txn!.type,
@@ -320,11 +362,12 @@ export const createlistDRTTxn = async (
       apid: txn!.appIndex, //app ID
       apaa: [txn!.appArgs![0]], //app args
       apas: [txn!.appForeignAssets![0]], //foreign assets
-      // apbx: [boxes] WIP TODO
+      apbx: apbx,
       fv: txn!.firstRound,
       lv: txn!.lastRound,
       gen: txn!.genesisID,
-      gh: txn!.genesisHash
+      gh: txn!.genesisHash,
+      fee: txn!.fee
     };
 
     const txnID = txn!.txID().toString();

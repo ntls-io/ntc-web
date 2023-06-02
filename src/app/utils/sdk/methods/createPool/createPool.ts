@@ -31,115 +31,6 @@ export class PoolCreate {
     private http: HttpClient
   ) {}
 
-  Debug_initclaim = async (
-    client: algosdk.Algodv2,
-    // creatorAccount: algosdk.Account, //to be removed (TBR) when signing functionality is imported
-    enclaveAccount: algosdk.Account, // to be removed
-    creatorAddr: algosdk.Account['addr'],
-    enclaveAddr: algosdk.Account['addr'],
-    vault_id: string,
-    auth_password: string,
-    appID: number,
-    contributorCreatorID: number,
-    appendDrtID: number
-  ) => {
-    try {
-      // Transaction 3 - Setup Data Pool DEMO meant to come our backend
-      var noRowsContributed = 4;
-      var dataPoolHash = 'HBKHJB-DataPool-DJKDB';
-      var appendDRTName = 'Append DRT';
-      var appendDRTUnitName = 'DRT';
-      var appendDRTSupply = 1;
-      var appendDRTPrice = 1000000;
-      var appendDRTurlBinary = 'https://url_append_binary';
-      var appendDRTBinaryHash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-
-      const txn3 = await DEMO_createSetupDataPoolTxn(
-        appID,
-        enclaveAccount,
-        client,
-        creatorAddr,
-        noRowsContributed,
-        dataPoolHash,
-        appendDRTName,
-        appendDRTUnitName,
-        appendDRTSupply,
-        appendDRTPrice,
-        appendDRTurlBinary,
-        appendDRTBinaryHash
-      );
-      //console.log(txn3);
-      var txId_3 = await txn3?.txID().toString();
-      //Sign the transaction, this is a DEMO TRANSACTION
-      const enclaveSecret = enclaveAccount?.sk;
-      const signedtxn3 = txn3?.signTxn(enclaveSecret);
-      // Decode the signed transaction
-      const decodedTxn = algosdk.decodeSignedTransaction(signedtxn3!);
-
-      // Access transaction properties
-      // Access the sender address
-      console.log(
-        'decoded signed tranasction boxes from sdk',
-        decodedTxn.txn.boxes
-      ); // Access the sender address
-      console.log('decoded signed tranasction boxes from sdk', decodedTxn.txn);
-      // Transaction 5 - claim contributor token
-      const txn5 = await createInitClaimContributorTxn(
-        appID,
-        client,
-        creatorAddr,
-        contributorCreatorID,
-        appendDrtID
-      );
-
-      // Sign the transaction, here we have to intervene
-      const signedtxn5 = await this.enclaveService.signTransaction({
-        vault_id: vault_id,
-        auth_password: auth_password,
-        transaction_to_sign: {
-          AlgorandTransaction: {
-            transaction_bytes: new Uint8Array([
-              0x54,
-              0x58,
-              ...to_msgpack(txn5?.modifiedTransaction)
-            ]) // Add "TX" prefix tag
-          }
-        }
-      });
-
-      let signedtxn5_2;
-      if (
-        'Signed' in signedtxn5 &&
-        'AlgorandTransactionSigned' in signedtxn5.Signed
-      ) {
-        signedtxn5_2 =
-          signedtxn5.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
-      } else {
-        throw new Error(
-          '[Contributor Init Claim Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
-        );
-      }
-      const decodedTxn_2 = algosdk.decodeSignedTransaction(signedtxn5_2!);
-
-      // Access transaction propertie
-      console.log('decoded signed tranasction enclave boxes', decodedTxn_2.txn);
-      console.log(
-        'decoded signed tranasction enclave boxes',
-        decodedTxn_2.txn.boxes
-      ); // Access the sender address
-      // Object{publicKey: Uint8Array{0: 1, 1: 252, 2: 221, 3: 179, 4: 139, 5: 245, 6: 147, 7: 26, 8: 53, 9: 219, 10: 156, 11: 224, 12: 74, 13: 154, 14: 147, 15: 160, 16: 220, 17: 71, 18: 58, 19: 228, 20: 49, 21: 209, 22: 85, 23: 82, 24: 110, 25: 26, 26: 111, 27: 59, 28: 72, 29: 174, 30: 139, 31: 76}, checksum: Uint8Array{0: 60, 1: 175, 2: 62, 3: 78}}
-      const txn5Result = await sendInitClaimContributorTxn(
-        signedtxn5_2,
-        client,
-        txn5?.txnID!
-      );
-      return txn5Result;
-    } catch (err) {
-      console.error('Error in createDataPoolMethod:', err);
-      throw err; // Rethrow the error to be handled by the caller
-    }
-  };
-
   async getFileContent(fileName: string): Promise<string> {
     const url = `assets/contract/${fileName}`;
 
@@ -161,8 +52,7 @@ export class PoolCreate {
 
   createDataPoolMethod = async (
     client: algosdk.Algodv2,
-    // creatorAccount: algosdk.Account, //to be removed (TBR) when signing functionality is imported
-    enclaveAccount: algosdk.Account, // to be removed
+    enclaveAccount: algosdk.Account,
     creatorAddr: algosdk.Account['addr'],
     enclaveAddr: algosdk.Account['addr'],
     vault_id: string,
@@ -171,215 +61,224 @@ export class PoolCreate {
     try {
       const approvalProgram = await this.getFileContent('approval.teal');
       const clearProgram = await this.getFileContent('clear.teal');
-      // console.log(approvalProgram);
-      /// Transaction 1 - Deploy Contract
-      let txn1 = await createDeployContractTxn(
-        creatorAddr,
-        enclaveAddr,
-        client,
-        approvalProgram,
-        clearProgram
-      );
 
-      const signedtxn1 = await this.enclaveService.signTransaction({
-        vault_id: vault_id,
-        auth_password: auth_password,
-        transaction_to_sign: {
-          AlgorandTransaction: {
-            transaction_bytes: new Uint8Array([
-              0x54,
-              0x58,
-              ...to_msgpack(txn1?.modifiedTransaction)
-            ]) // Add "TX" prefix tag
-          }
-        }
-      });
-
-      let signedtxn1_2;
-      if (
-        'Signed' in signedtxn1 &&
-        'AlgorandTransactionSigned' in signedtxn1.Signed
-      ) {
-        signedtxn1_2 =
-          signedtxn1.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
-      } else {
-        throw new Error(
-          '[Deploy Smart Contract Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+      let txn1, signedtxn1_2, appID;
+      try {
+        txn1 = await createDeployContractTxn(
+          creatorAddr,
+          enclaveAddr,
+          client,
+          approvalProgram,
+          clearProgram
         );
+
+        const signedtxn1 = await this.enclaveService.signTransaction({
+          vault_id: vault_id,
+          auth_password: auth_password,
+          transaction_to_sign: {
+            AlgorandTransaction: {
+              transaction_bytes: new Uint8Array([
+                0x54,
+                0x58,
+                ...to_msgpack(txn1?.modifiedTransaction)
+              ]) // Add "TX" prefix tag
+            }
+          }
+        });
+
+        if (
+          'Signed' in signedtxn1 &&
+          'AlgorandTransactionSigned' in signedtxn1.Signed
+        ) {
+          signedtxn1_2 =
+            signedtxn1.Signed.AlgorandTransactionSigned
+              .signed_transaction_bytes;
+        } else {
+          throw new Error(
+            '[Deploy Smart Contract Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+          );
+        }
+
+        appID = await sendDeployContractTxn(signedtxn1_2, client, txn1?.txnID!);
+      } catch (error) {
+        console.error('Error in txn1 - createDeployContractTxn:', error);
+        throw error;
       }
 
-      const appID = await sendDeployContractTxn(
-        signedtxn1_2,
-        client,
-        txn1?.txnID!
-      );
-
-      /// Transaction 2 - Fund Contract
-      var fundAmount = 2000000;
-      const txn2 = await createFundContractTxn(
-        appID,
-        fundAmount,
-        creatorAddr,
-        client
-      );
-      // sign transaction
-      const signedtxn2 = await this.enclaveService.signTransaction({
-        vault_id: vault_id,
-        auth_password: auth_password,
-        transaction_to_sign: {
-          AlgorandTransaction: {
-            transaction_bytes: new Uint8Array([
-              0x54,
-              0x58,
-              ...to_msgpack(txn2?.modifiedTransaction)
-            ]) // Add "TX" prefix tag
-          }
-        }
-      });
-
-      let signedtxn2_2;
-      if (
-        'Signed' in signedtxn2 &&
-        'AlgorandTransactionSigned' in signedtxn2.Signed
-      ) {
-        signedtxn2_2 =
-          signedtxn2.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
-      } else {
-        throw new Error(
-          '[Fund Smart Contract Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+      let txn2, signedtxn2_2;
+      try {
+        var fundAmount = 2000000;
+        txn2 = await createFundContractTxn(
+          appID,
+          fundAmount,
+          creatorAddr,
+          client
         );
+
+        const signedtxn2 = await this.enclaveService.signTransaction({
+          vault_id: vault_id,
+          auth_password: auth_password,
+          transaction_to_sign: {
+            AlgorandTransaction: {
+              transaction_bytes: new Uint8Array([
+                0x54,
+                0x58,
+                ...to_msgpack(txn2?.modifiedTransaction)
+              ]) // Add "TX" prefix tag
+            }
+          }
+        });
+
+        if (
+          'Signed' in signedtxn2 &&
+          'AlgorandTransactionSigned' in signedtxn2.Signed
+        ) {
+          signedtxn2_2 =
+            signedtxn2.Signed.AlgorandTransactionSigned
+              .signed_transaction_bytes;
+        } else {
+          throw new Error(
+            '[Fund Smart Contract Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+          );
+        }
+
+        await sendFundContractTxn(
+          signedtxn2_2,
+          client,
+          txn2?.txnID!,
+          creatorAddr,
+          appID,
+          fundAmount
+        );
+      } catch (error) {
+        console.error('Error in txn2 - sendFundContractTxn:', error);
+        throw error;
       }
 
-      const txn2Result = await sendFundContractTxn(
-        signedtxn2_2,
-        client,
-        txn2?.txnID!,
-        creatorAddr,
-        appID,
-        fundAmount
-      );
+      let signedtxn3, setupResult;
+      try {
+        var noRowsContributed = 4;
+        var dataPoolHash = 'HBKHJB-DataPool-DJKDB';
+        var appendDRTName = 'Append DRT';
+        var appendDRTUnitName = 'DRT';
+        var appendDRTSupply = 1;
+        var appendDRTPrice = 1000000;
+        var appendDRTurlBinary = 'https://url_append_binary';
+        var appendDRTBinaryHash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 
-      // Transaction 3 - Setup Data Pool DEMO meant to come our backend
-      var noRowsContributed = 4;
-      var dataPoolHash = 'HBKHJB-DataPool-DJKDB';
-      var appendDRTName = 'Append DRT';
-      var appendDRTUnitName = 'DRT';
-      var appendDRTSupply = 1;
-      var appendDRTPrice = 1000000;
-      var appendDRTurlBinary = 'https://url_append_binary';
-      var appendDRTBinaryHash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-
-      const txn3 = await DEMO_createSetupDataPoolTxn(
-        appID,
-        enclaveAccount,
-        client,
-        creatorAddr,
-        noRowsContributed,
-        dataPoolHash,
-        appendDRTName,
-        appendDRTUnitName,
-        appendDRTSupply,
-        appendDRTPrice,
-        appendDRTurlBinary,
-        appendDRTBinaryHash
-      );
-      //console.log(txn3);
-      var txId_3 = await txn3?.txID().toString();
-      //Sign the transaction, this is a DEMO TRANSACTION
-      const enclaveSecret = enclaveAccount?.sk;
-      const signedtxn3 = txn3?.signTxn(enclaveSecret);
-      const setupResult = await sendSetupDataPoolTxn(
-        signedtxn3,
-        client,
-        txId_3!
-      );
-      console.log(
-        'DEMO enclave Setup Txn confirmed, setup results: ',
-        setupResult
-      );
-
-      // transaction 4 - Optin to contributor token
-      const txn4 = await createAssetOptinTxn_new(
-        setupResult?.contributorCreatorID,
-        creatorAddr,
-        client
-      );
-
-      // sign transaction
-      const signedtxn4 = await this.enclaveService.signTransaction({
-        vault_id: vault_id,
-        auth_password: auth_password,
-        transaction_to_sign: {
-          AlgorandTransaction: {
-            transaction_bytes: new Uint8Array([
-              0x54,
-              0x58,
-              ...to_msgpack(txn4?.modifiedTransaction)
-            ]) // Add "TX" prefix tag
-          }
-        }
-      });
-
-      let signedtxn4_2;
-      if (
-        'Signed' in signedtxn4 &&
-        'AlgorandTransactionSigned' in signedtxn4.Signed
-      ) {
-        signedtxn4_2 =
-          signedtxn4.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
-      } else {
-        throw new Error(
-          '[Append Asset Optin Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+        const txn3 = await DEMO_createSetupDataPoolTxn(
+          appID,
+          enclaveAccount,
+          client,
+          creatorAddr,
+          noRowsContributed,
+          dataPoolHash,
+          appendDRTName,
+          appendDRTUnitName,
+          appendDRTSupply,
+          appendDRTPrice,
+          appendDRTurlBinary,
+          appendDRTBinaryHash
         );
+
+        var txId_3 = await txn3?.txID().toString();
+
+        const enclaveSecret = enclaveAccount?.sk;
+        signedtxn3 = txn3?.signTxn(enclaveSecret);
+
+        setupResult = await sendSetupDataPoolTxn(signedtxn3, client, txId_3!);
+        console.log(
+          'DEMO enclave Setup Txn confirmed, setup results: ',
+          setupResult
+        );
+      } catch (error) {
+        console.error('Error in txn3 - DEMO_createSetupDataPoolTxn:', error);
+        throw error;
       }
-      const txn4Result = await sendAssetOptinTxn(
-        signedtxn4_2,
-        client,
-        txn4?.txnID!
-      );
 
-      // // Transaction 5 - claim contributor token
-      // const txn5 = await createInitClaimContributorTxn(
-      //   appID,
-      //   client,
-      //   creatorAddr,
-      //   setupResult?.contributorCreatorID,
-      //   setupResult?.appendDrtID
-      // );
+      let txn4, signedtxn4_2;
+      try {
+        txn4 = await createAssetOptinTxn_new(
+          setupResult?.contributorCreatorID,
+          creatorAddr,
+          client
+        );
 
-      // // Sign the transaction, here we have to intervene
-      // const signedtxn5 = await this.enclaveService.signTransaction({
-      //   vault_id: vault_id,
-      //   auth_password: auth_password,
-      //   transaction_to_sign: {
-      //     AlgorandTransaction: {
-      //       transaction_bytes: new Uint8Array([
-      //         0x54,
-      //         0x58,
-      //         ...to_msgpack(txn5?.modifiedTransaction)
-      //       ]) // Add "TX" prefix tag
-      //     }
-      //   }
-      // });
+        const signedtxn4 = await this.enclaveService.signTransaction({
+          vault_id: vault_id,
+          auth_password: auth_password,
+          transaction_to_sign: {
+            AlgorandTransaction: {
+              transaction_bytes: new Uint8Array([
+                0x54,
+                0x58,
+                ...to_msgpack(txn4?.modifiedTransaction)
+              ]) // Add "TX" prefix tag
+            }
+          }
+        });
 
-      // let signedtxn5_2;
-      // if (
-      //   'Signed' in signedtxn5 &&
-      //   'AlgorandTransactionSigned' in signedtxn5.Signed
-      // ) {
-      //   signedtxn5_2 =
-      //     signedtxn5.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
-      // } else {
-      //   throw new Error(
-      //     '[Contributor Init Claim Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
-      //   );
-      // }
+        if (
+          'Signed' in signedtxn4 &&
+          'AlgorandTransactionSigned' in signedtxn4.Signed
+        ) {
+          signedtxn4_2 =
+            signedtxn4.Signed.AlgorandTransactionSigned
+              .signed_transaction_bytes;
+        } else {
+          throw new Error(
+            '[Append Asset Optin Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+          );
+        }
 
-      // const txn5Result = await sendInitClaimContributorTxn(
-      //   signedtxn5_2,
-      //   client,
-      //   txn5?.txnID!
-      // );
+        await sendAssetOptinTxn(signedtxn4_2, client, txn4?.txnID!);
+      } catch (error) {
+        console.error('Error in txn4 - createAssetOptinTxn_new:', error);
+        throw error;
+      }
+
+      let txn5, signedtxn5_2;
+      try {
+        txn5 = await createInitClaimContributorTxn(
+          appID,
+          client,
+          creatorAddr,
+          setupResult?.contributorCreatorID,
+          setupResult?.appendDrtID
+        );
+
+        const signedtxn5 = await this.enclaveService.signTransaction({
+          vault_id: vault_id,
+          auth_password: auth_password,
+          transaction_to_sign: {
+            AlgorandTransaction: {
+              transaction_bytes: new Uint8Array([
+                0x54,
+                0x58,
+                ...to_msgpack(txn5?.modifiedTransaction)
+              ]) // Add "TX" prefix tag
+            }
+          }
+        });
+
+        if (
+          'Signed' in signedtxn5 &&
+          'AlgorandTransactionSigned' in signedtxn5.Signed
+        ) {
+          signedtxn5_2 =
+            signedtxn5.Signed.AlgorandTransactionSigned
+              .signed_transaction_bytes;
+        } else {
+          throw new Error(
+            '[Contributor Init Claim Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+          );
+        }
+
+        await sendInitClaimContributorTxn(signedtxn5_2, client, txn5?.txnID!);
+      } catch (error) {
+        console.error('Error in txn5 - createInitClaimContributorTxn:', error);
+        throw error;
+      }
 
       const contributorCreatorID = setupResult?.contributorCreatorID;
       const appendDrtID = setupResult?.appendDrtID;

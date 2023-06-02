@@ -1,27 +1,28 @@
 import { Injectable } from '@angular/core';
 import algosdk from 'algosdk';
+import * as msgpack from 'msgpack-lite';
 import { to_msgpack } from 'src/app/schema/msgpack';
 import { EnclaveService } from 'src/app/services/enclave.service';
 import {
   createBuyDRTTxn,
   createClaimContributorTxn,
-  createClaimDRTTxn,
   createCreateDRTTxn,
   createDelistDRTTxn,
   createJoinPoolPendingTxn,
   createlistDRTTxn,
-  createRedeemDRTTxn
+  createRedeemDRTTxn,
+  createStoreDRTTxn
 } from '../../createTransactions/dataPoolOperationTxns';
 import { createAssetOptinTxn_new } from '../../createTransactions/utilityTxns';
 import {
   sendBuyDRTTxn,
   sendClaimContributorTxn,
-  sendClaimDRTTxn,
   sendCreateDRTTxn,
   sendDelistDRTTxn,
   sendExecuteDRTTxn,
   sendJoinPoolPendingTxn,
-  sendListDRTTxn
+  sendListDRTTxn,
+  sendStoreDRTTxn
 } from '../../sendTransactions/sendDataPoolTxns';
 import { sendAssetOptinTxn } from '../../sendTransactions/sendUtilityTxns';
 
@@ -35,7 +36,6 @@ export class PoolOperations {
   constructor(private enclaveService: EnclaveService) {}
 
   createDRTMethod = async (
-    // creatorAccount: algosdk.Account,
     creatorAddr: algosdk.Account['addr'],
     appID: number | bigint,
     client: algosdk.Algodv2,
@@ -47,55 +47,73 @@ export class PoolOperations {
     vault_id: string,
     auth_password: string
   ) => {
+    let drtID;
+
     try {
-      /// Transaction 1 - Create DRT
-      let txn1 = await createCreateDRTTxn(
-        appID,
-        client,
-        creatorAddr,
-        drtName,
-        drtSupply,
-        drtPrice,
-        drtUrlBinary,
-        drtBinaryHash
-      );
+      let txn1, signedtxn1_2;
 
-      const signedtxn1 = await this.enclaveService.signTransaction({
-        vault_id: vault_id,
-        auth_password: auth_password,
-        transaction_to_sign: {
-          AlgorandTransaction: {
-            transaction_bytes: new Uint8Array([
-              0x54,
-              0x58,
-              ...to_msgpack(txn1?.modifiedTransaction)
-            ]) // Add "TX" prefix tag
-          }
-        }
-      });
-
-      let signedtxn1_2;
-      if (
-        'Signed' in signedtxn1 &&
-        'AlgorandTransactionSigned' in signedtxn1.Signed
-      ) {
-        signedtxn1_2 =
-          signedtxn1.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
-      } else {
-        throw new Error(
-          '[Create DRT 1 Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+      try {
+        txn1 = await createCreateDRTTxn(
+          appID,
+          client,
+          creatorAddr,
+          drtName,
+          drtSupply,
+          drtPrice,
+          drtUrlBinary,
+          drtBinaryHash
         );
+
+        const signedtxn1 = await this.enclaveService.signTransaction({
+          vault_id: vault_id,
+          auth_password: auth_password,
+          transaction_to_sign: {
+            AlgorandTransaction: {
+              transaction_bytes: new Uint8Array([
+                0x54,
+                0x58,
+                ...to_msgpack(txn1?.modifiedTransaction)
+              ]) // Add "TX" prefix tag
+            }
+          }
+        });
+
+        if (
+          'Signed' in signedtxn1 &&
+          'AlgorandTransactionSigned' in signedtxn1.Signed
+        ) {
+          signedtxn1_2 =
+            signedtxn1.Signed.AlgorandTransactionSigned
+              .signed_transaction_bytes;
+        } else {
+          throw new Error(
+            '[Create DRT 1 Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+          );
+        }
+      } catch (error) {
+        console.error('Error in createCreateDRTTxn or signing txn1:', error);
+        throw error;
       }
 
-      const drtID = await sendCreateDRTTxn(
-        signedtxn1,
-        client,
-        txn1!.txnID,
-        appID
-      );
+      try {
+        drtID = await sendCreateDRTTxn(
+          signedtxn1_2,
+          client,
+          txn1?.txnID!,
+          appID
+        );
+      } catch (error) {
+        console.error('Error in sendCreateDRTTxn:', error);
+        throw error;
+      }
+    } catch (err) {
+      console.error('Error in createDRTMethod:', err);
+      throw err;
+    }
 
-      // Transaction 2 - Claim DRT
-      const txn2 = await createClaimDRTTxn(appID, client, creatorAddr, drtID);
+    try {
+      const txn2 = await createStoreDRTTxn(appID, client, creatorAddr, drtID);
+
       const signedtxn2 = await this.enclaveService.signTransaction({
         vault_id: vault_id,
         auth_password: auth_password,
@@ -123,10 +141,12 @@ export class PoolOperations {
         );
       }
 
-      const result = await sendClaimDRTTxn(signedtxn2_2, client, txn2!.txnID);
+      const result = await sendStoreDRTTxn(signedtxn2_2, client, txn2?.txnID!);
+      console.log(result);
       return drtID;
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error('Error in createStoreDRTTxn or sending txn2:', error);
+      throw error;
     }
   };
 
@@ -142,41 +162,35 @@ export class PoolOperations {
     auth_password: string
   ) => {
     try {
-      // transaction 1 - Optin to drt
-      const txn1 = await createAssetOptinTxn_new(drtId, buyerAddr, client);
+      // const txn1 = await createAssetOptinTxn_new(drtId, buyerAddr, client);
 
-      // sign transaction
-      const signedtxn1 = await this.enclaveService.signTransaction({
-        vault_id: vault_id,
-        auth_password: auth_password,
-        transaction_to_sign: {
-          AlgorandTransaction: {
-            transaction_bytes: new Uint8Array([
-              0x54,
-              0x58,
-              ...to_msgpack(txn1?.modifiedTransaction)
-            ]) // Add "TX" prefix tag
-          }
-        }
-      });
+      // const signedtxn1 = await this.enclaveService.signTransaction({
+      //   vault_id: vault_id,
+      //   auth_password: auth_password,
+      //   transaction_to_sign: {
+      //     AlgorandTransaction: {
+      //       transaction_bytes: new Uint8Array([
+      //         0x54,
+      //         0x58,
+      //         ...to_msgpack(txn1?.modifiedTransaction)
+      //       ]) // Add "TX" prefix tag
+      //     }
+      //   }
+      // });
+      // let signedtxn1_2;
+      // if (
+      //   'Signed' in signedtxn1 &&
+      //   'AlgorandTransactionSigned' in signedtxn1.Signed
+      // ) {
+      //   signedtxn1_2 =
+      //     signedtxn1.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
+      // } else {
+      //   throw new Error(
+      //     '[Append Asset Optin Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+      //   );
+      // }
 
-      let signedtxn1_2;
-      if (
-        'Signed' in signedtxn1 &&
-        'AlgorandTransactionSigned' in signedtxn1.Signed
-      ) {
-        signedtxn1_2 =
-          signedtxn1.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
-      } else {
-        throw new Error(
-          '[Asset Optin Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
-        );
-      }
-      const txn1Result = await sendAssetOptinTxn(
-        signedtxn1_2,
-        client,
-        txn1?.txnID!
-      );
+      // await sendAssetOptinTxn(signedtxn1_2, client, txn1?.txnID!);
 
       // /// Transaction 2 - Buy DRT group transaction
       const txn2 = await createBuyDRTTxn(
@@ -242,15 +256,22 @@ export class PoolOperations {
           '[Buy Txn 2] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
         );
       }
-
+      console.log(
+        'signed buy transaction receive back - ',
+        msgpack.decode(signedtxn2_buy_2).txn
+      );
+      console.log(
+        'signed pay transaction receive back - ',
+        msgpack.decode(signedtxn2_pay_2).txn
+      );
       // send group transaction
       const result = await sendBuyDRTTxn(
         [signedtxn2_buy_2, signedtxn2_pay_2],
         client,
-        txn2?.txnID_Pay!
+        txn2!.txnID_Buy
       );
-      // console.log(result);
-      return result;
+      console.log(result);
+      return 1;
     } catch (err) {
       console.log(err);
     }
@@ -259,7 +280,6 @@ export class PoolOperations {
   delistDRTMethod = async (
     client: algosdk.Algodv2,
     appID: number | bigint,
-    //creatorAccount: algosdk.Account,
     creatorAddr: algosdk.Account['addr'],
     drtId: number,
     vault_id: string,
@@ -305,7 +325,6 @@ export class PoolOperations {
   listDRTMethod = async (
     client: algosdk.Algodv2,
     appID: number | bigint,
-    //creatorAccount: algosdk.Account,
     creatorAddr: algosdk.Account['addr'],
     drtId: number,
     vault_id: string,
@@ -336,7 +355,7 @@ export class PoolOperations {
           signedtxn1.Signed.AlgorandTransactionSigned.signed_transaction_bytes;
       } else {
         throw new Error(
-          '[De-list DRT 1 Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
+          '[List DRT Txn] - Failed to retrieve signed transaction bytes from enclave service signed transaction'
         );
       }
 

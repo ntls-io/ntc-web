@@ -12,7 +12,13 @@ export const sendCreateDRTTxn = async (
     await client.sendRawTransaction(signedTxn).do();
     // Wait for transaction to be confirmed
     const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
-
+    // Get the completed Transaction
+    console.log(
+      'Create DRT Transaction 1 - Create DRT ASA: ' +
+        txId +
+        ' confirmed in round ' +
+        confirmedTxn['confirmed-round']
+    );
     const transactionResponse = await client
       .pendingTransactionInformation(txId)
       .do();
@@ -23,7 +29,7 @@ export const sendCreateDRTTxn = async (
   }
 };
 
-export const sendClaimDRTTxn = async (
+export const sendStoreDRTTxn = async (
   signedTxn: any,
   client: algosdk.Algodv2,
   txId: string
@@ -32,7 +38,12 @@ export const sendClaimDRTTxn = async (
     await client.sendRawTransaction(signedTxn).do();
     // Wait for transaction to be confirmed
     const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
-
+    console.log(
+      'Create DRT Transaction 2 - Store DRT in Box: ' +
+        txId +
+        ' confirmed in round ' +
+        confirmedTxn['confirmed-round']
+    );
     const transactionResponse = await client
       .pendingTransactionInformation(txId)
       .do();
@@ -50,8 +61,14 @@ export const sendBuyDRTTxn = async (
   try {
     await client.sendRawTransaction(signedTxn).do();
     // Wait for transaction to be confirmed
-    const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
+    const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 6);
 
+    console.log(
+      'Buy Group Transaction : ' +
+        txId +
+        ' confirmed in round ' +
+        confirmedTxn['confirmed-round']
+    );
     const transactionResponse = await client
       .pendingTransactionInformation(txId)
       .do();
@@ -70,7 +87,12 @@ export const sendListDRTTxn = async (
     await client.sendRawTransaction(signedTxn).do();
     // Wait for transaction to be confirmed
     const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
-
+    console.log(
+      'List DRT transaction: ' +
+        txId +
+        ' confirmed in round ' +
+        confirmedTxn['confirmed-round']
+    );
     const transactionResponse = await client
       .pendingTransactionInformation(txId)
       .do();
@@ -89,7 +111,12 @@ export const sendDelistDRTTxn = async (
     await client.sendRawTransaction(signedTxn).do();
     // Wait for transaction to be confirmed
     const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
-
+    console.log(
+      'De-List DRT transaction : ' +
+        txId +
+        ' confirmed in round ' +
+        confirmedTxn['confirmed-round']
+    );
     const transactionResponse = await client
       .pendingTransactionInformation(txId)
       .do();

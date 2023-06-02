@@ -1,8 +1,8 @@
-import algosdk, { BoxReference } from 'algosdk';
+import algosdk from 'algosdk';
 import * as base64js from 'base64-js';
 
 // Compile Program
-const compileContract = async (
+export const compileContract = async (
   client: algosdk.Algodv2,
   programSource: string | undefined
 ) => {
@@ -80,7 +80,7 @@ export const createDeployContractTxn = async (
     };
 
     const txnID = txn!.txID().toString();
-    return { modifiedTransaction, txnID };
+    return { modifiedTransaction, txn, txnID };
   } catch (err) {
     console.log(err);
   }
@@ -125,7 +125,7 @@ export const createFundContractTxn = async (
     };
 
     const txnID = txn!.txID().toString();
-    return { modifiedTransaction, txnID };
+    return { modifiedTransaction, txn, txnID };
   } catch (err) {
     console.log(err);
   }
@@ -185,7 +185,7 @@ export const DEMO_createSetupDataPoolTxn = async (
         }
       ]
     });
-    console.log(Number(appID));
+
     return txn;
   } catch (err) {
     console.log(err);
@@ -219,20 +219,6 @@ export const createInitClaimContributorTxn = async (
     boxName.set(assetBytes);
     boxName.set(pk, assetBytes.length);
 
-    const boxReferences: BoxReference[] = [
-      { appIndex: Number(appID), name: new Uint8Array([1, 2, 3, 4]) },
-      { appIndex: Number(appID), name: new Uint8Array([5, 6, 7, 8]) }
-    ];
-
-    // // Create the application call transaction object
-    // const txn = algosdk.makeApplicationCallTxnFromObject({
-    //   from: creatorAddr,
-    //   suggestedParams: params,
-    //   appIndex: Number(appID),
-    //   onComplete: algosdk.OnApplicationComplete.NoOpOC,
-    //   appArgs: appArgs,
-    //   boxes: boxReferences
-    // });
     const txn = algosdk.makeApplicationCallTxnFromObject({
       from: creatorAddr,
       appIndex: Number(appID),
@@ -240,39 +226,62 @@ export const createInitClaimContributorTxn = async (
       onComplete: onComplete,
       appArgs: appArgs,
       foreignAssets: [contributorAssetID, Number(appendAssetID)],
-      boxes: boxReferences
+      boxes: [
+        {
+          appIndex: Number(appID),
+          name: algosdk.encodeUint64(contributorAssetID)
+        },
+        {
+          appIndex: Number(appID),
+          name: algosdk.decodeAddress(creatorAddr).publicKey
+        },
+        {
+          appIndex: Number(appID),
+          name: boxName
+        }
+      ]
     });
 
-    const apbx = [];
-    apbx.push({
-      i: Number(appID),
-      n: algosdk.encodeUint64(contributorAssetID)
-    });
-    apbx.push({ i: Number(appID), n: boxName });
-    apbx.push({
-      i: Number(appID),
-      n: algosdk.decodeAddress(creatorAddr).publicKey
-    });
+    // never change this
+    // the i field must be left at 0, the zero i (appIndex) indicates that the
+    // application call is references boxes that are stored in the current application.
+    // only necessary to change this field you want the current application to call a foreign box from another application.
+    // Then to do so, you need to include the foreign application ID in the foreignApps array of the transaction to.
+    // As well as the i field of the box. i.e. i: Number(ForeignAppID) ..
+    const apbx = [
+      {
+        i: 0,
+        n: txn.boxes![0].name
+      },
+      {
+        i: 0,
+        n: txn.boxes![1].name
+      },
+      {
+        i: 0,
+        n: txn.boxes![2].name
+      }
+    ];
 
-    // Create the apbx field with the box references
+    // Create modified transaction to get processed by Algonaut SDK in enclave.
     var modifiedTransaction = {
       ...txn,
-      apl: txn!.type, //type
+      type: txn!.type, //type
       snd: txn?.from.publicKey, //sender
       apid: txn!.appIndex, //app ID
-      apaa: [txn!.appArgs![0]], //app args
-      apas: [txn!.appForeignAssets![0], txn!.appForeignAssets![1]],
-      apbx: [algosdk.decodeAddress(creatorAddr).publicKey],
+      apaa: [txn!.appArgs![0]], //app arguments
+      apas: [txn!.appForeignAssets![0], txn!.appForeignAssets![1]], //foreign ASAs
+      apbx: apbx, //boxes
       fv: txn!.firstRound,
       lv: txn!.lastRound,
       gen: txn!.genesisID,
-      gh: txn!.genesisHash
+      gh: txn!.genesisHash,
+      fee: txn!.fee
     };
 
-    console.log(modifiedTransaction);
-    const txnID = txn!.txID().toString();
+    const txnID = txn!.txID().toString(); //transaction ID
 
-    return { modifiedTransaction, txnID };
+    return { modifiedTransaction, txn, txnID };
   } catch (err) {
     console.log(err);
   }
