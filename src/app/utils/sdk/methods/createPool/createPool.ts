@@ -161,7 +161,7 @@ export class PoolCreate {
         var dataPoolHash = 'HBKHJB-DataPool-DJKDB';
         var appendDRTName = 'Append DRT';
         var appendDRTUnitName = 'DRT';
-        var appendDRTSupply = 1;
+        var appendDRTSupply = 15;
         var appendDRTPrice = 1000000;
         var appendDRTurlBinary = 'https://url_append_binary';
         var appendDRTBinaryHash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';

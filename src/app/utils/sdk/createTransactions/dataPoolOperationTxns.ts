@@ -386,6 +386,7 @@ export const createJoinPoolPendingTxn = async (
   executionFee: number | bigint
 ) => {
   try {
+    const encoder = new TextEncoder();
     // Transaction 1 - asset transfer
     const contractAddr = algosdk.getApplicationAddress(appID);
 
@@ -413,7 +414,7 @@ export const createJoinPoolPendingTxn = async (
     );
 
     // Transaction 3 - add user as pending contributor
-    const appArgs = [new Uint8Array(Buffer.from('add_contributor_pending'))];
+    const appArgs = [encoder.encode('add_contributor_pending')];
     const boxName = algosdk.decodeAddress(contributorAddr).publicKey;
 
     const addPendingContributorTxn = algosdk.makeApplicationCallTxnFromObject({
@@ -429,6 +430,12 @@ export const createJoinPoolPendingTxn = async (
         }
       ]
     });
+    const apbx = [
+      {
+        i: 0,
+        n: addPendingContributorTxn.boxes![0].name
+      }
+    ];
 
     //assign groups
     assignGroupID([
@@ -438,11 +445,11 @@ export const createJoinPoolPendingTxn = async (
     ]);
 
     const modifiedTransaction_assetTransfer = {
-      ...assetTransferTxn!.txn,
+      ...assetTransferTxn!.modifiedTransaction,
       grp: assetTransferTxn!.txn.group
     };
     const modifiedTransaction_assetPayment = {
-      ...payTxn!.txn,
+      ...payTxn!.modifiedTransaction,
       grp: payTxn!.txn.group
     };
 
@@ -452,12 +459,12 @@ export const createJoinPoolPendingTxn = async (
       snd: addPendingContributorTxn?.from.publicKey,
       apid: addPendingContributorTxn!.appIndex, //app ID
       apaa: [addPendingContributorTxn!.appArgs![0]], //app args
-      apas: [addPendingContributorTxn!.appForeignAssets![0]], //foreign assets
-      // apbx: [boxes] WIP TODO
+      apbx: apbx,
       fv: addPendingContributorTxn!.firstRound,
       lv: addPendingContributorTxn!.lastRound,
       gen: addPendingContributorTxn!.genesisID,
       gh: addPendingContributorTxn!.genesisHash,
+      fee: addPendingContributorTxn!.fee,
       grp: addPendingContributorTxn.group
     };
 
@@ -478,7 +485,7 @@ export const createJoinPoolPendingTxn = async (
   }
 };
 
-// create unsigned transaction DEMO until the enclave can create their own transactions
+// claim contributor token transaction
 export const createClaimContributorTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
@@ -486,7 +493,8 @@ export const createClaimContributorTxn = async (
   contributorAssetID: number
 ) => {
   try {
-    const appArgs = [new Uint8Array(Buffer.from('add_contributor_claim'))];
+    const encoder = new TextEncoder();
+    const appArgs = [encoder.encode('add_contributor_claim')];
 
     const params = await client.getTransactionParams().do();
 
@@ -505,9 +513,7 @@ export const createClaimContributorTxn = async (
       boxes: [
         {
           appIndex: Number(appID),
-          name: new Uint8Array(
-            Buffer.from(algosdk.encodeUint64(contributorAssetID))
-          )
+          name: algosdk.encodeUint64(contributorAssetID)
         },
         {
           appIndex: Number(appID),
@@ -515,18 +521,31 @@ export const createClaimContributorTxn = async (
         }
       ]
     });
+
+    const apbx = [
+      {
+        i: 0,
+        n: txn.boxes![0].name
+      },
+      {
+        i: 0,
+        n: txn.boxes![1].name
+      }
+    ];
+
     const modifiedTransaction = {
       ...txn,
-      type: txn!.type,
+      apl: txn!.type,
       snd: txn?.from.publicKey,
       apid: txn!.appIndex, //app ID
       apaa: [txn!.appArgs![0]], //app args
       apas: [txn!.appForeignAssets![0]], //foreign assets
-      // apbx: [boxes] WIP TODO
+      apbx: apbx,
       fv: txn!.firstRound,
       lv: txn!.lastRound,
       gen: txn!.genesisID,
-      gh: txn!.genesisHash
+      gh: txn!.genesisHash,
+      fee: txn!.fee
     };
 
     const txnID = txn!.txID().toString();
@@ -642,6 +661,67 @@ export const createRedeemDRTTxn = async (
       modifiedTransaction_executeDRTTxn,
       execeuteDRTTxn_ID
     };
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const createClaimRoyaltiesTxn = async (
+  appID: number | bigint,
+  client: algosdk.Algodv2,
+  contributorAddr: algosdk.Account['addr'],
+  contributorAssetID: number
+) => {
+  try {
+    const encoder = new TextEncoder();
+    const appArgs = [encoder.encode('claim_royalty_contributor')];
+
+    const params = await client.getTransactionParams().do();
+
+    const onComplete = algosdk.OnApplicationComplete.NoOpOC;
+
+    params.fee = 1000;
+    params.flatFee = true;
+
+    const txn = algosdk.makeApplicationCallTxnFromObject({
+      from: contributorAddr,
+      appIndex: Number(appID),
+      suggestedParams: params,
+      onComplete: onComplete,
+      appArgs: appArgs,
+      foreignAssets: [Number(contributorAssetID)],
+      boxes: [
+        {
+          appIndex: Number(appID),
+          name: algosdk.encodeUint64(contributorAssetID)
+        }
+      ]
+    });
+
+    const apbx = [
+      {
+        i: 0,
+        n: txn.boxes![0].name
+      }
+    ];
+
+    const modifiedTransaction = {
+      ...txn,
+      apl: txn!.type,
+      snd: txn?.from.publicKey,
+      apid: txn!.appIndex, //app ID
+      apaa: [txn!.appArgs![0]], //app args
+      apas: [txn!.appForeignAssets![0]], //foreign assets
+      apbx: apbx,
+      fv: txn!.firstRound,
+      lv: txn!.lastRound,
+      gen: txn!.genesisID,
+      gh: txn!.genesisHash,
+      fee: txn!.fee
+    };
+
+    const txnID = txn!.txID().toString();
+    return { modifiedTransaction, txnID };
   } catch (err) {
     console.log(err);
   }

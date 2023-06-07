@@ -149,12 +149,13 @@ export const createAssetTransferTxn = async (
       amount: Number(amount),
       suggestedParams: params
     });
+
     const modifiedTransaction = {
       ...txn,
       type: txn.type,
       xaid: txn.assetIndex,
-      aamt: txn.assetTotal,
-      snd: txn!.from.publicKey, // sender
+      aamt: txn.amount,
+      snd: txn!.from.publicKey,
       arcv: txn!.to.publicKey, // receiver,
       fv: txn!.firstRound,
       lv: txn!.lastRound,

@@ -11,7 +11,7 @@ export const sendAssetOptinTxn = async (
     // Wait for transaction to be confirmed
     const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
     console.log(
-      'Append Asset Optin Transaction ' +
+      'Asset Optin Transaction ' +
         txId +
         ' confirmed in round ' +
         confirmedTxn['confirmed-round']

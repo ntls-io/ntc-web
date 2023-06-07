@@ -135,7 +135,12 @@ export const sendJoinPoolPendingTxn = async (
     await client.sendRawTransaction(signedTxn).do();
     // Wait for transaction to be confirmed
     const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
-
+    console.log(
+      'Join Data Pool Group Transaction : ' +
+        txId +
+        ' confirmed in round ' +
+        confirmedTxn['confirmed-round']
+    );
     const transactionResponse = await client
       .pendingTransactionInformation(txId)
       .do();
@@ -154,7 +159,35 @@ export const sendClaimContributorTxn = async (
     await client.sendRawTransaction(signedTxn).do();
     // Wait for transaction to be confirmed
     const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
-
+    console.log(
+      'Claim Contributor Token Transaction : ' +
+        txId +
+        ' confirmed in round ' +
+        confirmedTxn['confirmed-round']
+    );
+    const transactionResponse = await client
+      .pendingTransactionInformation(txId)
+      .do();
+    return transactionResponse;
+  } catch (err) {
+    console.log(err);
+  }
+};
+export const sendClaimRoyaltyTxn = async (
+  signedTxn: any,
+  client: algosdk.Algodv2,
+  txId: string
+) => {
+  try {
+    await client.sendRawTransaction(signedTxn).do();
+    // Wait for transaction to be confirmed
+    const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
+    console.log(
+      'Claim Roylaty Fees Transaction : ' +
+        txId +
+        ' confirmed in round ' +
+        confirmedTxn['confirmed-round']
+    );
     const transactionResponse = await client
       .pendingTransactionInformation(txId)
       .do();
