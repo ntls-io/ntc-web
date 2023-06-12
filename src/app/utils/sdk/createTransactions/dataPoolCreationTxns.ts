@@ -1,7 +1,7 @@
 import algosdk from 'algosdk';
 import * as base64js from 'base64-js';
 
-// Compile Program
+// compile Program
 export const compileContract = async (
   client: algosdk.Algodv2,
   programSource: string | undefined
@@ -16,10 +16,11 @@ export const compileContract = async (
   return compiledBytes;
 };
 
-// create unsigned transaction
+// create unsigned transaction to deploy teal code
 export const createDeployContractTxn = async (
   creatorAddr: algosdk.Account['addr'],
   enclaveAddr: algosdk.Account['addr'],
+  nautilusAddr: algosdk.Account['addr'],
   client: algosdk.Algodv2,
   approvalProgram: string | undefined,
   clearProgram: string | undefined
@@ -28,13 +29,12 @@ export const createDeployContractTxn = async (
     // declare application state storage (immutable)
     const localInts = 0;
     const localBytes = 0;
-    const globalInts = 10; //
+    const globalInts = 10;
     const globalBytes = 5;
 
     const appArgs: never[] = [];
 
     const params = await client.getTransactionParams().do();
-    //const program = await readTeal();
 
     const compiledApprovalProgram = await compileContract(
       client,
@@ -60,7 +60,7 @@ export const createDeployContractTxn = async (
       numGlobalByteSlices: globalBytes,
       numGlobalInts: globalInts,
       appArgs: appArgs,
-      accounts: [enclaveAddr],
+      accounts: [enclaveAddr, nautilusAddr],
       extraPages: extraPagesNo
     });
 
@@ -71,7 +71,7 @@ export const createDeployContractTxn = async (
       apgs: { nui: txn?.appGlobalInts, nbs: txn?.appGlobalByteSlices },
       apap: txn?.appApprovalProgram,
       apsu: txn?.appClearProgram,
-      apat: [txn!.appAccounts![0].publicKey],
+      apat: [txn!.appAccounts![0].publicKey, txn!.appAccounts![1].publicKey],
       apep: txn!.extraPages,
       fv: txn!.firstRound,
       lv: txn!.lastRound,
@@ -86,7 +86,7 @@ export const createDeployContractTxn = async (
   }
 };
 
-// create unsigned transaction
+// create unsigned transaction to fund smart contract
 export const createFundContractTxn = async (
   appID: number | bigint,
   fundAmount: any,

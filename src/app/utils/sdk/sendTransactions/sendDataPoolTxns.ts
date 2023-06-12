@@ -203,9 +203,15 @@ export const sendExecuteDRTTxn = async (
 ) => {
   try {
     await client.sendRawTransaction(signedTxn).do();
+
     // Wait for transaction to be confirmed
     const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
-
+    console.log(
+      'Redeem DRT Group Transaction : ' +
+        txId +
+        ' confirmed in round ' +
+        confirmedTxn['confirmed-round']
+    );
     const transactionResponse = await client
       .pendingTransactionInformation(txId)
       .do();

@@ -1,6 +1,7 @@
 import algosdk, { assignGroupID } from 'algosdk';
 import { createAssetTransferTxn, createPaymentTxn } from './utilityTxns';
 
+// create DRT : create ASA
 export const createCreateDRTTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
@@ -37,7 +38,6 @@ export const createCreateDRTTxn = async (
       suggestedParams: params,
       onComplete: onComplete,
       appArgs: appArgs
-      //accounts: [creatorAddr]
     });
     const modifiedTransaction = {
       ...txn,
@@ -52,7 +52,6 @@ export const createCreateDRTTxn = async (
         txn!.appArgs![4],
         txn!.appArgs![5]
       ], //app args
-      //apat: [txn!.appAccounts![0].publicKey], //foreign accounts
       fv: txn!.firstRound,
       lv: txn!.lastRound,
       gen: txn!.genesisID,
@@ -67,6 +66,7 @@ export const createCreateDRTTxn = async (
   }
 };
 
+// create DRT : store in box
 export const createStoreDRTTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
@@ -132,6 +132,7 @@ export const createStoreDRTTxn = async (
   }
 };
 
+// buy a DRT
 export const createBuyDRTTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
@@ -241,6 +242,7 @@ export const createBuyDRTTxn = async (
   }
 };
 
+// de-list DRT for sale
 export const createDelistDRTTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
@@ -309,6 +311,7 @@ export const createDelistDRTTxn = async (
   }
 };
 
+// list DRT for sale
 export const createlistDRTTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,
@@ -377,6 +380,7 @@ export const createlistDRTTxn = async (
   }
 };
 
+// join pool as a pending data contributor
 export const createJoinPoolPendingTxn = async (
   client: algosdk.Algodv2,
   appID: number | bigint,
@@ -555,6 +559,7 @@ export const createClaimContributorTxn = async (
   }
 };
 
+// redeem / execute DRT
 export const createRedeemDRTTxn = async (
   client: algosdk.Algodv2,
   appID: number | bigint,
@@ -564,6 +569,7 @@ export const createRedeemDRTTxn = async (
   executionFee: number | bigint
 ) => {
   try {
+    const encoder = new TextEncoder();
     // Transaction 1 - asset transfer
     const contractAddr = algosdk.getApplicationAddress(appID);
 
@@ -591,7 +597,7 @@ export const createRedeemDRTTxn = async (
     );
 
     // Transaction 3 - execute DRT instruction
-    const appArgs = [new Uint8Array(Buffer.from('execute_drt'))];
+    const appArgs = [encoder.encode('execute_drt')];
 
     const assetBytes = algosdk.encodeUint64(drtId);
     const pkContract = algosdk.decodeAddress(contractAddr).publicKey;
@@ -626,13 +632,24 @@ export const createRedeemDRTTxn = async (
     assignGroupID([assetTransferTxn!.txn, payTxn!.txn, executeDRTTxn]);
 
     const modifiedTransaction_assetTransfer = {
-      ...assetTransferTxn!.txn,
+      ...assetTransferTxn!.modifiedTransaction,
       grp: assetTransferTxn!.txn.group
     };
     const modifiedTransaction_ExecuteFee = {
-      ...payTxn!.txn,
+      ...payTxn!.modifiedTransaction,
       grp: payTxn!.txn.group
     };
+
+    const apbx = [
+      {
+        i: 0,
+        n: executeDRTTxn.boxes![0].name
+      },
+      {
+        i: 0,
+        n: executeDRTTxn.boxes![1].name
+      }
+    ];
 
     const modifiedTransaction_executeDRTTxn = {
       ...executeDRTTxn,
@@ -641,11 +658,12 @@ export const createRedeemDRTTxn = async (
       apid: executeDRTTxn!.appIndex, //app ID
       apaa: [executeDRTTxn!.appArgs![0]], //app args
       apas: [executeDRTTxn!.appForeignAssets![0]], //foreign assets
-      // apbx: [boxes] WIP TODO
+      apbx: apbx,
       fv: executeDRTTxn!.firstRound,
       lv: executeDRTTxn!.lastRound,
       gen: executeDRTTxn!.genesisID,
       gh: executeDRTTxn!.genesisHash,
+      fee: executeDRTTxn!.fee,
       grp: executeDRTTxn.group
     };
 
@@ -666,6 +684,7 @@ export const createRedeemDRTTxn = async (
   }
 };
 
+// caim royalties from contributor
 export const createClaimRoyaltiesTxn = async (
   appID: number | bigint,
   client: algosdk.Algodv2,

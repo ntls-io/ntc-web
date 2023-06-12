@@ -55,6 +55,7 @@ export class PoolCreate {
     enclaveAccount: algosdk.Account,
     creatorAddr: algosdk.Account['addr'],
     enclaveAddr: algosdk.Account['addr'],
+    nautilusAddr: algosdk.Account['addr'],
     vault_id: string,
     auth_password: string
   ) => {
@@ -67,6 +68,7 @@ export class PoolCreate {
         txn1 = await createDeployContractTxn(
           creatorAddr,
           enclaveAddr,
+          nautilusAddr,
           client,
           approvalProgram,
           clearProgram
