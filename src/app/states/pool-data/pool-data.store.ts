@@ -7,7 +7,6 @@ export interface PoolDataState extends EntityState<PoolData> {}
 @Injectable({ providedIn: 'root' })
 @StoreConfig({
   name: 'poolData',
-  idKey: 'name',
   resettable: true
 })
 export class PoolDataStore extends EntityStore<PoolDataState> {

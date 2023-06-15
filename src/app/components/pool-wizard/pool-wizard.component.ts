@@ -50,11 +50,15 @@ export class PoolWizardComponent {
 
             if (mode === 'created') {
               const data = {
+                id: Math.random().toString(36).slice(-3),
                 name: this.poolData.name,
                 description: this.poolData.description,
                 drt: this.drtOptions
                   .filter(drt => drt.checked)
-                  .map(drt => drt.name)
+                  .map(drt => ({
+                    name: drt.name,
+                    description: drt.description
+                  }))
               };
               this.poolDataService.createPool(data);
             }

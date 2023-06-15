@@ -4,7 +4,9 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgWizardConfig, NgWizardModule, THEME } from 'ng-wizard';
 import { FileUploadModule } from 'ng2-file-upload';
+import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { JoinPoolComponent } from 'src/app/components/join-pool/join-pool.component';
 import { PoolWizardComponent } from 'src/app/components/pool-wizard/pool-wizard.component';
 import { SchemaPreviewComponent } from 'src/app/components/schema-preview/schema-preview.component';
@@ -37,7 +39,9 @@ const ngWizardConfig: NgWizardConfig = {
     SharedModule,
     NgWizardModule.forRoot(ngWizardConfig),
     FileUploadModule,
-    ModalModule.forRoot()
+    ModalModule.forRoot(),
+    ButtonsModule.forRoot(),
+    TooltipModule.forRoot()
   ]
 })
 export class DashboardModule {}

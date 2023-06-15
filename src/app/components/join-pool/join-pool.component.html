@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <h5 class="modal-title">Pool Name</h5>
+  <h5 class="modal-title">{{ pool?.name }}</h5>
   <button
     type="button"
     class="btn-close close pull-right"
@@ -10,15 +10,74 @@
   </button>
 </div>
 <div class="modal-body">
-  <p>Pool Description</p>
+  <p>{{ pool?.description }}</p>
 
   <div class="container-fluid px-0 pb-1">
-    <h5>Digital Righs</h5>
+    <em>Digital Rights</em>
     <div class="row">
-      <div class="col-auto p-1" *ngFor="let i of [].constructor(3)">
-        <button class="btn btn-outline-secondary">DRT example</button>
+      <div
+        class="col-auto p-1"
+        *ngFor="let drt of pool?.drt"
+        [tooltip]="drt?.description"
+        placement="bottom"
+      >
+        <button class="btn btn-sm btn-outline-secondary">
+          {{ drt?.name || drt }}
+        </button>
       </div>
     </div>
   </div>
-  <app-pool-wizard mode="join" (onFinish)="bsModalRef.hide()"></app-pool-wizard>
+
+  <ul
+    class="list-group my-3"
+    *ngIf="uploaderData.queue?.[0]?.file as file; else noData"
+  >
+    <li
+      class="list-group-item d-flex justify-content-between align-items-center p-2"
+    >
+      <span>
+        <small class="badge badge-primary">Data file</small>
+        <div>
+          {{ file.name }}
+        </div>
+      </span>
+
+      <button
+        class="btn btn-sm mr-2 btn-outline-secondary"
+        type="button"
+        (click)="uploaderData.clearQueue()"
+      >
+        <i class="bi bi-trash-fill"></i>
+      </button>
+    </li>
+  </ul>
+
+  <ng-template #noData>
+    <div class="form-group">
+      <label>Select data file</label>
+      <div class="input-group is-invalid">
+        <div class="custom-file">
+          <input
+            type="file"
+            class="custom-file-input"
+            ng2FileSelect
+            accept="application/json"
+            [uploader]="uploaderData"
+          />
+          <label class="custom-file-label">Choose data...</label>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</div>
+
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-secondary"
+    [disabled]="uploaderData.queue.length === 0"
+    (click)="joinPool()"
+  >
+    Join
+  </button>
 </div>

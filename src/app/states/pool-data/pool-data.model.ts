@@ -1,7 +1,13 @@
-export interface PoolData {
+export interface DRT {
   name: string;
   description: string;
-  drt: string[];
+}
+
+export interface PoolData {
+  id: string;
+  name: string;
+  description: string;
+  drt: DRT[];
 }
 
 export function createPoolDatum(params: Partial<PoolData>) {

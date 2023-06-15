@@ -16,9 +16,9 @@ export class PoolsComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  openJoinPool() {
+  openJoinPool(id: string) {
     const initialState: ModalOptions = {
-      initialState: {},
+      initialState: { id },
       class: 'modal-dialog-centered'
     };
     this.modalService.show(JoinPoolComponent, initialState);
