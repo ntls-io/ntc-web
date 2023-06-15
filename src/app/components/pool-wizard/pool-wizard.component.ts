@@ -1,8 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   NgWizardConfig,
+  NgWizardService,
   StepChangedArgs,
   StepValidationArgs,
+  STEP_POSITION,
   STEP_STATE,
   THEME
 } from 'ng-wizard';
@@ -10,6 +12,7 @@ import { FileUploader } from 'ng2-file-upload';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { defer, of } from 'rxjs';
 import { AjvService } from 'src/app/utils/ajv.service';
+import Swal from 'sweetalert2';
 import { SchemaPreviewComponent } from '../schema-preview/schema-preview.component';
 
 const uploaderConfig = {
@@ -25,6 +28,7 @@ const uploaderConfig = {
 })
 export class PoolWizardComponent {
   @Input() mode: 'join' | 'create' = 'create';
+  @Output() onFinish = new EventEmitter<null>();
   stepStates = {
     normal: STEP_STATE.normal,
     disabled: STEP_STATE.disabled,
@@ -34,8 +38,29 @@ export class PoolWizardComponent {
 
   config: NgWizardConfig = {
     selected: 0,
-    theme: THEME.default
+    theme: THEME.default,
+    toolbarSettings: {
+      toolbarExtraButtons: [
+        {
+          text: 'Finish',
+          class: 'btn btn-secondary finish-btn d-none',
+          event: async () => {
+            const mode = this.mode === 'create' ? 'created' : 'joined';
+            await Swal.fire({
+              icon: 'success',
+              titleText: 'Great stuff!',
+              text: `You have successfully ${mode} a data pool`
+            }).then(() => {
+              this.ngWizardService.reset();
+              this.onFinish.emit();
+            });
+          }
+        }
+      ]
+    }
   };
+
+  selectedPosition: STEP_POSITION | undefined;
 
   isValidTypeBoolean: boolean = true;
 
@@ -46,12 +71,21 @@ export class PoolWizardComponent {
 
   scPrevModal?: BsModalRef;
 
-  constructor(private ajv: AjvService, private modalService: BsModalService) {}
+  constructor(
+    private ajv: AjvService,
+    private modalService: BsModalService,
+    private ngWizardService: NgWizardService
+  ) {}
 
   ngOnInit() {}
 
   stepChanged(args: StepChangedArgs) {
-    console.log(args.step);
+    const fBtn = document.querySelector(`#${this.mode} .finish-btn`);
+    if (args.position === STEP_POSITION.final) {
+      fBtn?.classList.remove('d-none');
+    } else {
+      fBtn?.classList.add('d-none');
+    }
   }
 
   async previewModal(schema: Blob) {
