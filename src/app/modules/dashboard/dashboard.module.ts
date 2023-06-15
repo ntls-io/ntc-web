@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgWizardConfig, NgWizardModule, THEME } from 'ng-wizard';
 import { FileUploadModule } from 'ng2-file-upload';
 import { ModalModule } from 'ngx-bootstrap/modal';
@@ -30,6 +31,8 @@ const ngWizardConfig: NgWizardConfig = {
   ],
   imports: [
     CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
     DashboardRoutingModule,
     SharedModule,
     NgWizardModule.forRoot(ngWizardConfig),

@@ -25,19 +25,30 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let i of [].constructor(5)">
-                <td>Data name</td>
-                <td>Lorem ipsum dolor sit amet.</td>
-                <td>DRT description</td>
-                <td class="text-right">
-                  <button
-                    class="btn btn-sm btn-outline-dark"
-                    (click)="openJoinPool()"
-                  >
-                    Join Pool
-                  </button>
-                </td>
-              </tr>
+              <ng-container
+                *ngIf="(poolDataQuery.selectAll() | async)?.length; else noData"
+              >
+                <tr *ngFor="let pool of poolDataQuery.selectAll() | async">
+                  <td>{{ pool.name }}</td>
+                  <td>{{ pool.description }}</td>
+                  <td>
+                    {{ pool.drt.join(', ') }}
+                  </td>
+                  <td class="text-right">
+                    <button
+                      class="btn btn-sm btn-outline-dark"
+                      (click)="openJoinPool()"
+                    >
+                      Join Pool
+                    </button>
+                  </td>
+                </tr>
+              </ng-container>
+              <ng-template #noData>
+                <tr>
+                  <td colspan="4" class="text-center">No pools found</td>
+                </tr>
+              </ng-template>
             </tbody>
           </table>
         </div>

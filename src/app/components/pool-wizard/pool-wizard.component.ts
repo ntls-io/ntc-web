@@ -11,6 +11,7 @@ import {
 import { FileUploader } from 'ng2-file-upload';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { defer, of } from 'rxjs';
+import { PoolDataService } from 'src/app/states/pool-data';
 import { AjvService } from 'src/app/utils/ajv.service';
 import Swal from 'sweetalert2';
 import { SchemaPreviewComponent } from '../schema-preview/schema-preview.component';
@@ -46,12 +47,24 @@ export class PoolWizardComponent {
           class: 'btn btn-secondary finish-btn d-none',
           event: async () => {
             const mode = this.mode === 'create' ? 'created' : 'joined';
+
+            if (mode === 'created') {
+              const data = {
+                name: this.poolData.name,
+                description: this.poolData.description,
+                drt: this.drtOptions
+                  .filter(drt => drt.checked)
+                  .map(drt => drt.name)
+              };
+              this.poolDataService.createPool(data);
+            }
             await Swal.fire({
               icon: 'success',
               titleText: 'Great stuff!',
               text: `You have successfully ${mode} a data pool`,
               confirmButtonColor: '#000'
-            }).then(() => {
+            }).finally(() => {
+              this.resetData();
               this.ngWizardService.reset();
               this.onFinish.emit();
             });
@@ -75,19 +88,27 @@ export class PoolWizardComponent {
   drtOptions = [
     {
       name: 'Append',
-      description: 'Allow others to append their data and join your pool'
+      description: 'Allow others to append their data and join your pool',
+      checked: false
     },
     {
       name: 'Average',
       description:
-        'Allow others to calculate averages on integer values in your data'
+        'Allow others to calculate averages on integer values in your data',
+      checked: false
     }
   ];
+
+  poolData = {
+    name: '',
+    description: ''
+  };
 
   constructor(
     private ajv: AjvService,
     private modalService: BsModalService,
-    private ngWizardService: NgWizardService
+    private ngWizardService: NgWizardService,
+    private poolDataService: PoolDataService
   ) {}
 
   ngOnInit() {}
@@ -140,6 +161,16 @@ export class PoolWizardComponent {
 
     console.log(result);
     return result.success;
+  }
+
+  resetData() {
+    this.drtOptions.forEach(drt => (drt.checked = false));
+    this.poolData = {
+      name: '',
+      description: ''
+    };
+    this.uploaderSchema.clearQueue();
+    this.uploaderData.clearQueue();
   }
 
   resetPackageStep() {
