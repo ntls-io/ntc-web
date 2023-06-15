@@ -49,7 +49,8 @@ export class PoolWizardComponent {
             await Swal.fire({
               icon: 'success',
               titleText: 'Great stuff!',
-              text: `You have successfully ${mode} a data pool`
+              text: `You have successfully ${mode} a data pool`,
+              confirmButtonColor: '#000'
             }).then(() => {
               this.ngWizardService.reset();
               this.onFinish.emit();
