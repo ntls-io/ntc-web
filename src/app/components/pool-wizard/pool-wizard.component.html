@@ -8,17 +8,6 @@
     >
       <form>
         <ng-container *ngIf="mode === 'create'">
-          <div class="form-group">
-            <label>Select Schema Definition</label>
-            <select class="form-control">
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-            </select>
-          </div>
-
           <ul
             class="list-group my-3"
             *ngIf="uploaderSchema.queue?.[0]?.file as file; else noSchema"
