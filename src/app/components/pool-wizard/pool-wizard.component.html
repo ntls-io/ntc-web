@@ -140,9 +140,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>DRT Name</td>
-            <td>Lorem Ipsum</td>
+          <tr *ngFor="let drt of drtOptions">
+            <td>{{ drt.name }}</td>
+            <td>{{ drt.description }}</td>
             <td>
               <div class="form-check">
                 <input

@@ -72,6 +72,18 @@ export class PoolWizardComponent {
 
   scPrevModal?: BsModalRef;
 
+  drtOptions = [
+    {
+      name: 'Append',
+      description: 'Allow others to append their data and join your pool'
+    },
+    {
+      name: 'Average',
+      description:
+        'Allow others to calculate averages on integer values in your data'
+    }
+  ];
+
   constructor(
     private ajv: AjvService,
     private modalService: BsModalService,
