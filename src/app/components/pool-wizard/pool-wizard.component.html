@@ -180,4 +180,14 @@
       </div>
     </ng-wizard-step>
   </ng-wizard>
+  <ng-wizard-step
+      title="success"
+      description="Successful pool creation"
+      [canEnter]="isValidFunctionReturnsObservable.bind(this)"
+      [canExit]="isValidFunctionReturnsBoolean.bind(this)"
+    >
+        <p>You have successfully created a data pool</p>
+
+    </ng-wizard-step>
+  </ng-wizard>
 </div>
