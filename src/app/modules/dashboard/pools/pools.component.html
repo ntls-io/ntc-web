@@ -25,6 +25,29 @@
               </tr>
             </thead>
             <tbody>
+              <ng-container *ngIf="hardcoded_poolData?.length; else noData">
+                <tr *ngFor="let pool of hardcoded_poolData">
+                  <td>{{ pool.name }}</td>
+                  <td>{{ pool.description }}</td>
+                  <td>
+                    <span
+                      class="badge badge-pill badge-dark mx-1"
+                      [tooltip]="drt?.description"
+                      *ngFor="let drt of pool.drt"
+                    >
+                      {{ drt?.name || drt }}
+                    </span>
+                  </td>
+                  <td class="text-right">
+                    <button
+                      class="btn btn-sm btn-outline-dark"
+                      (click)="openJoinPool(pool.id)"
+                    >
+                      Join Pool
+                    </button>
+                  </td>
+                </tr>
+              </ng-container>
               <ng-container
                 *ngIf="(poolDataQuery.selectAll() | async)?.length; else noData"
               >
@@ -52,7 +75,7 @@
               </ng-container>
               <ng-template #noData>
                 <tr>
-                  <td colspan="4" class="text-center">No pools found</td>
+                  <td colspan="4" class="text-center"></td>
                 </tr>
               </ng-template>
             </tbody>
