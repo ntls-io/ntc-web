@@ -16,6 +16,7 @@ import { DashboardRoutingModule } from './dashboard-routing.module';
 import { HomeComponent } from './home/home.component';
 import { MarketComponent } from './market/market.component';
 import { PoolsComponent } from './pools/pools.component';
+import { RedeemComponent } from 'src/app/components/redeem/redeem.component';
 
 const ngWizardConfig: NgWizardConfig = {
   theme: THEME.default
@@ -29,6 +30,7 @@ const ngWizardConfig: NgWizardConfig = {
     JoinPoolComponent,
     SchemaPreviewComponent,
     MarketComponent,
+    RedeemComponent,
     AnalysisComponent
   ],
   imports: [

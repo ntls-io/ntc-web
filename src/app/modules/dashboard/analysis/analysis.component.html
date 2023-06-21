@@ -35,8 +35,18 @@
                 <td>Household financial analysis showing averages on set categories.</td>
                 <td>Redeemed</td>
                 <td class="text-right">
-                  <button class="btn btn-sm btn-outline-dark">Sell</button>
-                  <button class="btn btn-sm btn-outline-dark">Redeem</button>
+                  <button
+                    *ngIf="enableSellButton"
+                    class="btn btn-sm btn-outline-dark"
+                  >
+                    Sell
+                  </button>
+                  <button
+                    (click)="redeemDrt()"
+                    class="btn btn-sm btn-outline-dark"
+                  >
+                    Redeem
+                  </button>
                 </td>
               </tr>
             </tbody>
