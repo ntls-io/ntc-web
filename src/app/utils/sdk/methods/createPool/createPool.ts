@@ -159,13 +159,14 @@ export class PoolCreate {
 
       let signedtxn3, setupResult;
       try {
-        var noRowsContributed = 4;
-        var dataPoolHash = 'HBKHJB-DataPool-DJKDB';
-        var appendDRTName = 'Append DRT';
+        var noRowsContributed = 7;
+        var dataPoolHash = 'HBKHJBUDTGYPKUFRDJKDB';
+        var appendDRTName = 'Append';
         var appendDRTUnitName = 'DRT';
         var appendDRTSupply = 15;
         var appendDRTPrice = 1000000;
-        var appendDRTurlBinary = 'https://url_append_binary';
+        var appendDRTurlBinary =
+          'https://github.com/ntls-io/nautilus-trusted-compute/append';
         var appendDRTBinaryHash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 
         const txn3 = await DEMO_createSetupDataPoolTxn(
