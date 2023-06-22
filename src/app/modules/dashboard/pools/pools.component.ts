@@ -13,8 +13,7 @@ export class PoolsComponent implements OnInit {
     {
       id: '1',
       name: 'Human Genome Lab results',
-      description:
-        'Complex Genomics Analytics from human placenta DNA. Averages & Standard Deviations.',
+      description: 'Complex Genomics Analytics from human placenta DNA.',
       drt: [
         {
           name: 'Average',
@@ -25,6 +24,10 @@ export class PoolsComponent implements OnInit {
           name: 'Standard Deviation',
           description:
             'Allow others to calculate standard deviation on integer values in your data'
+        },
+        {
+          name: 'Append',
+          description: 'Allow others to append their data and join your pool'
         }
       ]
     },
@@ -32,7 +35,7 @@ export class PoolsComponent implements OnInit {
       id: '2',
       name: 'National Survey Financial Analytics',
       description:
-        'Household financial analysis showing averages on set categories',
+        'Household financial analysis over set categories of wealth brackets.',
       drt: [
         {
           name: 'Average',
@@ -43,6 +46,10 @@ export class PoolsComponent implements OnInit {
           name: 'Standard Deviation',
           description:
             'Allow others to calculate standard deviation on integer values in your data'
+        },
+        {
+          name: 'Append',
+          description: 'Allow others to append their data and join your pool'
         }
       ]
     },
@@ -50,7 +57,7 @@ export class PoolsComponent implements OnInit {
       id: '3',
       name: 'Blood oxygen & EKG results',
       description:
-        'Collection of data from cardio unit at HopX. Determine average hrate and blood oxygen across age.',
+        'Collection of data from cardio unit at HopX. Heart rates and blood oxygen versus age.',
       drt: [
         {
           name: 'Average',
@@ -61,6 +68,10 @@ export class PoolsComponent implements OnInit {
           name: 'Standard Deviation',
           description:
             'Allow others to calculate standard deviation on integer values in your data'
+        },
+        {
+          name: 'Append',
+          description: 'Allow others to append their data and join your pool'
         }
       ]
     }
