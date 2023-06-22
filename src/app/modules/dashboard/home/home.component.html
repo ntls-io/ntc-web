@@ -34,27 +34,22 @@
             </thead>
 
             <tbody>
-              <tr>
-                <td>Human Genome Sequencing</td>
-                <td>Complex Genomics Analytics from human placenta DNA.</td>
-                <td class="text-right">
-                  <button class="btn btn-sm btn-outline-dark">Issue DRT</button>
-                </td>
-              </tr>
-              <tr>
-                <td>National Survey Financial Analytics</td>
-                <td>Household financial analysis over set categories of wealth brackets.</td>
-                <td class="text-right">
-                  <button class="btn btn-sm btn-outline-dark">Issue DRT</button>
-                </td>
-              </tr>
-              <tr>
-                <td>Blood oxygen & EKG results</td>
-                <td>Collection of data from cardio unit at HopX. Heart rates and blood oxygen versus age.</td>
-                <td class="text-right">
-                  <button class="btn btn-sm btn-outline-dark">Issue DRT</button>
-                </td>
-              </tr>
+              <ng-container *ngIf="poolData?.length; else noData">
+                <tr *ngFor="let pool of poolData">
+                  <td>{{ pool.name }}</td>
+                  <td>{{ pool.description }}</td>
+                  <td class="text-right">
+                    <button class="btn btn-sm btn-outline-dark">
+                      Issue DRT
+                    </button>
+                  </td>
+                </tr>
+              </ng-container>
+              <ng-template #noData>
+                <tr>
+                  <td colspan="4" class="text-center"></td>
+                </tr>
+              </ng-template>
             </tbody>
           </table>
         </div>

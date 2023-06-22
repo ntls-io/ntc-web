@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FileUploader } from 'ng2-file-upload';
 import { BsModalRef } from 'ngx-bootstrap/modal';
-import { PoolData, PoolDataQuery } from 'src/app/states/pool-data';
+import { PoolData, PoolDataQuery, PoolDataService } from 'src/app/states/pool-data';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -21,11 +21,12 @@ export class JoinPoolComponent implements OnInit {
 
   constructor(
     public bsModalRef: BsModalRef,
-    private poolDataQuery: PoolDataQuery
+    private poolDataQuery: PoolDataQuery,
+    private poolDataService: PoolDataService
   ) {}
 
   ngOnInit(): void {
-    this.pool = this.poolDataQuery.getEntity(this.id);
+    this.pool = this.poolDataService.merge_data.find(pool => pool.id===this.id);
   }
 
   async joinPool(): Promise<void> {
