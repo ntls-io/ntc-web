@@ -57,7 +57,7 @@ export class PoolsComponent implements OnInit {
       id: '3',
       name: 'Blood oxygen & EKG results',
       description:
-        'Collection of data from cardio unit at HopX. Heart rates and blood oxygen versus age.',
+        'Collection of data from cardio unit at HopX. Heart rates and blood oxygen versus age. ',
       drt: [
         {
           name: 'Average',
