@@ -13,7 +13,7 @@ export class DigitalRightsService {
     private digitalRightsQuery: DigitalRightsQuery) {
   }
 
-  private hardcodedDrt: DigitalRight[] = [
+    hardcodedDrt: DigitalRight[] = [
     {
       id: '7',
       name: 'Human Genome Lab results',

@@ -39,7 +39,12 @@
                   <td>{{ pool.name }}</td>
                   <td>{{ pool.description }}</td>
                   <td class="text-right">
-                    <button class="btn btn-sm btn-outline-dark">
+                    <button
+                      class="btn btn-sm btn-outline-dark"
+                      (click)="
+                        openIssueDrt(pool.id, pool.name, pool.description)
+                      "
+                    >
                       Issue DRT
                     </button>
                   </td>

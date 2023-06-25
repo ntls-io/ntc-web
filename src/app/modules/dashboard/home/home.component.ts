@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PoolData, PoolDataQuery, PoolDataService } from 'src/app/states/pool-data';
+import { BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { IssueDrtComponent } from 'src/app/components/issue-drt/issue-drt.component';
 
 @Component({
   selector: 'app-home',
@@ -15,6 +17,7 @@ export class HomeComponent implements OnInit {
     { name: 'Amount Withdrawn', amount: '$20' }
   ];
   constructor(
+    private modalService: BsModalService,
     public poolDataService: PoolDataService,
     public poolDataQuery: PoolDataQuery
   ) {}
@@ -22,5 +25,13 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.poolDataService.fetchPoolData()
     this.poolData = this.poolDataService.merge_data;
+  }
+
+  openIssueDrt(id: string, name: string, description: string) {
+    const initialState: ModalOptions = {
+      initialState: { id, selectedDrtData: { name, description } },
+      class: 'modal-dialog-centered'
+    };
+    this.modalService.show(IssueDrtComponent, initialState);
   }
 }

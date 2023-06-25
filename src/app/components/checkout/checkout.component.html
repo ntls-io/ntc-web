@@ -10,7 +10,7 @@
   </button>
 </div>
 <div class="modal-body">
-  <h5>DRT Name</h5>
+  <h5>{{ selectedDrtData?.digital_right }}</h5>
   <em>
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum rem vero
     ipsum non! Voluptates nam facilis reprehenderit tenetur deserunt. Eligendi
@@ -28,7 +28,11 @@
         </div>
       </div>
       <div class="col">
-        <button type="button" class="btn btn-block btn-success">
+        <button
+          type="button"
+          class="btn btn-block btn-success"
+          (click)="confirmPurchase()"
+        >
           Confirm purchase
         </button>
       </div>

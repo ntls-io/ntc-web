@@ -21,27 +21,26 @@
             </thead>
 
             <tbody>
+              <ng-container *ngIf="digitalRights?.length; else noData">
+                <tr *ngFor="let drt of digitalRights">
+                  <td>{{ drt.name }}</td>
+                  <td>{{ drt.description }}</td>
+                  <td>{{ drt.digital_right }}</td>
+                  <td class="text-right">
+                    <button
+                      class="btn btn-sm btn-outline-dark"
+                      (click)="redeemDrt()"
+                    >
+                      Redeem
+                    </button>
+                  </td>
+                </tr>
+              </ng-container>
+              <ng-template #noData>
                 <tr>
-                <td>Human Genome Lab results</td>
-                <td>Complex Genomics Analytics from human placenta DNA.</td>
-                <td>Mean Average</td>
-                <td class="text-right">
-                  <button class="btn btn-sm btn-outline-dark">Redeem</button>
-                </td>
-              </tr>
-              <tr>
-                <td>National Survey Financial Analytics</td>
-                <td>Household financial analysis over set categories of wealth brackets.</td>
-                <td>Mean Average</td>
-                <td class="text-right">
-                  <button
-                    (click)="redeemDrt()"
-                    class="btn btn-sm btn-outline-dark"
-                  >
-                    Redeem
-                  </button>
-                </td>
-              </tr>
+                  <td colspan="5" class="text-center">No data.</td>
+                </tr>
+              </ng-template>
             </tbody>
           </table>
         </div>
