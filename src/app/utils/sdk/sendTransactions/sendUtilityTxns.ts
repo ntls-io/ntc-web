@@ -3,15 +3,19 @@ import algosdk from 'algosdk';
 export const sendAssetOptinTxn = async (
   signedTxn: any,
   client: algosdk.Algodv2,
-  txId: string,
-  account: any
+  txId: string
 ) => {
   try {
     // Submit the transaction
     await client.sendRawTransaction(signedTxn).do();
     // Wait for transaction to be confirmed
     const confirmedTxn = await algosdk.waitForConfirmation(client, txId, 4);
-
+    console.log(
+      'Asset Optin Transaction ' +
+        txId +
+        ' confirmed in round ' +
+        confirmedTxn['confirmed-round']
+    );
     const transactionResponse = await client
       .pendingTransactionInformation(txId)
       .do();
@@ -42,9 +46,4 @@ export const sendPaymentTxn = async (
   } catch (err) {
     console.log(err);
   }
-};
-
-exports = {
-  sendAssetOptinTxn,
-  sendPaymentTxn
 };

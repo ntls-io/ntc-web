@@ -2,23 +2,23 @@
 txn ApplicationID
 int 0
 ==
-bnz main_l41
+bnz main_l43
 txn OnCompletion
 int DeleteApplication
 ==
-bnz main_l40
+bnz main_l42
 txn OnCompletion
 int UpdateApplication
 ==
-bnz main_l39
+bnz main_l41
 txn OnCompletion
 int OptIn
 ==
-bnz main_l38
+bnz main_l40
 txn OnCompletion
 int CloseOut
 ==
-bnz main_l37
+bnz main_l39
 txn OnCompletion
 int NoOp
 ==
@@ -28,120 +28,127 @@ main_l7:
 txna ApplicationArgs 0
 byte "create_drt"
 ==
-bnz main_l36
+bnz main_l38
 txna ApplicationArgs 0
 byte "update_drt_price"
 ==
-bnz main_l35
+bnz main_l37
 txna ApplicationArgs 0
 byte "buy_drt"
 ==
-bnz main_l34
+bnz main_l36
 txna ApplicationArgs 0
 byte "claim_royalty_contributor"
 ==
-bnz main_l33
+bnz main_l35
 txna ApplicationArgs 0
 byte "init_contract"
 ==
-bnz main_l32
+bnz main_l34
 txna ApplicationArgs 0
 byte "drt_owner_change"
 ==
-bnz main_l31
+bnz main_l33
 txna ApplicationArgs 0
 byte "drt_to_box"
 ==
-bnz main_l30
+bnz main_l32
 txna ApplicationArgs 0
 byte "contributor_owner_change"
 ==
-bnz main_l29
+bnz main_l31
 txna ApplicationArgs 0
 byte "de_list_drt"
 ==
-bnz main_l28
+bnz main_l30
 txna ApplicationArgs 0
 byte "list_drt"
 ==
-bnz main_l27
+bnz main_l29
 txna ApplicationArgs 0
 byte "execute_drt"
 ==
-bnz main_l26
+bnz main_l28
 txna ApplicationArgs 0
 byte "add_contributor_pending"
 ==
-bnz main_l25
+bnz main_l27
 txna ApplicationArgs 0
 byte "add_contributor_approved"
 ==
-bnz main_l24
+bnz main_l26
 txna ApplicationArgs 0
 byte "add_contributor_claim"
 ==
-bnz main_l22
+bnz main_l25
+txna ApplicationArgs 0
+byte "nautilus_claim"
+==
+bnz main_l23
 err
-main_l22:
-callsub addcontributorclaim_17
 main_l23:
+callsub claimroyaltynautilus_19
+main_l24:
 int 0
 return
-main_l24:
-callsub addcontributorapproved_16
-b main_l23
 main_l25:
-callsub addcontributorpending_15
-b main_l23
+callsub addcontributorclaim_17
+b main_l24
 main_l26:
-callsub executedrt_21
-b main_l23
+callsub addcontributorapproved_16
+b main_l24
 main_l27:
-callsub listdrt_13
-b main_l23
+callsub addcontributorpending_15
+b main_l24
 main_l28:
-callsub delistdrt_12
-b main_l23
+callsub executedrt_22
+b main_l24
 main_l29:
-callsub contributorownershipchange_20
-b main_l23
+callsub listdrt_13
+b main_l24
 main_l30:
+callsub delistdrt_12
+b main_l24
+main_l31:
+callsub contributorownershipchange_21
+b main_l24
+main_l32:
 txna Assets 0
 callsub drttobox_10
-b main_l23
-main_l31:
-callsub drtownershipchange_19
-b main_l23
-main_l32:
-callsub initcontract_8
-b main_l23
+b main_l24
 main_l33:
+callsub drtownershipchange_20
+b main_l24
+main_l34:
+callsub initcontract_8
+b main_l24
+main_l35:
 txn Sender
 txna Assets 0
 callsub claimroyaltycontributor_18
-b main_l23
-main_l34:
-callsub buydrt_14
-b main_l23
-main_l35:
-callsub updatedrtprice_11
-b main_l23
+b main_l24
 main_l36:
-callsub createdrt_9
-b main_l23
+callsub buydrt_14
+b main_l24
 main_l37:
-int 0
-return
+callsub updatedrtprice_11
+b main_l24
 main_l38:
-int 1
-return
+callsub createdrt_9
+b main_l24
 main_l39:
 int 0
 return
 main_l40:
-int 0
+int 1
 return
 main_l41:
+int 0
+return
+main_l42:
+int 0
+return
+main_l43:
 txn TypeEnum
 int appl
 ==
@@ -151,11 +158,14 @@ int 0
 ==
 assert
 txn NumAccounts
-int 1
+int 2
 ==
 assert
 byte "enclave_address"
 txna Accounts 1
+app_global_put
+byte "nautilus"
+txna Accounts 2
 app_global_put
 byte "drt_counter"
 int 0
@@ -171,6 +181,9 @@ int 0
 app_global_put
 byte "data_package_hash"
 byte ""
+app_global_put
+byte "nautilus_pool"
+int 0
 app_global_put
 byte "init_progress"
 int 0
@@ -321,27 +334,24 @@ proto 1 1
 frame_dig -1
 itob
 box_get
+store 35
 store 34
-store 33
-load 33
+load 34
 int 0
 extract_uint64
-store 31
-load 33
+store 32
+load 34
 int 8
 extract_uint64
-store 30
-load 30
+store 31
+load 31
 byte "drt_payment_row_average"
 app_global_get
-load 31
+load 32
 -
 *
-store 32
-byte "royalty_fee"
-load 32
-app_global_put
-load 32
+store 33
+load 33
 retsub
 
 // init_contract
@@ -691,20 +701,20 @@ itob
 global CurrentApplicationAddress
 concat
 box_get
+store 16
 store 15
-store 14
-load 14
+load 15
 int 0
 extract_uint64
-store 10
-load 14
+store 11
+load 15
 int 8
 extract_uint64
-store 9
-load 14
+store 10
+load 15
 int 16
 extract_uint64
-store 12
+store 13
 int 0
 callsub defaultTransactionChecks_2
 int 1
@@ -712,8 +722,8 @@ callsub defaultTransactionChecks_2
 gtxn 0 Sender
 gtxna 0 Assets 0
 asset_holding_get AssetBalance
+store 9
 store 8
-store 7
 global GroupSize
 int 2
 ==
@@ -729,10 +739,10 @@ assert
 gtxn 1 TypeEnum
 int pay
 ==
-load 15
+load 16
 &&
 gtxn 1 Amount
-load 10
+load 11
 gtxna 0 ApplicationArgs 1
 btoi
 *
@@ -742,9 +752,9 @@ global CurrentApplicationAddress
 gtxn 1 Receiver
 ==
 &&
-load 8
-&&
 load 9
+&&
+load 10
 gtxna 0 ApplicationArgs 1
 btoi
 >=
@@ -757,7 +767,7 @@ gtxn 0 Sender
 gtxn 1 Sender
 ==
 &&
-load 12
+load 13
 int 10001
 ==
 &&
@@ -773,35 +783,59 @@ app_global_get
 byte "dataset_total_rows"
 app_global_get
 gtxn 1 Amount
+gtxn 1 Amount
+int 5
+*
+int 100
+/
+-
 callsub computeglobaldrtpaymentrowaverage_6
 app_global_put
-byte "total_fees"
 gtxn 1 Amount
+gtxn 1 Amount
+int 5
+*
+int 100
+/
+-
+store 7
+byte "total_fees"
+load 7
 byte "total_fees"
 app_global_get
 +
 app_global_put
-load 9
+byte "nautilus_pool"
+gtxn 1 Amount
+int 5
+*
+int 100
+/
+byte "nautilus_pool"
+app_global_get
++
+app_global_put
+load 10
 gtxna 0 ApplicationArgs 1
 btoi
 -
-store 11
+store 12
 gtxna 0 Assets 0
 itob
 global CurrentApplicationAddress
 concat
 int 8
-load 11
+load 12
 itob
 box_replace
 gtxna 0 ApplicationArgs 1
 btoi
-store 13
+store 14
 gtxna 0 Assets 0
 itob
 gtxn 0 Sender
 concat
-load 13
+load 14
 itob
 box_put
 gtxna 0 Assets 0
@@ -869,6 +903,12 @@ int 0
 !=
 &&
 assert
+byte "nautilus_pool"
+gtxn 1 Amount
+byte "nautilus_pool"
+app_global_get
++
+app_global_put
 txn Sender
 int 500
 box_create
@@ -892,9 +932,9 @@ global ZeroAddress
 assert
 txna Accounts 1
 box_get
+store 20
 store 19
-store 18
-load 18
+load 19
 int 0
 extract_uint64
 int 20001
@@ -933,8 +973,8 @@ callsub itoa_1
 byte base64(y9OJ5MRLCHQj8GqbikAUKMBI7hom+SOj8dlopNdNHXI=)
 byte ""
 callsub innerassetcreatetxn_4
-store 16
-load 16
+store 17
+load 17
 itob
 byte "drt_payment_row_average"
 app_global_get
@@ -946,10 +986,10 @@ itob
 concat
 txna Accounts 1
 concat
-store 17
+store 18
 txna Accounts 1
 int 0
-load 17
+load 18
 box_replace
 byte "data_package_hash"
 txna ApplicationArgs 2
@@ -976,34 +1016,34 @@ assert
 txn Sender
 txna Assets 0
 asset_holding_get AssetBalance
+store 22
 store 21
-store 20
 txn Sender
 box_get
+store 26
 store 25
-store 24
-load 24
+load 25
 int 0
 extract_uint64
-store 22
-load 24
-extract 8 48
 store 23
-load 21
-txna Assets 0
+load 25
+extract 8 48
+store 24
 load 22
+txna Assets 0
+load 23
 ==
 &&
 assert
-load 22
+load 23
 itob
 int 500
 box_create
 pop
-load 22
+load 23
 itob
 int 0
-load 23
+load 24
 box_replace
 txn Sender
 box_del
@@ -1054,14 +1094,14 @@ proto 2 0
 frame_dig -2
 frame_dig -1
 asset_holding_get AssetBalance
+store 28
 store 27
-store 26
 frame_dig -1
 itob
 int 16
 int 32
 box_extract
-store 29
+store 30
 int 0
 callsub defaultTransactionChecks_2
 global GroupSize
@@ -1076,8 +1116,8 @@ gtxn 0 RekeyTo
 global ZeroAddress
 ==
 assert
+load 28
 load 27
-load 26
 int 1
 ==
 &&
@@ -1096,7 +1136,7 @@ frame_dig -1
 callsub computeroyaltybox_7
 >=
 &&
-load 29
+load 30
 frame_dig -2
 ==
 &&
@@ -1108,7 +1148,7 @@ int 0
 assert
 frame_dig -1
 callsub computeroyaltybox_7
-store 28
+store 29
 txn Sender
 frame_dig -1
 callsub computeroyaltybox_7
@@ -1123,30 +1163,80 @@ box_replace
 byte "total_fees"
 byte "total_fees"
 app_global_get
-load 28
+load 29
+-
+app_global_put
+int 1
+return
+
+// claim_royalty_nautilus
+claimroyaltynautilus_19:
+proto 0 0
+int 0
+callsub defaultTransactionChecks_2
+global GroupSize
+int 1
+==
+txn GroupIndex
+int 0
+==
+&&
+assert
+gtxn 0 RekeyTo
+global ZeroAddress
+==
+assert
+txn NumAppArgs
+int 1
+==
+byte "nautilus_pool"
+app_global_get
+int 0
+>
+&&
+txn Sender
+byte "nautilus"
+app_global_get
+==
+&&
+byte "init_progress"
+app_global_get
+int 0
+!=
+&&
+assert
+txn Sender
+byte "nautilus_pool"
+app_global_get
+callsub innersendPayment_3
+byte "nautilus_pool"
+byte "nautilus_pool"
+app_global_get
+byte "nautilus_pool"
+app_global_get
 -
 app_global_put
 int 1
 return
 
 // drt_ownership_change
-drtownershipchange_19:
+drtownershipchange_20:
 proto 0 0
 gtxn 0 XferAsset
 itob
 gtxn 0 Sender
 concat
 box_get
+store 41
 store 40
-store 39
-load 39
+load 40
 int 0
 extract_uint64
-store 37
+store 38
 gtxn 0 XferAsset
 asset_params_get AssetCreator
+store 37
 store 36
-store 35
 int 0
 callsub defaultTransactionChecks_2
 global GroupSize
@@ -1184,7 +1274,7 @@ gtxn 2 Receiver
 global CurrentApplicationAddress
 ==
 &&
-load 35
+load 36
 global CurrentApplicationAddress
 ==
 &&
@@ -1202,16 +1292,16 @@ int 0
 !=
 &&
 assert
-load 37
+load 38
 gtxn 0 AssetAmount
 -
-store 38
+store 39
 gtxn 0 XferAsset
 itob
 gtxn 0 Sender
 concat
 int 0
-load 38
+load 39
 itob
 box_replace
 gtxn 0 XferAsset
@@ -1231,18 +1321,18 @@ int 1
 return
 
 // contributor_ownership_change
-contributorownershipchange_20:
+contributorownershipchange_21:
 proto 0 0
 gtxn 0 XferAsset
 itob
 int 16
 int 32
 box_extract
-store 43
+store 44
 gtxn 0 XferAsset
 asset_params_get AssetCreator
+store 43
 store 42
-store 41
 int 0
 callsub defaultTransactionChecks_2
 gtxn 0 RekeyTo
@@ -1272,7 +1362,7 @@ gtxn 2 Receiver
 global CurrentApplicationAddress
 ==
 &&
-load 41
+load 42
 global CurrentApplicationAddress
 ==
 &&
@@ -1284,7 +1374,7 @@ int 100
 /
 ==
 &&
-load 43
+load 44
 gtxn 0 Sender
 ==
 &&
@@ -1319,7 +1409,7 @@ int 1
 return
 
 // execute_drt
-executedrt_21:
+executedrt_22:
 proto 0 0
 int 0
 callsub defaultTransactionChecks_2
@@ -1339,7 +1429,7 @@ store 51
 load 51
 int 0
 extract_uint64
-store 46
+store 47
 gtxn 0 XferAsset
 itob
 global CurrentApplicationAddress
@@ -1350,11 +1440,11 @@ store 53
 load 53
 int 8
 extract_uint64
-store 48
+store 49
 gtxn 0 XferAsset
 asset_params_get AssetCreator
+store 46
 store 45
-store 44
 global GroupSize
 int 3
 ==
@@ -1370,7 +1460,7 @@ gtxn 0 Sender
 gtxn 1 Sender
 ==
 &&
-load 44
+load 45
 global CurrentApplicationAddress
 ==
 &&
@@ -1378,16 +1468,16 @@ gtxn 0 AssetAmount
 int 1
 ==
 &&
-load 46
+load 47
 int 1
 >=
 &&
-load 48
+load 49
 int 1
 >=
 &&
 gtxn 1 Amount
-int 1000000
+int 3000000
 ==
 &&
 byte "init_progress"
@@ -1396,37 +1486,35 @@ int 0
 !=
 &&
 assert
-load 46
+load 47
 gtxn 0 AssetAmount
 -
-store 47
+store 48
 gtxn 0 XferAsset
 itob
 gtxn 0 Sender
 concat
 int 0
-load 47
+load 48
 itob
 box_replace
-load 48
+load 49
 gtxn 0 AssetAmount
 +
-store 49
+store 50
 gtxn 0 XferAsset
 itob
 global CurrentApplicationAddress
 concat
 int 8
-load 49
+load 50
 itob
 box_replace
-byte "total_fees"
-app_global_get
+byte "nautilus_pool"
 gtxn 1 Amount
+byte "nautilus_pool"
+app_global_get
 +
-store 50
-byte "total_fees"
-load 50
 app_global_put
 int 1
 return
