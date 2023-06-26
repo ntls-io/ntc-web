@@ -20,7 +20,7 @@ export class MarketComponent implements OnInit {
   ngOnInit(): void{
     this.digitalRightsSubscription = this.digitalRightsQuery.selectAll().subscribe(
       (digitalRights: DigitalRight[]) => {
-        this.digitalRights = digitalRights;
+        this.digitalRights = [...digitalRights, ...this.harcodedDrts];
       }
     );
   }
@@ -38,4 +38,42 @@ export class MarketComponent implements OnInit {
     };
     this.modalService.show(CheckoutComponent, initialState);
   }
+
+  harcodedDrts: DigitalRight[] = [
+    { id: '101',
+      name: 'Human Genome Lab results',
+      description: 'Complex Genomics Analytics from human placenta DNA.',
+      digital_right: 'Average',
+      price: '5'},
+
+      { id: '102',
+      name: 'Human Genome Lab results',
+      description: 'Complex Genomics Analytics from human placenta DNA.',
+      digital_right: 'Standard Deviation',
+      price: '5'},
+
+      { id: '103',
+      name: 'Human Genome Lab results',
+      description: 'Complex Genomics Analytics from human placenta DNA.',
+      digital_right: 'Append',
+      price: '5'},
+
+      { id: '104',
+      name: 'National Survey Financial Analytics',
+      description: 'Household financial analysis over set categories of wealth brackets.',
+      digital_right: 'Average',
+      price: '5'},
+
+      { id: '105',
+      name: 'National Survey Financial Analytics',
+      description: 'Household financial analysis over set categories of wealth brackets.',
+      digital_right: 'Standard Deviation',
+      price: '5'},
+
+      { id: '106',
+      name: 'National Survey Financial Analytics',
+      description: 'Household financial analysis over set categories of wealth brackets.',
+      digital_right: 'Append',
+      price: '5'},
+  ]
 }

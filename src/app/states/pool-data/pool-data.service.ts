@@ -55,29 +55,7 @@ export class PoolDataService {
           description: 'Allow others to append their data and join your pool',
         },
       ],
-    },
-    {
-      id: '3',
-      name: 'Blood oxygen & EKG results',
-      description:
-        'Collection of data from cardio unit at HopX. Heart rates and blood oxygen versus age.',
-      drt: [
-        {
-          name: 'Average',
-          description:
-            'Allow others to calculate averages on integer values in your data',
-        },
-        {
-          name: 'Standard Deviation',
-          description:
-            'Allow others to calculate standard deviation on integer values in your data',
-        },
-        {
-          name: 'Append',
-          description: 'Allow others to append their data and join your pool',
-        },
-      ],
-    },
+    }
   ];
 
   createPool(data: PoolData) {
