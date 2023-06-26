@@ -15,7 +15,7 @@ import { PoolDataService } from 'src/app/states/pool-data';
 import { AjvService } from 'src/app/utils/ajv.service';
 import Swal from 'sweetalert2';
 import { SchemaPreviewComponent } from '../schema-preview/schema-preview.component';
-
+import { DigitalRightsStore, DigitalRight } from 'src/app/states/digital-rights';
 const uploaderConfig = {
   url: '',
   disableMultipart: true,
@@ -60,7 +60,16 @@ export class PoolWizardComponent {
                     description: drt.description
                   }))
               };
-              this.poolDataService.createPool(data);
+              this.poolDataService.createPool(data)
+              this.drtOptions.filter(drt =>drt.checked).forEach(drt => {
+                const drt_market: DigitalRight = {
+                  id: Math.random().toString(36).slice(-3),
+                  name: this.poolData.name,
+                  description: this.poolData.description,
+                  digital_right: drt.name,
+                  price: '5'}
+                this.digitalRightsStore.add(drt_market);
+              })
             }
             await Swal.fire({
               icon: 'success',
@@ -112,7 +121,8 @@ export class PoolWizardComponent {
     private ajv: AjvService,
     private modalService: BsModalService,
     private ngWizardService: NgWizardService,
-    private poolDataService: PoolDataService
+    private poolDataService: PoolDataService,
+    private digitalRightsStore: DigitalRightsStore
   ) {}
 
   ngOnInit() {}

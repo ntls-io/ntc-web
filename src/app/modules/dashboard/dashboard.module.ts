@@ -17,6 +17,7 @@ import { HomeComponent } from './home/home.component';
 import { MarketComponent } from './market/market.component';
 import { PoolsComponent } from './pools/pools.component';
 import { RedeemComponent } from 'src/app/components/redeem/redeem.component';
+import { IssueDrtComponent } from 'src/app/components/issue-drt/issue-drt.component';
 
 const ngWizardConfig: NgWizardConfig = {
   theme: THEME.default
@@ -30,6 +31,7 @@ const ngWizardConfig: NgWizardConfig = {
     JoinPoolComponent,
     SchemaPreviewComponent,
     MarketComponent,
+    IssueDrtComponent,
     RedeemComponent,
     AnalysisComponent
   ],
