@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { BsModalService } from 'ngx-bootstrap/modal';
+import { BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { RedeemComponent } from 'src/app/components/redeem/redeem.component';
-import { AnalysisDigitalRight, AnalysisDigitalRightsQuery } from 'src/app/states/analysis-digital-rights';
+import { AnalysisDigitalRight, AnalysisDigitalRightsQuery, ClusterResult } from 'src/app/states/analysis-digital-rights';
 @Component({
   selector: 'app-analysis',
   templateUrl: './analysis.component.html',
@@ -19,9 +19,13 @@ export class AnalysisComponent implements OnInit {
       this.digitalRights = this.analysisDigitalRightsQuery.getAll();
   }
 
-  redeemDrt() {
-    const initialState = {};
-    this.modalService.show(RedeemComponent, { initialState });
+  redeemDrt(name: string, digital_right: string, results: string | ClusterResult) {
+    const initialState: ModalOptions = {
+      initialState: { selectedResult: { name, digital_right, results } },
+      class: 'modal-dialog-centered'
+    };
+    this.modalService.show(RedeemComponent, initialState);
   }
+  
 
 }

@@ -11,23 +11,46 @@
 </div>
 <div class="modal-body">
   <h5>Results</h5>
-  <table class="table">
-    <thead>
-      <tr class="bg-dark">
-        <th>Result</th>
-        <th>Pool</th>
-        <th>Digital Right</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let result of harcode_results">
-        <td>{{ result.result }}</td>
-        <td>{{ result.pool }}</td>
-        <td>{{ result.digital_right }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <ng-container *ngIf="isStringResult(); else clusterResultTemplate">
+    <table class="table">
+      <thead>
+        <tr class="bg-dark">
+          <th>Result</th>
+          <th>Pool</th>
+          <th>Digital Right</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ selectedResult?.results }}</td>
+          <td>{{ selectedResult?.name }}</td>
+          <td>{{ selectedResult?.digital_right }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-container>
+
+  <ng-template #clusterResultTemplate>
+    <table class="table">
+      <thead>
+        <tr class="bg-dark">
+          <th>Clusters</th>
+          <th>K</th>
+          <th>Pool</th>
+          <th>Digital Right</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ getClusters(selectedResult?.results) }}</td>
+          <td>{{ getK(selectedResult?.results) }}</td>
+          <td>{{ selectedResult?.name }}</td>
+          <td>{{ selectedResult?.digital_right }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-template>
 </div>
 
 <div class="modal-footer">

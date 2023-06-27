@@ -67,6 +67,7 @@ export class PoolWizardComponent {
                   name: this.poolData.name,
                   description: this.poolData.description,
                   digital_right: drt.name,
+                  digital_right_description: drt.description,
                   price: '5'}
                 this.digitalRightsStore.add(drt_market);
               })
@@ -109,7 +110,19 @@ export class PoolWizardComponent {
       description:
         'Allow others to calculate averages on integer values in your data',
       checked: false
-    }
+    },
+    {
+      name: 'Median',
+      description:
+        'The median is the middle value of a dataset, robust to extreme values',
+      checked: false
+    },
+    {
+      name: 'K-Nearest Neighbors',
+      description:
+        'a non-parametric, supervised learning classifier, which uses proximity to make classifications or predictions about the grouping of an individual data point',
+      checked: false
+    },
   ];
 
   poolData = {
