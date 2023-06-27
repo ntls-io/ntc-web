@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal';
-import { AnalysisDigitalRight, AnalysisDigitalRightsStore } from 'src/app/states/analysis-digital-rights';
+import { AnalysisDigitalRight, AnalysisDigitalRightsStore, ClusterResult } from 'src/app/states/analysis-digital-rights';
 import { DigitalRightsStore, DigitalRightsQuery } from 'src/app/states/digital-rights';
 
 @Component({
@@ -19,11 +19,21 @@ export class CheckoutComponent {
 
   confirmPurchase(){
     if (this.selectedDrtData) {
+      let results: string | ClusterResult;
+      if(this.selectedDrtData.digital_right !== 'K-Nearest Neighbors'){
+        results = '5'
+      } else {
+        results = {
+          clusters: '2', 
+          k: '3'
+        }
+      }
       const data: AnalysisDigitalRight = {
         id: Math.random().toString(36).slice(-3),
         name: this.selectedDrtData.name,
         description: this.selectedDrtData.description,
-        digital_right: this.selectedDrtData.digital_right, 
+        digital_right: this.selectedDrtData.digital_right,
+        results: results
       }
       this.analysisDigitalRightsStore.add(data);
       this.digitalRightsStore.remove(this.selectedDrtData.id);
@@ -38,4 +48,5 @@ interface SelectedDrtData {
   name: string;
   description: string;
   digital_right: string;
+  digital_right_description: string;
 }

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal';
+import { ClusterResult } from 'src/app/states/analysis-digital-rights';
 
 @Component({
   selector: 'app-redeem',
@@ -9,16 +10,32 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 export class RedeemComponent {
   constructor(public bsModalRef: BsModalRef) {}
 
-  harcode_results = [
-    {
-      result: 4,
-      pool: 'Lab Data for Proj X',
-      digital_right: 'average'
-      },
-      {
-      result: 2,
-      pool: 'Lab Data for Proj X',
-      digital_right: 'standard deviation'
-      },
-  ]
+  selectedResult?: Results;
+  
+  isStringResult(): boolean {
+    return typeof this.selectedResult?.results === 'string';
+  }
+
+  getClusters(results: string | ClusterResult | undefined): string | undefined {
+    if (typeof results === 'string') {
+      return '5';
+    } else {
+      return results?.clusters;
+    }
+  }
+
+  getK(results: string | ClusterResult | undefined): string | undefined {
+    if (typeof results === 'string') {
+      return '5';
+    } else {
+      return results?.k;
+    }
+  }
+}
+
+
+interface Results {
+  name: string, 
+  digital_right: string, 
+  results: string | ClusterResult
 }

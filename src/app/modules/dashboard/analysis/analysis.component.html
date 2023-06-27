@@ -29,7 +29,9 @@
                   <td class="text-right">
                     <button
                       class="btn btn-sm btn-outline-dark"
-                      (click)="redeemDrt()"
+                      (click)="
+                        redeemDrt(drt.name, drt.digital_right, drt.results)
+                      "
                     >
                       Redeem
                     </button>

@@ -3,6 +3,7 @@ export interface DigitalRight {
   name: string,
   description: string,
   digital_right: string,
+  digital_right_description: string,
   price: string
 }
 
